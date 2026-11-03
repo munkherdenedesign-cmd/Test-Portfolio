@@ -303,7 +303,7 @@ export const SimpleAddProject: React.FC<SimpleAddProjectProps> = ({
           {/* Add Button */}
           <button
             type="submit"
-            disabled={isSubmitting || (!inputUrl.trim() && !title.trim())}
+            disabled={isSubmitting || autoCoverLoading || coverUploading || (!inputUrl.trim() && !title.trim())}
             className="px-5 py-2.5 bg-white text-black hover:bg-neutral-200 rounded-xl text-xs font-mono font-medium flex items-center justify-center gap-1.5 transition-all cursor-pointer shadow-md disabled:opacity-40 shrink-0"
           >
             {isSubmitting ? (
