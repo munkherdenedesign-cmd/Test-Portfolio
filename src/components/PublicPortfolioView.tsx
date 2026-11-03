@@ -73,12 +73,12 @@ export const PublicPortfolioView: React.FC<PublicPortfolioViewProps> = ({
 
       {/* Top Center: Signature with Exclusion Effect */}
       <header className="w-full pt-6 md:pt-8 pb-3 px-6 flex items-center justify-center relative z-20 pointer-events-none">
-        <div className="pointer-events-auto">
+        <a href="/" className="pointer-events-auto inline-flex rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-white" aria-label="Go to home page" title="Home">
           <Signature
             signatureUrl={portfolio.signatureUrl}
             className="cursor-pointer"
           />
-        </div>
+        </a>
       </header>
 
       {/* Main Content */}
