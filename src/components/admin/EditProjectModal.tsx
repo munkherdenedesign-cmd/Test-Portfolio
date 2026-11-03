@@ -17,6 +17,8 @@ import {
   ArrowLeft,
   ArrowRight,
   Pencil,
+  FileText,
+  SlidersHorizontal,
 } from 'lucide-react';
 
 interface EditProjectModalProps {
@@ -36,6 +38,7 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
   onUpdateProject,
   onDeleteProject
 }) => {
+  const [activePage, setActivePage] = useState<0 | 1 | 2>(0);
   // Form fields
   const [title, setTitle] = useState(project.title);
   const [client, setClient] = useState(project.client || '');
@@ -608,6 +611,14 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
               )}
             </div>
 
+            <nav aria-label="Edit project pages" className="flex items-center gap-1">
+              {([{ label: 'Info', Icon: FileText }, { label: 'Media', Icon: ImageIcon }, { label: 'More', Icon: SlidersHorizontal }] as const).map(({ label, Icon }, index) => (
+                <button key={label} type="button" onClick={() => setActivePage(index as 0 | 1 | 2)} aria-label={label} aria-current={activePage === index ? 'page' : undefined} title={label}
+                  className={`h-10 w-10 inline-flex items-center justify-center rounded-lg transition-colors ${activePage === index ? 'bg-white/15 text-white' : 'text-neutral-500 hover:text-white hover:bg-white/10'}`}>
+                  <Icon size={18}/>
+                </button>
+              ))}
+            </nav>
             {/* Save button */}
             <div className="flex items-center gap-3">
               <button
