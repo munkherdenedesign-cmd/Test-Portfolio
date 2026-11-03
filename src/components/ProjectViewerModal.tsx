@@ -168,6 +168,7 @@ export const ProjectViewerModal: React.FC<ProjectViewerModalProps> = ({ project,
       <div className="absolute inset-0 overflow-y-auto overscroll-contain" >
         <div className="min-h-full flex flex-col items-center justify-center px-4 md:px-16 py-12 md:py-10">
           <div className="group relative w-full max-w-[80vw] flex flex-col items-center" style={{ width: fittedWidth }} onClick={e => e.stopPropagation()}>
+            <div className="group/media relative w-full">
             <div className={`relative w-full flex items-center justify-center bg-[#101012] border border-white/10 rounded-xl overflow-hidden ${isPortraitSocial ? "aspect-[9/16]" : ""}`}
               onTouchStart={e => { touchStart.current = e.touches[0]?.clientX ?? null; }}
               onTouchEnd={e => { if (!carousel || touchStart.current === null) return; const delta = (e.changedTouches[0]?.clientX ?? touchStart.current) - touchStart.current; if (Math.abs(delta) > 45) setActivePage(p => Math.max(0, Math.min(pages.length - 1, p + (delta < 0 ? 1 : -1)))); touchStart.current = null; }}>
@@ -178,11 +179,12 @@ export const ProjectViewerModal: React.FC<ProjectViewerModalProps> = ({ project,
                 <button type="button" onClick={() => setActivePage(p => Math.min(pages.length - 1, p + 1))} disabled={activePage === pages.length - 1} aria-label="Next carousel page" className="absolute right-2 md:right-3 top-1/2 -translate-y-1/2 z-30 flex h-10 w-10 items-center justify-center rounded-full border border-white/35 bg-white/15 backdrop-blur-md shadow-[inset_0_1px_1px_rgba(255,255,255,0.5),0_2px_12px_rgba(0,0,0,0.12)] text-white opacity-100 transition-[background-color,box-shadow] duration-200 hover:bg-white/25"><ChevronRight size={25} strokeWidth={2.2} className="mix-blend-difference" /></button>
               </>}
             </div>
-            {carouselThumbnails}
-            {/* Details are a separate overlay so media dimensions never clip or resize them. */}
-            <div className={`hidden md:block absolute inset-x-0 bottom-0 z-20 max-h-[min(60dvh,520px)] overflow-y-auto overscroll-contain rounded-b-xl bg-[#101012]/97 border border-white/15 backdrop-blur-2xl ${compactDetails ? 'px-4 py-4' : 'px-7 py-7 lg:px-10 lg:py-9'} translate-y-[12px] opacity-0 invisible transition-[transform,opacity,visibility] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-0 group-hover:opacity-100 group-hover:visible group-focus-within:translate-y-0 group-focus-within:opacity-100 group-focus-within:visible pointer-events-none group-hover:pointer-events-auto group-focus-within:pointer-events-auto`}>
+            {/* Details are anchored to the large image, not the thumbnail strip. */}
+            <div className={`hidden md:block absolute inset-x-0 bottom-0 z-20 max-h-[min(60dvh,520px)] overflow-y-auto overscroll-contain rounded-b-xl bg-[#101012]/97 border border-white/15 backdrop-blur-2xl ${compactDetails ? 'px-4 py-4' : 'px-7 py-7 lg:px-10 lg:py-9'} translate-y-[12px] opacity-0 invisible transition-[transform,opacity,visibility] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover/media:translate-y-0 group-hover/media:opacity-100 group-hover/media:visible group-focus-within/media:translate-y-0 group-focus-within/media:opacity-100 group-focus-within/media:visible pointer-events-none group-hover/media:pointer-events-auto group-focus-within/media:pointer-events-auto`}>
               {information}
             </div>
+            </div>
+            {carouselThumbnails}
             {/* Mobile: no hover dependency. Details are always shown underneath the full media. */}
             <section className="md:hidden w-[min(90vw,440px)] max-w-[90vw] px-3 pt-5 pb-20">{information}</section>
           </div>
