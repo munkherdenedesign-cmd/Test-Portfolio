@@ -1,0 +1,30 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    font-family: 'JetBrains Mono', 'Space Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    letter-spacing: -0.015em;
+  }
+}
+
+@keyframes orbitMotion {
+  0% {
+    transform: translate(-50%, 0px);
+  }
+  25% {
+    transform: translate(calc(-50% + 6px), -5px);
+  }
+  50% {
+    transform: translate(-50%, -10px);
+  }
+  75% {
+    transform: translate(calc(-50% - 6px), -5px);
+  }
+  100% {
+    transform: translate(-50%, 0px);
+  }
+}
+
+.animate-orbit-floating {
+  animation: orbitMotion 5s ease-in-out infinite;
+}

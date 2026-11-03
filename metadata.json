@@ -1,0 +1,8 @@
+{
+  "name": "Editorial Portfolio & Sphere Gallery",
+  "description": "Editorial portfolio platform with interactive 3D sphere project gallery and private admin management for multiple independent portfolio pages.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
