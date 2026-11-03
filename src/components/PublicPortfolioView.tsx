@@ -3,7 +3,8 @@ import { Portfolio, Project } from '../types/portfolio';
 import SphereImageGrid, { ImageData } from './SphereImageGrid';
 import { ProjectViewerModal } from './ProjectViewerModal';
 import { Signature } from './Signature';
-import { Compass, Grid, ArrowUpRight, Shield } from 'lucide-react';
+import ConditionGrid from './ui/conditiongrid';
+import { Compass, Grid, Shield } from 'lucide-react';
 
 interface PublicPortfolioViewProps {
   portfolio: Portfolio;
@@ -116,50 +117,9 @@ export const PublicPortfolioView: React.FC<PublicPortfolioViewProps> = ({
             </div>
           </div>
         ) : (
-          /* Index Grid */
-          <div className="w-full max-w-5xl my-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-              {projects.map((project) => (
-                <div
-                  key={project.id}
-                  onClick={() => setSelectedProject(project)}
-                  className="group cursor-pointer rounded-xl bg-neutral-900/60 border border-white/10 hover:border-white/30 overflow-hidden transition-all duration-200 flex flex-col"
-                >
-                  <div className="relative aspect-[16/10] bg-black overflow-hidden">
-                    <img
-                      src={project.coverUrl}
-                      alt={project.title}
-                      className="w-full h-full object-cover group-hover:scale-102 transition-transform duration-300"
-                    />
-                    <div className="absolute top-2.5 right-2.5 px-2 py-0.5 rounded text-[10px] font-mono uppercase tracking-wider bg-black/70 backdrop-blur-md text-white border border-white/10">
-                      {project.mediaType}
-                    </div>
-                  </div>
-
-                  <div className="p-4 flex-1 flex flex-col justify-between">
-                    <div>
-                      <div className="flex items-center justify-between text-xs font-mono text-neutral-500 mb-1">
-                        <span>{project.year || '2026'}</span>
-                        <span>{project.client}</span>
-                      </div>
-                      <h3 className="text-sm font-mono font-medium text-white">
-                        {project.title}
-                      </h3>
-                      {project.description && (
-                        <p className="mt-1.5 text-xs text-neutral-400 line-clamp-2 leading-relaxed font-mono">
-                          {project.description}
-                        </p>
-                      )}
-                    </div>
-
-                    <div className="mt-4 pt-3 border-t border-white/5 flex items-center justify-between text-xs font-mono text-neutral-500 group-hover:text-white transition-colors">
-                      <span>View Preview</span>
-                      <ArrowUpRight size={13} />
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
+          /* Editorial grid: preserves uploaded aspect ratios without cropping */
+          <div className="w-full max-w-6xl my-4 pb-20">
+            <ConditionGrid projects={projects} onSelect={setSelectedProject} />
           </div>
         )}
       </main>
