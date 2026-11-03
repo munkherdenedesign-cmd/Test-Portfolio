@@ -24,7 +24,7 @@ export const PublicPortfolioView: React.FC<PublicPortfolioViewProps> = ({
   const [sphereSize, setSphereSize] = useState<number>(500);
   const reducedMotion = useReducedMotion();
   const [hoveredView, setHoveredView] = useState<'sphere' | 'index' | null>(null);
-  const [signatureHovered, setSignatureHovered] = useState(false);
+  const [sphereCircleHovered, setSphereCircleHovered] = useState(false);
 
   // Responsive sphere sizing based on window width
   useEffect(() => {
@@ -42,6 +42,10 @@ export const PublicPortfolioView: React.FC<PublicPortfolioViewProps> = ({
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
+
+  useEffect(() => {
+    if (viewMode !== "sphere") setSphereCircleHovered(false);
+  }, [viewMode]);
 
   // Transform projects to Sphere ImageData format
   const sphereImages: ImageData[] = projects.map(p => ({
@@ -79,8 +83,8 @@ export const PublicPortfolioView: React.FC<PublicPortfolioViewProps> = ({
 
       {/* Top Center: Signature with Exclusion Effect */}
       <header className="w-full pt-6 md:pt-8 pb-3 px-6 flex items-center justify-center relative z-20 pointer-events-none">
-        <a href="/" onMouseEnter={() => setSignatureHovered(true)} onMouseLeave={() => setSignatureHovered(false)} onFocus={() => setSignatureHovered(true)} onBlur={() => setSignatureHovered(false)} className="pointer-events-auto inline-flex rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-white" aria-label="Go to home page" title="Home">
-          <motion.span className="inline-flex origin-top items-center justify-center relative z-30" animate={{ scale: signatureHovered && !reducedMotion ? 1.85 : 1 }} transition={{ type: "spring", stiffness: 550, damping: 32, mass: 0.55 }}>
+        <a href="/" className="pointer-events-auto inline-flex rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-white" aria-label="Go to home page" title="Home">
+          <motion.span className="inline-flex origin-top items-center justify-center relative z-30" animate={{ scale: sphereCircleHovered && !reducedMotion ? 1.85 : 1 }} transition={{ type: "spring", stiffness: 550, damping: 32, mass: 0.55 }}>
             <LiquidSurface className="cursor-pointer">
               <Signature signatureUrl={portfolio.signatureUrl} className="cursor-pointer" />
             </LiquidSurface>
@@ -94,10 +98,10 @@ export const PublicPortfolioView: React.FC<PublicPortfolioViewProps> = ({
         {(portfolio.subtitle || portfolio.introduction) && (
           <motion.section
             className="text-center max-w-md mx-auto mb-2 px-4"
-            animate={{ opacity: signatureHovered ? 0 : 1, y: signatureHovered ? 8 : 0 }}
+            animate={{ opacity: sphereCircleHovered ? 0 : 1, y: sphereCircleHovered ? 8 : 0 }}
             transition={{ duration: reducedMotion ? 0 : 0.16, ease: 'easeOut' }}
-            style={{ pointerEvents: signatureHovered ? 'none' : 'auto' }}
-            aria-hidden={signatureHovered}
+            style={{ pointerEvents: sphereCircleHovered ? 'none' : 'auto' }}
+            aria-hidden={sphereCircleHovered}
           >
             {portfolio.subtitle && (
               <p className="text-[10px] font-mono uppercase tracking-[0.2em] text-neutral-500 mb-1">
@@ -124,6 +128,7 @@ export const PublicPortfolioView: React.FC<PublicPortfolioViewProps> = ({
                 autoRotateSpeed={0.25}
                 dragSensitivity={0.55}
                 onSelectImage={handleSphereSelect}
+                onCircleHoverChange={setSphereCircleHovered}
                 className="transition-all duration-300"
               />
             </div>
