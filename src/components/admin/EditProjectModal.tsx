@@ -6,7 +6,6 @@ import { extractInstagramReelCover, isInstagramReelUrl } from '../../lib/reelCov
 import { splitBrands } from '../../lib/brandCatalog';
 import {
   X,
-  ChevronDown,
   Check,
   Upload,
   Link as LinkIcon,
@@ -515,17 +514,15 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
           </div>
 
           {/* Carousel pages are saved within this project, not as separate projects. */}
-          <details defaultOpen={isCarousel} className="group rounded-xl border border-white/10 bg-white/[0.025] overflow-hidden">
-            <summary className="flex items-center justify-between gap-4 px-5 py-4 cursor-pointer select-none list-none [&::-webkit-details-marker]:hidden">
-              <span className="min-w-0"><span className="block text-sm font-medium text-white">Carousel pages</span><span className="block mt-1 text-[11px] text-neutral-500">Optional · Multiple images in one project</span></span>
-              <span className="flex items-center gap-3 shrink-0"><span className="text-[11px] text-neutral-400">{isCarousel ? `${carouselPages.length + 1} pages` : 'Off'}</span><ChevronDown size={16} className="text-neutral-400 transition-transform group-open:rotate-180"/></span>
-            </summary>
-            <div className="border-t border-white/10 px-5 py-4 space-y-4">
-            <label className="flex items-center gap-3 cursor-pointer">
-              <input type="checkbox" checked={isCarousel} onChange={e => setIsCarousel(e.target.checked)} className="accent-white w-4 h-4" />
-              <span className="text-xs text-neutral-200">Enable carousel for this project</span>
-            </label>
-            {isCarousel && <>
+          <div className="rounded-xl border border-white/10 bg-white/[0.025] overflow-hidden">
+            <div className="flex flex-wrap items-center justify-between gap-3 px-5 py-4">
+              <label className="flex min-w-0 items-center gap-3 cursor-pointer">
+                <input type="checkbox" checked={isCarousel} onChange={e => setIsCarousel(e.target.checked)} className="accent-white w-4 h-4 shrink-0" />
+                <span><span className="block text-sm font-medium text-white">Carousel project</span><span className="block mt-1 text-[11px] text-neutral-500">Optional · Multiple images in one project</span></span>
+              </label>
+              <span className="text-[11px] text-neutral-400">{isCarousel ? `${carouselPages.length + 1} pages` : 'Off'}</span>
+            </div>
+            {isCarousel && <div className="border-t border-white/10 px-5 py-4 space-y-4">
               <p className="text-[11px] leading-relaxed text-neutral-400">The main media image is page 1. Add the remaining pages here now or later. All pages belong to this single project.</p>
               <div className="flex flex-wrap gap-3">
                 {(mediaUrl || coverUrl) && <div className="w-20 space-y-1"><img src={mediaUrl || coverUrl} alt="Page 1" className="w-20 h-24 object-contain bg-black rounded-lg border border-white/15"/><p className="text-[10px] text-center text-neutral-400">Page 1</p></div>}
@@ -545,9 +542,8 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
                 <input type="file" multiple accept="image/*" className="hidden" disabled={uploadingPages} onChange={e => { void uploadCarouselPages(e.target.files); e.target.value = ''; }}/>
               </label>
               {carouselError && <p className="text-xs text-red-300">{carouselError}</p>}
-            </>}
-            </div>
-          </details>
+            </div>}
+          </div>
 
           {/* Footer Actions */}
           <div className="sticky bottom-0 z-20 -mx-5 sm:-mx-7 -mb-5 px-5 sm:px-7 py-4 bg-[#121215] border-t border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-[0_-12px_28px_rgba(0,0,0,0.4)]">
