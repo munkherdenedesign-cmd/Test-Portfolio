@@ -314,7 +314,7 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
           </div>
           <div className="space-y-2">
             {/* Section 2: Title, Client, Year */}
-          <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="min-w-0 space-y-1.5">
               <label className="block text-xs font-mono uppercase tracking-wider text-neutral-400">
                 Project Title *
@@ -324,7 +324,7 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
                 required
                 value={title}
                 onChange={e => setTitle(e.target.value)}
-                className="w-full bg-black/60 border border-white/15 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-white font-medium"
+                className="w-full h-12 bg-black/60 border border-white/15 rounded-xl px-4 text-sm text-white focus:outline-none focus:border-white font-medium"
               />
             </div>
             <div className="space-y-1.5">
@@ -333,14 +333,14 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
               </label>
               <div className="relative">
                 {client.trim() && !clientPickerOpen ? (
-                  <div className="flex items-center justify-between gap-3 rounded-xl border border-white/20 bg-white/[0.06] px-3 py-3">
+                  <div className="flex h-12 items-center justify-between gap-3 rounded-xl border border-white/20 bg-white/[0.06] px-4">
                     <span className="min-w-0 truncate text-sm text-white">{client.split(',')[0].trim()}</span>
                     <button type="button" onClick={() => { setClientPickerOpen(true); setBrandSearch(''); }} title="Change client" aria-label="Change client" className="shrink-0 inline-flex h-8 w-8 items-center justify-center rounded-lg text-neutral-400 hover:bg-white/10 hover:text-white"><Pencil size={15}/></button>
                   </div>
                 ) : (
-                  <div className="rounded-xl border border-white/15 bg-black/40 p-2">
+                  <div className="relative rounded-xl border border-white/15 bg-black/40 p-1">
                     <input type="text" autoFocus={clientPickerOpen} value={brandSearch} onChange={e => setBrandSearch(e.target.value)}
-                      placeholder="Search clients…" className="w-full rounded-lg border border-white/10 bg-neutral-950 px-3 py-2.5 text-xs text-white outline-none focus:border-white/40"/>
+                      placeholder="Search clients…" className="w-full h-10 rounded-lg border border-white/10 bg-neutral-950 px-3 text-sm text-white outline-none focus:border-white/40"/>
                     <div className="mt-2 max-h-40 overflow-y-auto space-y-1">
                       {brandOptions.filter(name => name.toLowerCase().includes(brandSearch.toLowerCase())).map(name => (
                         <button key={name} type="button" onClick={() => { setClient(name); setBrandSearch(''); setClientPickerOpen(false); }}
@@ -363,7 +363,7 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
           <div className="space-y-4">
             <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-4 sm:p-5 space-y-5">
               {/* Section 4: Cover Thumbnail & Aspect Ratio */}
-          <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_180px] gap-5">
+          <div className="space-y-4">
             <div className="min-w-0 space-y-1.5">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <label className="block text-xs font-mono uppercase tracking-wider text-neutral-400">Cover image</label>
@@ -375,7 +375,7 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
                 )}
               </div>
               {autoCoverError && <p className="text-[11px] text-amber-400">{autoCoverError}</p>}
-              <div className="flex flex-col sm:flex-row sm:items-end gap-4">
+              <div className="flex flex-col sm:flex-row sm:items-start gap-5">
                 <div className="w-full sm:w-56 h-48 sm:h-56 rounded-xl bg-neutral-900 border border-white/20 overflow-hidden shrink-0 flex items-center justify-center">
                   {coverUrl ? (
                     <img src={coverUrl} alt="Cover Preview" className="w-full h-full object-contain" />
@@ -383,12 +383,24 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
                     <ImageIcon size={20} className="text-neutral-500" />
                   )}
                 </div>
-                <div className="min-w-0 flex-1 space-y-3">
+                <div className="min-w-0 flex-1 max-w-sm space-y-3">
+                  <div className="space-y-1.5">
+                    <label htmlFor="edit-aspect-ratio" className="block text-xs uppercase tracking-wider text-neutral-400">Aspect ratio</label>
+                    <select id="edit-aspect-ratio" value={aspectRatio} onChange={e => setAspectRatio(e.target.value as AspectRatio)}
+                      className="h-10 w-32 rounded-lg border border-white/15 bg-black/60 px-3 text-sm text-white outline-none focus:border-white/50">
+                      <option value="auto">Auto</option>
+                      <option value="9/16">9:16</option>
+                      <option value="1:1">1:1</option>
+                      <option value="16/9">16:9</option>
+                      <option value="4/5">4:5</option>
+                      <option value="4/3">4:3</option>
+                    </select>
+                  </div>
                   <input
                     type="url"
                     value={coverUrl}
                     onChange={e => setCoverUrl(e.target.value)}
-                    placeholder="Cover Image URL"
+                    placeholder="Cover URL (optional)"
                     className="w-full min-w-0 bg-black/60 border border-white/15 rounded-lg px-3 py-2.5 text-xs text-white focus:outline-none focus:border-white font-mono"
                   />
                   <div className="relative">
@@ -410,23 +422,7 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
               </div>
             </div>
 
-            <div className="space-y-1.5">
-              <label className="block text-xs font-mono uppercase tracking-wider text-neutral-400">
-                Aspect Ratio
-              </label>
-              <select
-                value={aspectRatio}
-                onChange={e => setAspectRatio(e.target.value as AspectRatio)}
-                className="w-full bg-black/60 border border-white/15 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-white font-mono"
-              >
-                <option value="9/16">9:16</option>
-                <option value="1:1">1:1</option>
-                <option value="16/9">16:9</option>
-                <option value="4/5">4:5</option>
-                <option value="4/3">4:3</option>
-                <option value="auto">Auto</option>
-              </select>
-            </div>
+
           </div>
 
 
