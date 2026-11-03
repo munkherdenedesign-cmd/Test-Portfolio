@@ -20,7 +20,7 @@ export const PublicPortfolioView: React.FC<PublicPortfolioViewProps> = ({
   previewMode = false
 }) => {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
-  const [viewMode, setViewMode] = useState<'sphere' | 'index'>('sphere');
+  const [viewMode, setViewMode] = useState<'sphere' | 'index'>(() => typeof window !== 'undefined' && window.matchMedia('(max-width: 639px)').matches ? 'index' : 'sphere');
   const [sphereSize, setSphereSize] = useState<number>(500);
   const reducedMotion = useReducedMotion();
   const [hoveredView, setHoveredView] = useState<'sphere' | 'index' | null>(null);
@@ -108,11 +108,11 @@ export const PublicPortfolioView: React.FC<PublicPortfolioViewProps> = ({
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col items-center justify-center px-4 md:px-10 py-2 max-w-6xl mx-auto w-full relative">
+      <main className="flex-1 flex flex-col items-center justify-center px-4 md:px-10 pt-5 pb-4 sm:py-2 max-w-6xl mx-auto w-full relative">
         {/* Intro (if present) */}
         {(portfolio.subtitle || portfolio.introduction) && (
           <motion.section
-            className="text-center max-w-md mx-auto mb-2 px-4"
+            className="text-center max-w-md mx-auto mb-5 sm:mb-2 px-2 sm:px-4"
             animate={{ opacity: sphereCircleHovered ? 0 : 1, y: sphereCircleHovered ? 8 : 0 }}
             transition={{ duration: reducedMotion ? 0 : 0.16, ease: 'easeOut' }}
             style={{ pointerEvents: sphereCircleHovered ? 'none' : 'auto' }}
@@ -150,14 +150,14 @@ export const PublicPortfolioView: React.FC<PublicPortfolioViewProps> = ({
           </div>
         ) : (
           /* Editorial grid: preserves uploaded aspect ratios without cropping */
-          <div className="w-full max-w-6xl my-4 pb-20">
+          <div className="w-full max-w-6xl my-3 sm:my-4 pb-24 sm:pb-20">
             <ConditionGrid projects={projects} onSelect={setSelectedProject} />
           </div>
         )}
       </main>
 
       {/* Floating liquid view switch */}
-      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-30 pointer-events-auto">
+      <div className="fixed bottom-[max(20px,env(safe-area-inset-bottom))] sm:bottom-6 left-1/2 -translate-x-1/2 z-30 pointer-events-auto">
         <div role="group" aria-label="Portfolio view" className="relative flex items-center gap-1 p-1 rounded-full bg-neutral-900/95 backdrop-blur-md border border-white/20 shadow-2xl shadow-black/80">
           <motion.span aria-hidden="true"
             className="absolute top-1 left-1 w-10 h-10 rounded-full bg-white shadow-[0_0_18px_rgba(255,255,255,0.25)]"
