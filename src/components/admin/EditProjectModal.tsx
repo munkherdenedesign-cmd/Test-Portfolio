@@ -6,6 +6,7 @@ import { extractInstagramReelCover, isInstagramReelUrl } from '../../lib/reelCov
 import { splitBrands } from '../../lib/brandCatalog';
 import {
   X,
+  ChevronDown,
   Check,
   Upload,
   Link as LinkIcon,
@@ -227,7 +228,7 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md overflow-y-auto font-mono">
-      <div className="bg-[#121215] border border-white/20 rounded-2xl w-full max-w-4xl my-3 sm:my-6 overflow-hidden shadow-2xl flex flex-col max-h-[94vh] sm:max-h-[90vh]">
+      <div className="bg-[#121215] border border-white/20 rounded-2xl w-full max-w-3xl my-3 sm:my-6 overflow-hidden shadow-2xl flex flex-col max-h-[94vh] sm:max-h-[90vh]">
         {/* Header */}
         <div className="px-5 sm:px-7 py-4 border-b border-white/10 flex items-center justify-between bg-neutral-950/60 sticky top-0 z-10">
           <div>
@@ -245,10 +246,10 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
         </div>
 
         {/* Scrollable Form Body */}
-        <form onSubmit={handleSave} className="px-5 sm:px-7 py-5 overflow-y-auto space-y-5 flex-1">
+        <form onSubmit={handleSave} className="px-5 sm:px-7 py-5 overflow-y-auto space-y-6 flex-1 min-w-0">
           {/* Section 1: Portfolio Roles Assignment */}
           <div className="p-4 bg-white/[0.035] border border-white/10 rounded-xl space-y-3">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
                 <span className="text-xs font-mono uppercase tracking-wider text-white font-medium">
                   Assigned Portfolio Role Pages
@@ -307,38 +308,9 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
             </div>
           </div>
 
-          {/* Carousel pages are saved within this project, not as separate projects. */}
-          <div className="rounded-xl border border-white/30 bg-white/[0.065] p-4 space-y-3">
-            <label className="flex items-center gap-3 cursor-pointer">
-              <input type="checkbox" checked={isCarousel} onChange={e => setIsCarousel(e.target.checked)} className="accent-white w-4 h-4" />
-              <span className="text-sm font-medium text-white">Carousel project · multiple images</span>
-            </label>
-            {isCarousel && <>
-              <p className="text-[11px] leading-relaxed text-neutral-400">The main media image is page 1. Add the remaining pages here now or later. All pages belong to this single project.</p>
-              <div className="flex flex-wrap gap-3">
-                {(mediaUrl || coverUrl) && <div className="w-20 space-y-1"><img src={mediaUrl || coverUrl} alt="Page 1" className="w-20 h-24 object-contain bg-black rounded-lg border border-white/15"/><p className="text-[10px] text-center text-neutral-400">Page 1</p></div>}
-                {carouselPages.map((url, index) => <div key={url + index} className="w-20 space-y-1">
-                  <img src={url} alt={`Page ${index + 2}`} className="w-20 h-24 object-contain bg-black rounded-lg border border-white/15"/>
-                  <div className="flex justify-between items-center text-[10px] text-neutral-400"><span>{index + 2}</span>
-                    <div className="flex gap-1">
-                      <button type="button" disabled={index === 0} onClick={() => setCarouselPages(p => { const a = [...p]; [a[index - 1], a[index]] = [a[index], a[index - 1]]; return a; })} aria-label="Move page earlier">←</button>
-                      <button type="button" disabled={index === carouselPages.length - 1} onClick={() => setCarouselPages(p => { const a = [...p]; [a[index], a[index + 1]] = [a[index + 1], a[index]]; return a; })} aria-label="Move page later">→</button>
-                      <button type="button" onClick={() => setCarouselPages(p => p.filter((_, i) => i !== index))} aria-label="Remove page" className="text-red-300">×</button>
-                    </div>
-                  </div>
-                </div>)}
-              </div>
-              <label className="inline-flex items-center gap-2 rounded-lg border border-white/20 px-3 py-2 text-xs cursor-pointer hover:bg-white/10">
-                <Upload size={13}/>{uploadingPages ? 'Uploading pages...' : 'Add carousel pages'}
-                <input type="file" multiple accept="image/*" className="hidden" disabled={uploadingPages} onChange={e => { void uploadCarouselPages(e.target.files); e.target.value = ''; }}/>
-              </label>
-              {carouselError && <p className="text-xs text-red-300">{carouselError}</p>}
-            </>}
-          </div>
-
           {/* Section 2: Title, Client, Year */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-            <div className="md:col-span-2 space-y-1.5">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div className="min-w-0 space-y-1.5">
               <label className="block text-xs font-mono uppercase tracking-wider text-neutral-400">
                 Project Title *
               </label>
@@ -412,13 +384,13 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
             <label className="block text-xs font-mono uppercase tracking-wider text-neutral-400">
               Media Link or Direct Asset URL
             </label>
-            <div className="flex gap-2">
+            <div className="flex flex-col sm:flex-row gap-2 min-w-0">
               <input
                 type="text"
                 value={mediaUrl}
                 onChange={e => handleMediaUrlChange(e.target.value)}
                 placeholder="https://www.instagram.com/reel/... or https://..."
-                className="flex-1 bg-black/60 border border-white/15 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-white font-mono"
+                className="min-w-0 flex-1 bg-black/60 border border-white/15 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-white font-mono"
               />
               <div className="relative">
                 <input
@@ -447,8 +419,8 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
           </div>
 
           {/* Section 4: Cover Thumbnail & Aspect Ratio */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="space-y-1.5 md:col-span-2">
+          <div className="grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_180px] gap-5">
+            <div className="min-w-0 space-y-1.5">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <label className="block text-xs font-mono uppercase tracking-wider text-neutral-400">Cover image</label>
                 {isInstagramReelUrl(mediaUrl || socialUrl || externalLink) && (
@@ -459,7 +431,7 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
                 )}
               </div>
               {autoCoverError && <p className="text-[11px] text-amber-400">{autoCoverError}</p>}
-              <div className="flex items-center gap-3">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-3">
                 <div className="w-24 h-24 rounded-xl bg-neutral-900 border border-white/20 overflow-hidden shrink-0 flex items-center justify-center">
                   {coverUrl ? (
                     <img src={coverUrl} alt="Cover Preview" className="w-full h-full object-cover" />
@@ -467,7 +439,7 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
                     <ImageIcon size={20} className="text-neutral-500" />
                   )}
                 </div>
-                <div className="flex-1 space-y-1">
+                <div className="min-w-0 flex-1 space-y-1">
                   <input
                     type="url"
                     value={coverUrl}
@@ -527,7 +499,7 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
             />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 min-w-0">
             <div className="space-y-1.5">
               <label className="block text-xs font-mono uppercase tracking-wider text-neutral-400">
                 Year
@@ -541,6 +513,41 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
               />
             </div>
           </div>
+
+          {/* Carousel pages are saved within this project, not as separate projects. */}
+          <details open={isCarousel} className="group rounded-xl border border-white/10 bg-white/[0.025] overflow-hidden">
+            <summary className="flex items-center justify-between gap-4 px-5 py-4 cursor-pointer select-none list-none [&::-webkit-details-marker]:hidden">
+              <span className="min-w-0"><span className="block text-sm font-medium text-white">Carousel pages</span><span className="block mt-1 text-[11px] text-neutral-500">Optional · Multiple images in one project</span></span>
+              <span className="flex items-center gap-3 shrink-0"><span className="text-[11px] text-neutral-400">{isCarousel ? `${carouselPages.length + 1} pages` : 'Off'}</span><ChevronDown size={16} className="text-neutral-400 transition-transform group-open:rotate-180"/></span>
+            </summary>
+            <div className="border-t border-white/10 px-5 py-4 space-y-4">
+            <label className="flex items-center gap-3 cursor-pointer">
+              <input type="checkbox" checked={isCarousel} onChange={e => setIsCarousel(e.target.checked)} className="accent-white w-4 h-4" />
+              <span className="text-xs text-neutral-200">Enable carousel for this project</span>
+            </label>
+            {isCarousel && <>
+              <p className="text-[11px] leading-relaxed text-neutral-400">The main media image is page 1. Add the remaining pages here now or later. All pages belong to this single project.</p>
+              <div className="flex flex-wrap gap-3">
+                {(mediaUrl || coverUrl) && <div className="w-20 space-y-1"><img src={mediaUrl || coverUrl} alt="Page 1" className="w-20 h-24 object-contain bg-black rounded-lg border border-white/15"/><p className="text-[10px] text-center text-neutral-400">Page 1</p></div>}
+                {carouselPages.map((url, index) => <div key={url + index} className="w-20 space-y-1">
+                  <img src={url} alt={`Page ${index + 2}`} className="w-20 h-24 object-contain bg-black rounded-lg border border-white/15"/>
+                  <div className="flex justify-between items-center text-[10px] text-neutral-400"><span>{index + 2}</span>
+                    <div className="flex gap-1">
+                      <button type="button" disabled={index === 0} onClick={() => setCarouselPages(p => { const a = [...p]; [a[index - 1], a[index]] = [a[index], a[index - 1]]; return a; })} aria-label="Move page earlier">←</button>
+                      <button type="button" disabled={index === carouselPages.length - 1} onClick={() => setCarouselPages(p => { const a = [...p]; [a[index], a[index + 1]] = [a[index + 1], a[index]]; return a; })} aria-label="Move page later">→</button>
+                      <button type="button" onClick={() => setCarouselPages(p => p.filter((_, i) => i !== index))} aria-label="Remove page" className="text-red-300">×</button>
+                    </div>
+                  </div>
+                </div>)}
+              </div>
+              <label className="inline-flex items-center gap-2 rounded-lg border border-white/20 px-3 py-2 text-xs cursor-pointer hover:bg-white/10">
+                <Upload size={13}/>{uploadingPages ? 'Uploading pages...' : 'Add carousel pages'}
+                <input type="file" multiple accept="image/*" className="hidden" disabled={uploadingPages} onChange={e => { void uploadCarouselPages(e.target.files); e.target.value = ''; }}/>
+              </label>
+              {carouselError && <p className="text-xs text-red-300">{carouselError}</p>}
+            </>}
+            </div>
+          </details>
 
           {/* Footer Actions */}
           <div className="sticky bottom-0 z-20 -mx-5 sm:-mx-7 -mb-5 px-5 sm:px-7 py-4 bg-[#121215] border-t border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-[0_-12px_28px_rgba(0,0,0,0.4)]">
