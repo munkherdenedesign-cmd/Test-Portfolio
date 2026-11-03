@@ -3,7 +3,6 @@ import { Project, Portfolio, MediaType, AspectRatio } from '../../types/portfoli
 import { uploadAssetToSupabase, isSupabaseConfigured } from '../../lib/supabase';
 import { parseSocialOrMediaUrl, ParsedMediaLink } from '../../lib/socialMediaParser';
 import { extractInstagramReelCover, isInstagramReelUrl } from '../../lib/reelCover';
-import { splitBrands } from '../../lib/brandCatalog';
 import {
   X,
   Check,
@@ -38,6 +37,7 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
   const [title, setTitle] = useState(project.title);
   const [client, setClient] = useState(project.client || '');
   const [brandSearch, setBrandSearch] = useState('');
+  const [clientPickerOpen, setClientPickerOpen] = useState(false);
   const [year, setYear] = useState(project.year || '');
   const [description, setDescription] = useState(project.description || '');
   const [mediaType, setMediaType] = useState<MediaType>(project.mediaType);
@@ -329,25 +329,31 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
             </div>
             <div className="space-y-1.5">
               <label className="block text-xs font-mono uppercase tracking-wider text-neutral-400">
-                Client / Brands
+                Client
               </label>
-              <div className="rounded-xl border border-white/15 bg-black/40 p-2 space-y-2">
-                <div className="flex flex-wrap gap-1.5">
-                  {splitBrands(client).map(name => (
-                    <button key={name} type="button" onClick={() => setClient(splitBrands(client).filter(s => s !== name).join(', '))}
-                      title={'Remove ' + name}
-                      className="rounded-md bg-white text-black px-2 py-1 text-[11px] flex items-center gap-1.5">{name} <X size={11}/></button>
-                  ))}
-                  {!client.trim() && <span className="text-[11px] text-neutral-500 px-1 py-1">Select brands below</span>}
-                </div>
-                <input type="text" value={brandSearch} onChange={e => setBrandSearch(e.target.value)}
-                  placeholder="Search brands..." className="w-full rounded-lg border border-white/10 bg-neutral-950 px-3 py-2 text-xs text-white outline-none focus:border-white/40"/>
-                <div className="max-h-28 overflow-y-auto flex flex-wrap gap-1.5">
-                  {brandOptions.filter(name => name.toLowerCase().includes(brandSearch.toLowerCase()) && !splitBrands(client).some(s => s.toLowerCase() === name.toLowerCase())).map(name => (
-                    <button key={name} type="button" onClick={() => { setClient([...splitBrands(client), name].join(', ')); setBrandSearch(''); }}
-                      className="rounded-md border border-white/15 px-2 py-1 text-[11px] text-neutral-300 hover:bg-white/10">{name}</button>
-                  ))}
-                </div>
+              <div className="relative">
+                {client.trim() && !clientPickerOpen ? (
+                  <div className="flex items-center justify-between gap-3 rounded-xl border border-white/20 bg-white/[0.06] px-3 py-3">
+                    <span className="min-w-0 truncate text-sm text-white">{client.split(',')[0].trim()}</span>
+                    <button type="button" onClick={() => { setClientPickerOpen(true); setBrandSearch(''); }} className="shrink-0 text-xs text-neutral-400 hover:text-white">Change</button>
+                  </div>
+                ) : (
+                  <div className="rounded-xl border border-white/15 bg-black/40 p-2">
+                    <input type="text" autoFocus={clientPickerOpen} value={brandSearch} onChange={e => setBrandSearch(e.target.value)}
+                      placeholder="Search clients…" className="w-full rounded-lg border border-white/10 bg-neutral-950 px-3 py-2.5 text-xs text-white outline-none focus:border-white/40"/>
+                    <div className="mt-2 max-h-40 overflow-y-auto space-y-1">
+                      {brandOptions.filter(name => name.toLowerCase().includes(brandSearch.toLowerCase())).map(name => (
+                        <button key={name} type="button" onClick={() => { setClient(name); setBrandSearch(''); setClientPickerOpen(false); }}
+                          className="block w-full truncate rounded-lg px-3 py-2 text-left text-xs text-neutral-300 hover:bg-white/10 hover:text-white">{name}</button>
+                      ))}
+                      {!brandOptions.length && <p className="px-3 py-2 text-xs text-neutral-500">No saved clients</p>}
+                    </div>
+                    <div className="mt-2 flex justify-between border-t border-white/10 pt-2">
+                      <button type="button" onClick={() => { setClient(''); setClientPickerOpen(false); setBrandSearch(''); }} className="text-xs text-neutral-500 hover:text-white">Clear</button>
+                      {client && <button type="button" onClick={() => { setClientPickerOpen(false); setBrandSearch(''); }} className="text-xs text-neutral-400 hover:text-white">Cancel</button>}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>
