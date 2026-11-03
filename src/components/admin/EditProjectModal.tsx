@@ -251,7 +251,7 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
         <form id="edit-project-form" onSubmit={handleSave} className="px-5 sm:px-7 py-5 overflow-y-auto space-y-8 flex-1 min-h-0 min-w-0">
           <div className="space-y-3">
             {/* Section 1: Portfolio Roles Assignment */}
-          <div className="p-5 bg-white/[0.025] border border-white/10 rounded-xl space-y-3">
+          <div className="space-y-3">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
                 <span className="text-xs font-mono uppercase tracking-wider text-white font-medium">
@@ -265,7 +265,7 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
                 <button
                   type="button"
                   onClick={selectAllPortfolios}
-                  aria-label="Select all portfolio roles" title="Select all" className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 hover:bg-white/10 hover:text-white cursor-pointer"
+                  aria-label="Select all portfolio roles" title="Select all" className="inline-flex h-8 w-8 items-center justify-center rounded-lg hover:bg-white/10 hover:text-white cursor-pointer"
                 >
                   <CheckSquare size={15}/>
                 </button>
@@ -333,14 +333,14 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
               </label>
               <div className="relative">
                 {client.trim() && !clientPickerOpen ? (
-                  <div className="flex h-12 items-center justify-between gap-3 rounded-xl border border-white/20 bg-white/[0.06] px-4">
+                  <div className="flex h-12 items-center justify-between gap-3 rounded-xl border border-white/15 bg-black/60 px-4">
                     <span className="min-w-0 truncate text-sm text-white">{client.split(',')[0].trim()}</span>
                     <button type="button" onClick={() => { setClientPickerOpen(true); setBrandSearch(''); }} title="Change client" aria-label="Change client" className="shrink-0 inline-flex h-8 w-8 items-center justify-center rounded-lg text-neutral-400 hover:bg-white/10 hover:text-white"><Pencil size={15}/></button>
                   </div>
                 ) : (
                   <div className="relative rounded-xl border border-white/15 bg-black/40 p-1">
                     <input type="text" autoFocus={clientPickerOpen} value={brandSearch} onChange={e => setBrandSearch(e.target.value)}
-                      placeholder="Search clients…" className="w-full h-10 rounded-lg border border-white/10 bg-neutral-950 px-3 text-sm text-white outline-none focus:border-white/40"/>
+                      placeholder="Search clients…" className="w-full h-12 rounded-xl border border-white/15 bg-black/60 px-4 text-sm text-white outline-none focus:border-white/40"/>
                     <div className="mt-2 max-h-40 overflow-y-auto space-y-1">
                       {brandOptions.filter(name => name.toLowerCase().includes(brandSearch.toLowerCase())).map(name => (
                         <button key={name} type="button" onClick={() => { setClient(name); setBrandSearch(''); setClientPickerOpen(false); }}
@@ -361,7 +361,7 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
 
           </div>
           <div className="space-y-4">
-            <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-4 sm:p-5 space-y-5">
+            <div className="space-y-5">
               {/* Section 4: Cover Thumbnail & Aspect Ratio */}
           <div className="space-y-4">
             <div className="min-w-0 space-y-1.5">
@@ -376,7 +376,7 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
               </div>
               {autoCoverError && <p className="text-[11px] text-amber-400">{autoCoverError}</p>}
               <div className="flex flex-col sm:flex-row sm:items-start gap-5">
-                <div className="w-full sm:w-56 h-48 sm:h-56 rounded-xl bg-neutral-900 border border-white/20 overflow-hidden shrink-0 flex items-center justify-center">
+                <div className="w-full sm:w-56 h-48 sm:h-56 rounded-lg bg-neutral-900 overflow-hidden shrink-0 flex items-center justify-center">
                   {coverUrl ? (
                     <img src={coverUrl} alt="Cover Preview" className="w-full h-full object-contain" />
                   ) : (
@@ -502,7 +502,7 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
 
 
             {/* Quick Jump Links: Google Drive & Social Media */}
-          <details className="rounded-xl border border-white/10 bg-white/[0.025] p-4 space-y-3">
+          <details className="border-t border-white/10 pt-4 space-y-3">
             <summary className="text-xs font-mono text-neutral-300 cursor-pointer select-none">Additional links <span className="text-neutral-500">(optional)</span></summary>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-3">
               <div className="space-y-1">
@@ -538,15 +538,15 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
           <div className="space-y-3">
 
             {/* Carousel pages are saved within this project, not as separate projects. */}
-          <div className="rounded-xl border border-white/10 bg-white/[0.025] overflow-hidden">
-            <div className="flex flex-wrap items-center justify-between gap-3 px-5 py-4">
+          <div className="border-t border-white/10 pt-4">
+            <div className="flex flex-wrap items-center justify-between gap-3 py-2">
               <label className="flex min-w-0 items-center gap-3 cursor-pointer">
                 <input type="checkbox" checked={isCarousel} onChange={e => setIsCarousel(e.target.checked)} className="accent-white w-4 h-4 shrink-0" />
                 <span><span className="block text-sm font-medium text-white">Carousel project</span><span className="block mt-1 text-[11px] text-neutral-500">Optional · Multiple images in one project</span></span>
               </label>
               <span className="text-[11px] text-neutral-400">{isCarousel ? `${carouselPages.length + 1} pages` : 'Off'}</span>
             </div>
-            {isCarousel && <div className="border-t border-white/10 px-5 py-4 space-y-4">
+            {isCarousel && <div className="pt-3 space-y-4">
               <p className="text-[11px] leading-relaxed text-neutral-400">The main media image is page 1. Add the remaining pages here now or later. All pages belong to this single project.</p>
               <div className="flex flex-wrap gap-3">
                 {(mediaUrl || coverUrl) && <div className="w-20 space-y-1"><img src={mediaUrl || coverUrl} alt="Page 1" className="w-20 h-24 object-contain bg-black rounded-lg border border-white/15"/><p className="text-[10px] text-center text-neutral-400">Page 1</p></div>}
