@@ -248,7 +248,7 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
         </div>
 
         {/* Scrollable Form Body */}
-        <form onSubmit={handleSave} className="px-5 sm:px-7 py-5 overflow-y-auto space-y-8 flex-1 min-w-0">
+        <form id="edit-project-form" onSubmit={handleSave} className="px-5 sm:px-7 py-5 overflow-y-auto space-y-8 flex-1 min-h-0 min-w-0">
           <div className="space-y-3">
             {/* Section 1: Portfolio Roles Assignment */}
           <div className="p-5 bg-white/[0.025] border border-white/10 rounded-xl space-y-3">
@@ -576,8 +576,10 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
 
           </div>
 
+        </form>
+
           {/* Footer Actions */}
-          <div className="sticky bottom-0 z-20 -mx-5 sm:-mx-7 -mb-5 px-5 sm:px-7 py-4 bg-[#121215] border-t border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-[0_-12px_28px_rgba(0,0,0,0.4)]">
+          <div className="shrink-0 px-5 sm:px-7 py-4 bg-[#121215] border-t border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             {/* Delete button */}
             <div>
               {confirmDelete ? (
@@ -622,6 +624,7 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
 
               <button
                 type="submit"
+                form="edit-project-form"
                 disabled={isSaving || !title.trim()}
                 className="min-w-36 justify-center px-5 py-2.5 rounded-xl bg-white text-black hover:bg-neutral-200 text-xs font-mono font-medium flex items-center gap-1.5 transition-all cursor-pointer shadow-md disabled:opacity-50"
               >
@@ -639,7 +642,6 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
               </button>
             </div>
           </div>
-        </form>
       </div>
     </div>
   );
