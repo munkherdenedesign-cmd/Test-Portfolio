@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Portfolio, Project } from './types/portfolio';
 import { PublicPortfolioView } from './components/PublicPortfolioView';
+import { PublicSiteNavigation } from './components/PublicSiteNavigation';
+import { PublicInfoPage } from './components/PublicInfoPage';
 import { AdminAuth } from './components/admin/AdminAuth';
 import { PasswordReset } from './components/admin/PasswordReset';
 import { AdminDashboard } from './components/admin/AdminDashboard';
@@ -157,6 +159,17 @@ export default function App() {
     );
   }
 
+  // Shared navigation is present on every public route, including About and Contact.
+  const publicNav = <PublicSiteNavigation currentPath={currentPath} />;
+  if (currentPath === '/about' || currentPath === '/contact') {
+    return (
+      <>
+        {publicNav}
+        <PublicInfoPage page={currentPath === '/about' ? 'about' : 'contact'} signatureUrl={portfolioData.portfolio?.signatureUrl} />
+      </>
+    );
+  }
+
   // 2. Render Public Portfolio View (Minimal, editorial, no public profession tabs, no public admin links)
   if (loading) {
     return (
@@ -182,10 +195,13 @@ export default function App() {
   }
 
   return (
-    <PublicPortfolioView
-      portfolio={portfolioData.portfolio}
-      projects={portfolioData.projects}
-      previewMode={Boolean(previewStaged)}
-    />
+    <>
+      {publicNav}
+      <PublicPortfolioView
+        portfolio={portfolioData.portfolio}
+        projects={portfolioData.projects}
+        previewMode={Boolean(previewStaged)}
+      />
+    </>
   );
 }
