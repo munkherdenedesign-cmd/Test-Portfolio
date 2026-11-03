@@ -32,8 +32,6 @@ const ProjectTile: React.FC<{project: Project; onSelect: (project: Project) => v
 
 /** Asymmetric editorial columns, keeping each uploaded cover's natural aspect ratio. */
 export default function ConditionGrid({projects, onSelect}: ConditionGridProps) {
-  const left = projects.filter((_, i) => i % 2 === 0);
-  const right = projects.filter((_, i) => i % 2 === 1);
   if (!projects.length) return null;
   const mobileColumns = [0, 1, 2].map(column => projects.filter((_, index) => index % 3 === column));
   return (
@@ -46,14 +44,15 @@ export default function ConditionGrid({projects, onSelect}: ConditionGridProps) 
           </div>
         ))}
       </div>
-      {/* Keep the existing asymmetric editorial layout on desktop. */}
-      <div className="hidden sm:grid sm:grid-cols-12 sm:gap-4 w-full">
-        <div className="sm:col-span-5 flex flex-col sm:gap-4">
-          {left.map(project => <ProjectTile key={project.id} project={project} onSelect={onSelect}/>)}
-        </div>
-        <div className="sm:col-span-7 flex flex-col sm:gap-4">
-          {right.map(project => <ProjectTile key={project.id} project={project} onSelect={onSelect}/>)}
-        </div>
+      {/* Desktop gallery: at least three projects across, preserving each cover's aspect ratio. */}
+      <div className="hidden sm:grid sm:grid-cols-3 sm:gap-4 w-full">
+        {[0, 1, 2].map(column => (
+          <div key={column} className="flex min-w-0 flex-col gap-4">
+            {projects.filter((_, index) => index % 3 === column).map(project => (
+              <ProjectTile key={project.id} project={project} onSelect={onSelect}/>
+            ))}
+          </div>
+        ))}
       </div>
     </>
   );
