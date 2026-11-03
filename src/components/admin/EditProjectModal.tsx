@@ -246,8 +246,73 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
 
         {/* Scrollable Form Body */}
         <form onSubmit={handleSave} className="px-5 sm:px-7 py-5 overflow-y-auto space-y-8 flex-1 min-w-0">
+          <div className="space-y-3">
+            <p className="text-[10px] uppercase tracking-[0.2em] text-neutral-500">Visibility</p>
+            {/* Section 1: Portfolio Roles Assignment */}
+          <div className="p-5 bg-white/[0.025] border border-white/10 rounded-xl space-y-3">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <span className="text-xs font-mono uppercase tracking-wider text-white font-medium">
+                  Portfolio Roles
+                </span>
+                <p className="text-[11px] text-neutral-400 mt-0.5">
+                  Choose where this project appears.
+                </p>
+              </div>
+              <div className="flex items-center gap-2 text-xs font-mono text-neutral-400">
+                <button
+                  type="button"
+                  onClick={selectAllPortfolios}
+                  className="hover:text-white underline cursor-pointer"
+                >
+                  All
+                </button>
+                <span>/</span>
+                <button
+                  type="button"
+                  onClick={clearAllPortfolios}
+                  className="hover:text-white underline cursor-pointer"
+                >
+                  None
+                </button>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap gap-2 pt-1">
+              {portfolios.map(port => {
+                const isSelected = assignedPortfolioIds.includes(port.id);
+                return (
+                  <button
+                    type="button"
+                    key={port.id}
+                    onClick={() => togglePortfolio(port.id)}
+                    className={`px-3 py-2 rounded-lg border text-left transition-all cursor-pointer flex items-center justify-between gap-2 ${
+                      isSelected
+                        ? 'bg-white text-black border-white font-medium'
+                        : 'bg-black/40 text-neutral-400 border-white/10 hover:border-white/30 hover:text-white'
+                    }`}
+                  >
+                    <div className="truncate mr-2">
+                      <div className="text-xs truncate">{port.title}</div>
+                      
+                    </div>
+                    <span
+                      className={`w-3.5 h-3.5 rounded-full flex items-center justify-center shrink-0 ${
+                        isSelected ? 'bg-black text-white' : 'border border-neutral-600'
+                      }`}
+                    >
+                      {isSelected && <Check size={10} />}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+
+          </div>
           <div className="space-y-2">
-            <p className="text-[10px] uppercase tracking-[0.2em] text-neutral-500">01 / Project</p>
+            <p className="text-[10px] uppercase tracking-[0.2em] text-neutral-500">Project</p>
             {/* Section 2: Title, Client, Year */}
           <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] gap-5">
             <div className="min-w-0 space-y-1.5">
@@ -290,7 +355,7 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
 
           </div>
           <div className="space-y-4">
-            <p className="text-[10px] uppercase tracking-[0.2em] text-neutral-500">02 / Visuals</p>
+            <p className="text-[10px] uppercase tracking-[0.2em] text-neutral-500">Visuals</p>
             <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-4 sm:p-5 space-y-5">
               {/* Section 4: Cover Thumbnail & Aspect Ratio */}
           <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_180px] gap-5">
@@ -405,7 +470,7 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
             </div>
           </div>
           <div className="space-y-3">
-            <p className="text-[10px] uppercase tracking-[0.2em] text-neutral-500">03 / Details</p>
+            <p className="text-[10px] uppercase tracking-[0.2em] text-neutral-500">Details</p>
             {/* Section 5: Description & Year */}
           <div className="space-y-1.5">
             <label className="block text-xs font-mono uppercase tracking-wider text-neutral-400">
@@ -420,7 +485,7 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
             />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 min-w-0">
+          <div className="w-full max-w-[150px]">
             <div className="space-y-1.5">
               <label className="block text-xs font-mono uppercase tracking-wider text-neutral-400">
                 Year
@@ -471,72 +536,7 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
 
           </div>
           <div className="space-y-3">
-            <p className="text-[10px] uppercase tracking-[0.2em] text-neutral-500">04 / Visibility</p>
-            {/* Section 1: Portfolio Roles Assignment */}
-          <div className="p-5 bg-white/[0.025] border border-white/10 rounded-xl space-y-3">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <div>
-                <span className="text-xs font-mono uppercase tracking-wider text-white font-medium">
-                  Assigned Portfolio Role Pages
-                </span>
-                <p className="text-[11px] text-neutral-400 mt-0.5">
-                  Check each portfolio version where this project should appear.
-                </p>
-              </div>
-              <div className="flex items-center gap-2 text-xs font-mono text-neutral-400">
-                <button
-                  type="button"
-                  onClick={selectAllPortfolios}
-                  className="hover:text-white underline cursor-pointer"
-                >
-                  All
-                </button>
-                <span>/</span>
-                <button
-                  type="button"
-                  onClick={clearAllPortfolios}
-                  className="hover:text-white underline cursor-pointer"
-                >
-                  None
-                </button>
-              </div>
-            </div>
-
-            <div className="flex flex-wrap gap-2 pt-1">
-              {portfolios.map(port => {
-                const isSelected = assignedPortfolioIds.includes(port.id);
-                return (
-                  <button
-                    type="button"
-                    key={port.id}
-                    onClick={() => togglePortfolio(port.id)}
-                    className={`px-3 py-2 rounded-lg border text-left transition-all cursor-pointer flex items-center justify-between gap-2 ${
-                      isSelected
-                        ? 'bg-white text-black border-white font-medium'
-                        : 'bg-black/40 text-neutral-400 border-white/10 hover:border-white/30 hover:text-white'
-                    }`}
-                  >
-                    <div className="truncate mr-2">
-                      <div className="text-xs truncate">{port.title}</div>
-                      
-                    </div>
-                    <span
-                      className={`w-3.5 h-3.5 rounded-full flex items-center justify-center shrink-0 ${
-                        isSelected ? 'bg-black text-white' : 'border border-neutral-600'
-                      }`}
-                    >
-                      {isSelected && <Check size={10} />}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-
-          </div>
-          <div className="space-y-3">
-            <p className="text-[10px] uppercase tracking-[0.2em] text-neutral-500">05 / Optional</p>
+            <p className="text-[10px] uppercase tracking-[0.2em] text-neutral-500">Optional</p>
             {/* Carousel pages are saved within this project, not as separate projects. */}
           <div className="rounded-xl border border-white/10 bg-white/[0.025] overflow-hidden">
             <div className="flex flex-wrap items-center justify-between gap-3 px-5 py-4">
