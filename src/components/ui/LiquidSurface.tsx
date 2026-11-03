@@ -5,7 +5,7 @@ export function LiquidSurface({ children, className = '', active, subtle = false
   const filterId = 'liquid' + useId().replace(/:/g, '');
   const [hover, setHover] = useState(false);
   const reduceMotion = useReducedMotion();
-  const engaged = active ?? hover;
+  const engaged = Boolean(active || hover);
   return (
     <motion.span className={'relative inline-flex items-center justify-center ' + className}
       onHoverStart={() => setHover(true)} onHoverEnd={() => setHover(false)}
