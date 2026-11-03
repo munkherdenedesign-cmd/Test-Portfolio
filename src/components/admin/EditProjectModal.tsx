@@ -407,12 +407,12 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
                 onChange={e => setAspectRatio(e.target.value as AspectRatio)}
                 className="w-full bg-black/60 border border-white/15 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-white font-mono"
               >
-                <option value="9/16">9:16 (Vertical Reel / Story)</option>
-                <option value="1:1">1:1 (Square Post)</option>
-                <option value="16/9">16:9 (Landscape Video / Web)</option>
-                <option value="4/5">4:5 (Instagram Portrait)</option>
-                <option value="4/3">4:3 (Document)</option>
-                <option value="auto">Auto Aspect Ratio</option>
+                <option value="9/16">9:16</option>
+                <option value="1:1">1:1</option>
+                <option value="16/9">16:9</option>
+                <option value="4/5">4:5</option>
+                <option value="4/3">4:3</option>
+                <option value="auto">Auto</option>
               </select>
             </div>
           </div>
