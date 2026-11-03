@@ -4,7 +4,6 @@ import { SimpleAddProject } from './SimpleAddProject';
 import { EditProjectModal } from './EditProjectModal';
 import { SupabaseSetup } from './SupabaseSetup';
 import { BackupAndSync } from './BackupAndSync';
-import { Signature } from '../Signature';
 import { AboutExperienceEditor } from './AboutExperienceEditor';
 import { addBrand, removeBrand, fetchBrandCatalog, getBrandOptions } from '../../lib/brandCatalog';
 import {
@@ -70,10 +69,6 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const [newBrand, setNewBrand] = useState('');
   const [brandBusy, setBrandBusy] = useState(false);
   const [brandError, setBrandError] = useState('');
-  const [showSignatureModal, setShowSignatureModal] = useState(false);
-  const [signatureUrlInput, setSignatureUrlInput] = useState(() => {
-    return localStorage.getItem('portfolio_signature_url') || '';
-  });
   const [copiedSlug, setCopiedSlug] = useState<string | null>(null);
 
   const showNotification = (msg: string) => {
@@ -351,7 +346,6 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       {/* NAVBAR WITH ROLES / PAGES */}
       <header className="px-6 md:px-10 py-3 bg-neutral-950/90 backdrop-blur-md sticky top-0 z-40 flex items-center justify-between border-b border-white/5">
         <div className="flex items-center gap-4 overflow-x-auto no-scrollbar py-0.5 font-mono">
-          <span className="shrink-0 inline-flex items-center justify-center min-w-[90px]"><Signature signatureUrl={signatureUrlInput} className="max-w-[125px] [&_img]:!h-7" /></span>
 
           {/* Role Pages inside Navbar */}
           <div className="flex items-center gap-1 bg-white/5 p-1 rounded-xl border border-white/10 text-xs font-mono shrink-0">
@@ -405,15 +399,6 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
             className="px-2.5 py-1 bg-white/5 hover:bg-white/10 text-neutral-300 hover:text-white text-xs font-mono rounded-lg border border-white/10">
             Brands
           </button>
-          <button
-            onClick={() => setShowSignatureModal(true)}
-            className="px-2.5 py-1 bg-white/5 hover:bg-white/10 text-neutral-300 hover:text-white text-xs font-mono rounded-lg flex items-center gap-1.5 border border-white/10 transition-colors cursor-pointer"
-            title="Custom Signature Settings"
-          >
-            <PenTool size={12} />
-            <span className="hidden sm:inline">Signature</span>
-          </button>
-
           <a
             href={selectedPortfolio ? (selectedPortfolio.slug ? `/p/${selectedPortfolio.slug}` : '/') : '/'}
             target="_blank"
@@ -817,121 +802,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
         </div>
       )}
 
-      {/* Signature Settings Modal */}
-      {showSignatureModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md overflow-y-auto font-mono">
-          <div className="bg-[#121215] border border-white/20 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl relative">
-            <div className="px-6 py-4 border-b border-white/10 flex items-center justify-between bg-neutral-950">
-              <div className="flex items-center gap-2">
-                <PenTool size={15} className="text-white" />
-                <h3 className="text-sm font-mono font-medium text-white">Signature &amp; Exclusion Effect</h3>
-              </div>
-              <button
-                onClick={() => setShowSignatureModal(false)}
-                className="p-1 text-neutral-400 hover:text-white"
-              >
-                <X size={16} />
-              </button>
-            </div>
 
-            <div className="p-6 space-y-5 text-xs font-mono">
-              {/* Exclusion Live Preview Canvas */}
-              <div>
-                <span className="block text-neutral-400 uppercase tracking-wider mb-2 text-[11px]">
-                  Live Preview (Exclusion Effect)
-                </span>
-                <div className="relative rounded-xl overflow-hidden border border-white/15 h-28 flex items-center justify-center bg-gradient-to-r from-[#0a0a0c] via-neutral-800 to-neutral-200 p-4">
-                  <div className="mix-blend-exclusion">
-                    <Signature signatureUrl={signatureUrlInput} />
-                  </div>
-                </div>
-                <p className="text-[10px] text-neutral-500 mt-1.5">
-                  The signature is placed at the top center with mix-blend-mode: exclusion, inverting against dark, light, and 3D moving spheres.
-                </p>
-              </div>
-
-              {/* Upload PNG or SVG */}
-              <div className="space-y-2">
-                <span className="block text-neutral-400 uppercase tracking-wider text-[11px]">
-                  Upload PNG or SVG File
-                </span>
-                <div className="flex items-center gap-3">
-                  <input
-                    type="file"
-                    id="admin-signature-upload"
-                    className="hidden"
-                    accept="image/png,image/svg+xml,image/webp"
-                    onChange={async (e) => {
-                      const file = e.target.files?.[0];
-                      if (!file) return;
-                      const reader = new FileReader();
-                      reader.onload = () => {
-                        const res = reader.result as string;
-                        setSignatureUrlInput(res);
-                        localStorage.setItem('portfolio_signature_url', res);
-                        showNotification('Signature file loaded');
-                      };
-                      reader.readAsDataURL(file);
-                    }}
-                  />
-                  <label
-                    htmlFor="admin-signature-upload"
-                    className="px-4 py-2 bg-white text-black hover:bg-neutral-200 rounded-xl text-xs font-mono font-medium flex items-center gap-1.5 cursor-pointer shadow-sm transition-colors"
-                  >
-                    <Upload size={13} />
-                    <span>Choose PNG / SVG</span>
-                  </label>
-                  {signatureUrlInput && (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setSignatureUrlInput('');
-                        localStorage.removeItem('portfolio_signature_url');
-                        showNotification('Reset to default vector signature');
-                      }}
-                      className="px-3 py-2 bg-white/10 hover:bg-white/20 text-neutral-300 rounded-xl text-xs font-mono transition-colors"
-                    >
-                      Reset to Default
-                    </button>
-                  )}
-                </div>
-              </div>
-
-              {/* Paste Direct URL */}
-              <div className="space-y-1.5">
-                <span className="block text-neutral-400 uppercase tracking-wider text-[11px]">
-                  Or Paste Signature Image URL
-                </span>
-                <input
-                  type="text"
-                  value={signatureUrlInput}
-                  onChange={(e) => {
-                    setSignatureUrlInput(e.target.value);
-                    if (e.target.value.trim()) {
-                      localStorage.setItem('portfolio_signature_url', e.target.value.trim());
-                    } else {
-                      localStorage.removeItem('portfolio_signature_url');
-                    }
-                  }}
-                  placeholder="https://.../signature.png or svg"
-                  className="w-full bg-black/60 border border-white/15 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-white font-mono"
-                />
-              </div>
-
-              {/* Action buttons */}
-              <div className="pt-3 border-t border-white/10 flex items-center justify-end gap-2">
-                <button
-                  type="button"
-                  onClick={() => setShowSignatureModal(false)}
-                  className="px-4 py-2 bg-white text-black hover:bg-neutral-200 rounded-xl font-medium text-xs font-mono transition-colors"
-                >
-                  Done
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
