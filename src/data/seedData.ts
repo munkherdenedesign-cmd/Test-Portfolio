@@ -211,7 +211,7 @@ export const INITIAL_PORTFOLIOS: Portfolio[] = [
     id: 'port-general',
     slug: '',
     title: 'Selected Works & Archive',
-    subtitle: 'Interdisciplinary Practice 2024—2026',
+    subtitle: 'Well, hello there.',
     introduction: 'A comprehensive cross-disciplinary curation exploring spatial identities, physical publications, kinetic media, and interactive digital systems. Built with precision and deliberate editorial tension.',
     status: 'published',
     projectIds: ['proj-1', 'proj-3', 'proj-2', 'proj-4', 'proj-7', 'proj-6', 'proj-9', 'proj-10'],
