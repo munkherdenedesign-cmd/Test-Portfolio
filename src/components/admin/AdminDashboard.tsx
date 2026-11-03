@@ -5,6 +5,7 @@ import { EditProjectModal } from './EditProjectModal';
 import { SupabaseSetup } from './SupabaseSetup';
 import { BackupAndSync } from './BackupAndSync';
 import { Signature } from '../Signature';
+import { addBrand, removeBrand, fetchBrandCatalog, getBrandOptions } from '../../lib/brandCatalog';
 import {
   fetchAdminData,
   saveLocalProjects,
@@ -62,6 +63,11 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const [newRoleTitle, setNewRoleTitle] = useState('');
   const [newRoleSlug, setNewRoleSlug] = useState('');
   const [showDbModal, setShowDbModal] = useState(false);
+  const [showBrandsModal, setShowBrandsModal] = useState(false);
+  const [brands, setBrands] = useState<string[]>([]);
+  const [newBrand, setNewBrand] = useState('');
+  const [brandBusy, setBrandBusy] = useState(false);
+  const [brandError, setBrandError] = useState('');
   const [showSignatureModal, setShowSignatureModal] = useState(false);
   const [signatureUrlInput, setSignatureUrlInput] = useState(() => {
     return localStorage.getItem('portfolio_signature_url') || '';
@@ -79,6 +85,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       const data = await fetchAdminData();
       setPortfolios(data.portfolios);
       setProjects(data.projects);
+      setBrands(await fetchBrandCatalog());
       setLoading(false);
     };
     load();
@@ -389,6 +396,10 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
         {/* Right side controls */}
         <div className="flex items-center gap-2 shrink-0 ml-3">
+          <button type="button" onClick={() => { setBrandError(''); setShowBrandsModal(true); }}
+            className="px-2.5 py-1 bg-white/5 hover:bg-white/10 text-neutral-300 hover:text-white text-xs font-mono rounded-lg border border-white/10">
+            Brands
+          </button>
           <button
             onClick={() => setShowSignatureModal(true)}
             className="px-2.5 py-1 bg-white/5 hover:bg-white/10 text-neutral-300 hover:text-white text-xs font-mono rounded-lg flex items-center gap-1.5 border border-white/10 transition-colors cursor-pointer"
@@ -598,6 +609,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
         <EditProjectModal
           project={editingProject}
           portfolios={portfolios}
+          brandOptions={getBrandOptions(projects, brands)}
           onClose={() => setEditingProject(null)}
           onUpdateProject={handleUpdateProject}
           onDeleteProject={handleDeleteProject}
@@ -738,6 +750,44 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               </button>
             </div>
           </form>
+        </div>
+      )}
+
+      {showBrandsModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4" onClick={() => setShowBrandsModal(false)}>
+          <div className="w-full max-w-md rounded-2xl border border-white/20 bg-[#121215] p-5 space-y-4" onClick={e => e.stopPropagation()}>
+            <div className="flex justify-between items-center">
+              <h3 className="text-sm font-medium text-white">Manage Brands</h3>
+              <button type="button" onClick={() => setShowBrandsModal(false)} aria-label="Close"><X size={17}/></button>
+            </div>
+            <p className="text-xs text-neutral-400">Add brands here, then select them in Edit Project. Brands already used by projects are listed automatically.</p>
+            <form onSubmit={async e => {
+              e.preventDefault();
+              if (!newBrand.trim()) return;
+              setBrandBusy(true); setBrandError('');
+              try { await addBrand(newBrand); setBrands(prev => [...prev, newBrand.trim()]); setNewBrand(''); }
+              catch (err: any) { setBrandError(err.message || 'Could not save brand'); }
+              finally { setBrandBusy(false); }
+            }} className="flex gap-2">
+              <input value={newBrand} onChange={e => setNewBrand(e.target.value)} placeholder="Company / brand name" maxLength={100}
+                className="flex-1 min-w-0 bg-black/50 border border-white/15 rounded-lg px-3 py-2 text-xs text-white"/>
+              <button type="submit" disabled={brandBusy || !newBrand.trim()} className="bg-white text-black rounded-lg px-4 py-2 text-xs disabled:opacity-50">Add</button>
+            </form>
+            {brandError && <p role="alert" className="text-xs text-amber-400">{brandError}</p>}
+            <div className="max-h-64 overflow-y-auto space-y-1.5">
+              {getBrandOptions(projects, brands).map(name => (
+                <div key={name} className="flex items-center justify-between rounded-lg border border-white/10 px-3 py-2 text-xs">
+                  <span>{name}</span>
+                  {brands.some(b => b.toLowerCase() === name.toLowerCase()) && (
+                    <button type="button" disabled={brandBusy} aria-label={'Remove ' + name} className="text-neutral-500 hover:text-rose-400"
+                      onClick={async () => { setBrandBusy(true); setBrandError(''); try { await removeBrand(name); setBrands(prev => prev.filter(b => b !== name)); } catch(err: any) { setBrandError(err.message || 'Could not remove brand'); } finally { setBrandBusy(false); } }}>
+                      <X size={13}/>
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       )}
 
