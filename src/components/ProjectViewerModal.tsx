@@ -131,19 +131,19 @@ export const ProjectViewerModal: React.FC<ProjectViewerModalProps> = ({ project,
               </div>
               <button type="button" onClick={() => setActivePage(p => Math.min(pages.length - 1, p + 1))} disabled={activePage === pages.length - 1} aria-label="Next carousel page" className="shrink-0 p-2 border border-white/20 rounded-full disabled:opacity-30"><ChevronRight size={16}/></button>
             </div>}
-            {projectsList.length > 1 && <nav aria-label="Browse projects" className="flex items-center justify-center gap-2.5 mt-5 mb-1 min-h-6">
-              {projectsList.map((item, index) => (
-                <button key={item.id} type="button" onClick={() => onNavigate(item)} aria-label={`View project ${index + 1}: ${item.title}`} aria-current={index === currentIndex ? 'true' : undefined} title={item.title}
-                  className="group/dot flex h-7 min-w-3 items-center justify-center rounded-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-white">
-                  <span className={`block rounded-full transition-all duration-300 ease-out ${index === currentIndex ? 'h-3 w-3 bg-white shadow-[0_0_10px_rgba(255,255,255,0.4)]' : 'h-1.5 w-1.5 bg-white/35 group-hover/dot:bg-white/80 group-hover/dot:scale-125'}`} />
-                </button>
-              ))}
-            </nav>}
             {/* Mobile: no hover dependency. Details are always shown underneath the full media. */}
             <section className="md:hidden w-full px-1 pt-7 pb-20">{information}</section>
           </div>
         </div>
       </div>
+      {projectsList.length > 1 && <nav aria-label="Browse projects" className="fixed left-1/2 bottom-[max(12px,env(safe-area-inset-bottom))] z-40 -translate-x-1/2 flex items-center justify-center gap-1.5 rounded-full bg-black/65 px-3 py-1.5 backdrop-blur-md">
+        {projectsList.map((item, index) => (
+          <button key={item.id} type="button" onClick={() => onNavigate(item)} aria-label={`View project ${index + 1}: ${item.title}`} aria-current={index === currentIndex ? 'true' : undefined} title={item.title}
+            className="group/dot flex h-5 min-w-2.5 items-center justify-center rounded-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-white">
+            <span className={`block rounded-full transition-all duration-300 ease-out ${index === currentIndex ? 'h-2 w-2 bg-white shadow-[0_0_10px_rgba(255,255,255,0.4)]' : 'h-1 w-1 bg-white/35 group-hover/dot:bg-white/80 group-hover/dot:scale-125'}`} />
+          </button>
+        ))}
+      </nav>}
       {hasPrev && <button onClick={e => { e.stopPropagation(); prev(); }} aria-label="Previous project" className="fixed z-30 left-2 md:left-5 top-1/2 -translate-y-1/2 p-2 rounded-full bg-black/70 border border-white/20 hover:bg-neutral-800"><ChevronLeft size={20} /></button>}
       {hasNext && <button onClick={e => { e.stopPropagation(); next(); }} aria-label="Next project" className="fixed z-30 right-2 md:right-5 top-1/2 -translate-y-1/2 p-2 rounded-full bg-black/70 border border-white/20 hover:bg-neutral-800"><ChevronRight size={20} /></button>}
     </div>
