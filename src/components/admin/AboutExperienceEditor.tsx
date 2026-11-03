@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { Experience, emptyExperience, loadExperiences, saveExperiences, uploadAssetToSupabase } from '../../lib/aboutExperience';
+import { Experience, emptyExperience, loadAboutData, saveAboutData, DEFAULT_ABOUT_INTRO, type AboutIntro, uploadAssetToSupabase } from '../../lib/aboutExperience';
 import { ArrowLeft, Plus, Trash2, Upload } from 'lucide-react';
 
 export function AboutExperienceEditor({ onBack }: { onBack: () => void }) {
   const [items, setItems] = useState<Experience[]>([]);
+  const [intro, setIntro] = useState<AboutIntro>(DEFAULT_ABOUT_INTRO);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState('');
-  useEffect(() => { loadExperiences().then(setItems); }, []);
+  useEffect(() => { loadAboutData().then(data => { setItems(data.items); setIntro(data.intro); }); }, []);
   const update = (id: string, patch: Partial<Experience>) => setItems(old => old.map(x => x.id === id ? { ...x, ...patch } : x));
   const input = 'w-full rounded-lg bg-black/40 border border-white/15 px-3 py-2 text-xs text-white placeholder:text-neutral-600 focus:outline-none focus:border-white/50';
   const field = (item: Experience, label: string, key: keyof Experience, placeholder = '') => (
@@ -20,6 +21,13 @@ export function AboutExperienceEditor({ onBack }: { onBack: () => void }) {
       <button onClick={() => setItems(v => v.length < 5 ? [...v, emptyExperience()] : v)} disabled={items.length >= 5} className="flex items-center gap-2 text-xs bg-white text-black rounded-lg px-3 py-2 disabled:opacity-30"><Plus size={14}/> Add experience</button>
     </div>
     <p className="text-xs text-neutral-500 mb-8">Up to five hanging badges. Dragging isn't needed: badges appear in this order. Front: image, company, role, timeline. Back: description, three keywords, location, social link, and QR.</p>
+    <section className="rounded-2xl bg-[#141417] border border-white/10 p-5 mb-7 space-y-4">
+      <h2 className="text-sm font-medium">About page introduction</h2>
+      <p className="text-xs text-neutral-500">These three lines appear above the five lanyards.</p>
+      <label className="block space-y-1.5"><span className="text-[10px] text-neutral-400">Eyebrow</span><input className={input} value={intro.eyebrow} onChange={e=>setIntro(v=>({...v,eyebrow:e.target.value}))}/></label>
+      <label className="block space-y-1.5"><span className="text-[10px] text-neutral-400">Headline</span><input className={input} value={intro.heading} onChange={e=>setIntro(v=>({...v,heading:e.target.value}))}/></label>
+      <label className="block space-y-1.5"><span className="text-[10px] text-neutral-400">Short introduction</span><textarea rows={3} className={input} value={intro.description} onChange={e=>setIntro(v=>({...v,description:e.target.value}))}/></label>
+    </section>
     <div className="space-y-5">{items.map((item, index) => <section key={item.id} className="rounded-2xl bg-[#141417] border border-white/10 p-5">
       <div className="flex justify-between items-center mb-5"><h2 className="text-sm">Experience {index + 1}</h2><button onClick={() => setItems(v => v.filter(x => x.id !== item.id))} className="text-neutral-500 hover:text-red-400" title="Remove experience"><Trash2 size={16}/></button></div>
       <div className="grid md:grid-cols-[150px_1fr] gap-6">
@@ -41,6 +49,6 @@ export function AboutExperienceEditor({ onBack }: { onBack: () => void }) {
       </div>
     </section>)}</div>
     {items.length === 0 && <p className="text-sm text-neutral-500 py-12 text-center">No experience added yet. Add your first badge above.</p>}
-    <div className="flex items-center justify-end gap-4 mt-8 sticky bottom-4 bg-[#0a0a0c]/95 p-3 rounded-xl border border-white/10"><span className="text-xs text-neutral-400 flex-1">{message}</span><button disabled={busy} onClick={async () => { setBusy(true); setMessage('Saving...'); try { await saveExperiences(items); setMessage('Published successfully.'); } catch(e:any) { setMessage(e.message); } finally { setBusy(false); } }} className="px-5 py-2.5 bg-white text-black text-xs font-medium rounded-lg disabled:opacity-50">{busy ? 'Working...' : 'Save & publish'}</button></div>
+    <div className="flex items-center justify-end gap-4 mt-8 sticky bottom-4 bg-[#0a0a0c]/95 p-3 rounded-xl border border-white/10"><span className="text-xs text-neutral-400 flex-1">{message}</span><button disabled={busy} onClick={async () => { setBusy(true); setMessage('Saving...'); try { await saveAboutData(items, intro); setMessage('Published successfully.'); } catch(e:any) { setMessage(e.message); } finally { setBusy(false); } }} className="px-5 py-2.5 bg-white text-black text-xs font-medium rounded-lg disabled:opacity-50">{busy ? 'Working...' : 'Save & publish'}</button></div>
   </div>;
 }
