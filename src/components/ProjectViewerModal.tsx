@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useState, useRef } from 'react';
 import { Project } from '../types/portfolio';
 import { ArrowUpRight, ChevronLeft, ChevronRight, X } from 'lucide-react';
 
@@ -10,6 +10,9 @@ interface ProjectViewerModalProps {
 }
 
 export const ProjectViewerModal: React.FC<ProjectViewerModalProps> = ({ project, projectsList, onClose, onNavigate }) => {
+  const [activePage, setActivePage] = useState(0);
+  const touchStart = useRef<number | null>(null);
+  useEffect(() => setActivePage(0), [project?.id]);
   const currentIndex = project ? projectsList.findIndex(p => p.id === project.id) : -1;
   const hasPrev = currentIndex > 0;
   const hasNext = currentIndex >= 0 && currentIndex < projectsList.length - 1;
@@ -36,7 +39,9 @@ export const ProjectViewerModal: React.FC<ProjectViewerModalProps> = ({ project,
 
   if (!project) return null;
 
-  const source = project.mediaUrl || project.coverUrl;
+  const carousel = Boolean(project.details?.isCarousel && project.mediaType === 'image');
+  const pages = carousel ? [project.mediaUrl || project.coverUrl, ...(project.details?.carouselPages || [])].filter(Boolean) : [];
+  const source = carousel ? pages[Math.min(activePage, pages.length - 1)] : project.mediaUrl || project.coverUrl;
   const socialUrl = project.socialUrl || (/instagram\.com|facebook\.com|youtu\.be|youtube\.com|tiktok\.com/.test(source) ? source : '');
   const driveUrl = project.googleDriveUrl || (project.externalLink?.includes('drive.google.com') ? project.externalLink : '');
   const websiteUrl = project.externalLink && !project.externalLink.includes('drive.google.com')
@@ -113,13 +118,23 @@ export const ProjectViewerModal: React.FC<ProjectViewerModalProps> = ({ project,
       <div className="absolute inset-x-0 top-14 bottom-0 overflow-y-auto overscroll-contain" onClick={e => e.stopPropagation()}>
         <div className="min-h-full flex flex-col items-center justify-center px-4 md:px-16 py-5 md:py-8">
           <div className="group relative w-full max-w-6xl flex flex-col items-center">
-            <div className="relative w-full flex items-center justify-center bg-[#101012] border border-white/10 rounded-xl overflow-hidden">
+            <div className="relative w-full flex items-center justify-center bg-[#101012] border border-white/10 rounded-xl overflow-hidden"
+              onTouchStart={e => { touchStart.current = e.touches[0]?.clientX ?? null; }}
+              onTouchEnd={e => { if (!carousel || touchStart.current === null) return; const delta = (e.changedTouches[0]?.clientX ?? touchStart.current) - touchStart.current; if (Math.abs(delta) > 45) setActivePage(p => Math.max(0, Math.min(pages.length - 1, p + (delta < 0 ? 1 : -1)))); touchStart.current = null; }}>
               {media}
+              {carousel && pages.length > 1 && <div className="absolute top-3 right-3 z-20 rounded-full bg-black/75 px-3 py-1.5 text-[11px] text-white pointer-events-none">{activePage + 1} / {pages.length}</div>}
               {/* On desktop the project remains uncropped; information floats over the bottom on hover or keyboard focus. */}
               <div className="hidden md:block absolute inset-x-0 bottom-0 z-10 max-h-[85%] overflow-y-auto bg-[#101012]/95 border-t border-white/15 backdrop-blur-2xl px-7 py-7 lg:px-10 lg:py-9 translate-y-full opacity-0 transition-[transform,opacity] duration-500 ease-out group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:translate-y-0 group-focus-within:opacity-100 pointer-events-none group-hover:pointer-events-auto group-focus-within:pointer-events-auto">
                 {information}
               </div>
             </div>
+            {carousel && pages.length > 1 && <div className="w-full flex items-center gap-2 mt-4">
+              <button type="button" onClick={() => setActivePage(p => Math.max(0, p - 1))} disabled={activePage === 0} aria-label="Previous carousel page" className="shrink-0 p-2 border border-white/20 rounded-full disabled:opacity-30"><ChevronLeft size={16}/></button>
+              <div className="flex-1 min-w-0 flex gap-2 overflow-x-auto py-1">
+                {pages.map((url, i) => <button key={url + i} type="button" onClick={() => setActivePage(i)} aria-label={`Show carousel page ${i + 1}`} aria-current={i === activePage ? 'true' : undefined} className={`shrink-0 w-14 h-16 rounded-md border-2 overflow-hidden bg-neutral-900 ${i === activePage ? 'border-white' : 'border-transparent opacity-60 hover:opacity-100'}`}><img src={url} alt={`Page ${i + 1}`} className="w-full h-full object-contain"/></button>)}
+              </div>
+              <button type="button" onClick={() => setActivePage(p => Math.min(pages.length - 1, p + 1))} disabled={activePage === pages.length - 1} aria-label="Next carousel page" className="shrink-0 p-2 border border-white/20 rounded-full disabled:opacity-30"><ChevronRight size={16}/></button>
+            </div>}
             {/* Mobile: no hover dependency. Details are always shown underneath the full media. */}
             <section className="md:hidden w-full px-1 pt-7 pb-20">{information}</section>
             <p className="hidden md:block mt-3 text-[10px] text-neutral-500 tracking-wider">HOVER TO EXPLORE PROJECT DETAILS</p>
