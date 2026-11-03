@@ -1,7 +1,8 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Project, MediaType, AspectRatio, Portfolio } from '../../types/portfolio';
 import { uploadAssetToSupabase, isSupabaseConfigured } from '../../lib/supabase';
 import { parseSocialOrMediaUrl } from '../../lib/socialMediaParser';
+import { extractInstagramReelCover, isInstagramReelUrl } from '../../lib/reelCover';
 import {
   Plus,
   Upload,
@@ -47,9 +48,41 @@ export const SimpleAddProject: React.FC<SimpleAddProjectProps> = ({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const coverInputRef = useRef<HTMLInputElement>(null);
   const [coverUploading, setCoverUploading] = useState(false);
+  const [autoCoverLoading, setAutoCoverLoading] = useState(false);
+  const [coverError, setCoverError] = useState('');
+  const coverRequestId = useRef(0);
+
+  const autoCover = async (url: string) => {
+    if (!isInstagramReelUrl(url)) return;
+    const requestId = ++coverRequestId.current;
+    setAutoCoverLoading(true);
+    setCoverError('');
+    try {
+      const result = await extractInstagramReelCover(url);
+      if (requestId === coverRequestId.current) setCoverUrl(result);
+    } catch (err: any) {
+      if (requestId === coverRequestId.current) setCoverError(err.message || 'Could not retrieve the cover.');
+    } finally {
+      if (requestId === coverRequestId.current) setAutoCoverLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!isInstagramReelUrl(inputUrl) || coverUrl || coverUploading) return;
+    const timer = window.setTimeout(() => void autoCover(inputUrl), 1000);
+    return () => window.clearTimeout(timer);
+  // Only run after the link changes or a cover has been selected.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [inputUrl, coverUrl, coverUploading]);
 
   // Auto-detect URL on paste/type
   const handleUrlInput = (val: string) => {
+    if (val !== inputUrl) {
+      coverRequestId.current++;
+      setAutoCoverLoading(false);
+      setCoverUrl('');
+      setCoverError('');
+    }
     setInputUrl(val);
     if (!val.trim()) {
       setDetectedBadge(null);
@@ -129,6 +162,9 @@ export const SimpleAddProject: React.FC<SimpleAddProjectProps> = ({
 
   const handleCoverUpload = async (file?: File) => {
     if (!file) return;
+    coverRequestId.current++;
+    setAutoCoverLoading(false);
+    setCoverError('');
     setCoverUploading(true);
     try {
       if (isSupabaseConfigured()) {
@@ -193,6 +229,7 @@ export const SimpleAddProject: React.FC<SimpleAddProjectProps> = ({
     setCoverUrl('');
     setDetectedBadge(null);
     setEmbedCode('');
+    setCoverError('');
     setIsSubmitting(false);
   };
 
@@ -287,12 +324,16 @@ export const SimpleAddProject: React.FC<SimpleAddProjectProps> = ({
             </div>
             <div className="min-w-0 flex-1">
               <p className="text-xs text-white">Cover image</p>
-              <p className="text-[11px] text-neutral-500">Instagram and Facebook previews need a cover upload.</p>
+              <p className="text-[11px] text-neutral-500">{isInstagramReelUrl(inputUrl) ? (autoCoverLoading ? 'Finding Instagram thumbnail...' : 'Automatic where available') : 'Upload a thumbnail for social posts'}</p>
+              {coverError && <p className="text-[11px] text-amber-400">{coverError}</p>}
             </div>
             <input ref={coverInputRef} type="file" accept="image/*" className="hidden" onChange={e => handleCoverUpload(e.target.files?.[0])} />
-            <button type="button" disabled={coverUploading} onClick={() => coverInputRef.current?.click()} className="shrink-0 rounded-lg bg-white/10 px-3 py-2 text-xs text-white hover:bg-white/20 disabled:opacity-50">
-              {coverUploading ? 'Uploading...' : 'Upload cover'}
-            </button>
+            <div className="flex flex-wrap justify-end gap-2">
+              {isInstagramReelUrl(inputUrl) && <button type="button" disabled={autoCoverLoading || coverUploading} onClick={() => void autoCover(inputUrl)} className="rounded-lg border border-white/15 px-3 py-2 text-xs text-neutral-300 hover:text-white disabled:opacity-50">{autoCoverLoading ? 'Finding...' : 'Get cover'}</button>}
+              <button type="button" disabled={coverUploading} onClick={() => coverInputRef.current?.click()} className="shrink-0 rounded-lg bg-white/10 px-3 py-2 text-xs text-white hover:bg-white/20 disabled:opacity-50">
+                {coverUploading ? 'Uploading...' : 'Upload cover'}
+              </button>
+            </div>
           </div>
         )}
 
