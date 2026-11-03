@@ -68,6 +68,36 @@ export const ProjectViewerModal: React.FC<ProjectViewerModalProps> = ({ project,
     { label: 'Figma', url: project.figmaUrl },
   ].filter((item): item is { label: string; url: string } => Boolean(item.url));
 
+  // Compact adaptation of ArchGallery: fan-shaped, selectable carousel previews.
+  const carouselThumbnails = carousel && pages.length > 1 ? (
+    <div className="w-full max-w-full overflow-x-auto overflow-y-hidden py-2 [scrollbar-width:thin]" role="group" aria-label="Carousel pages">
+      <div className="mx-auto flex w-max min-w-full items-center justify-center px-4 pt-4 pb-5">
+        {pages.map((page, index) => {
+          const offset = index - (pages.length - 1) / 2;
+          const selected = activePage === index;
+          return (
+            <button
+              key={`${page}-${index}`}
+              type="button"
+              onClick={() => setActivePage(index)}
+              aria-label={`Show carousel image ${index + 1} of ${pages.length}`}
+              aria-pressed={selected}
+              title={`Image ${index + 1}`}
+              className={`relative shrink-0 h-[78px] w-[58px] sm:h-[92px] sm:w-[68px] overflow-hidden rounded-md border bg-[#171719] shadow-[0_6px_18px_rgba(0,0,0,0.3)] transition-[transform,border-color,box-shadow] duration-300 ease-out hover:!z-50 hover:!-translate-y-3 hover:!rotate-0 hover:scale-110 focus-visible:!z-50 focus-visible:!rotate-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white ${selected ? 'border-white' : 'border-white/20 hover:border-white/70'}`}
+              style={{
+                marginLeft: index === 0 ? 0 : '-12px',
+                transform: `translateY(${Math.abs(offset) * 2}px) rotate(${offset * 3}deg) ${selected ? 'translateY(-8px)' : ''}`,
+                zIndex: selected ? pages.length + 2 : pages.length - Math.abs(offset),
+              }}
+            >
+              <img src={page} alt="" loading="lazy" draggable={false} className="h-full w-full select-none object-cover pointer-events-none" />
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  ) : null;
+
   const media = (() => {
     if (project.mediaType === 'video') {
       return <video key={source} src={source} controls playsInline preload="metadata" onLoadedMetadata={e => { const v = e.currentTarget; if (v.videoWidth && v.videoHeight) setNaturalRatio(v.videoWidth / v.videoHeight); }} className="block max-w-full w-auto h-auto max-h-[70dvh] md:max-h-[70dvh] object-contain" />;
@@ -148,6 +178,7 @@ export const ProjectViewerModal: React.FC<ProjectViewerModalProps> = ({ project,
                 <button type="button" onClick={() => setActivePage(p => Math.min(pages.length - 1, p + 1))} disabled={activePage === pages.length - 1} aria-label="Next carousel page" className="absolute right-2 md:right-3 top-1/2 -translate-y-1/2 z-30 flex h-10 w-10 items-center justify-center rounded-full border border-white/35 bg-white/15 backdrop-blur-md shadow-[inset_0_1px_1px_rgba(255,255,255,0.5),0_2px_12px_rgba(0,0,0,0.12)] text-white opacity-100 transition-[background-color,box-shadow] duration-200 hover:bg-white/25"><ChevronRight size={25} strokeWidth={2.2} className="mix-blend-difference" /></button>
               </>}
             </div>
+            {carouselThumbnails}
             {/* Details are a separate overlay so media dimensions never clip or resize them. */}
             <div className={`hidden md:block absolute inset-x-0 bottom-0 z-20 max-h-[min(60dvh,520px)] overflow-y-auto overscroll-contain rounded-b-xl bg-[#101012]/97 border border-white/15 backdrop-blur-2xl ${compactDetails ? 'px-4 py-4' : 'px-7 py-7 lg:px-10 lg:py-9'} translate-y-[12px] opacity-0 invisible transition-[transform,opacity,visibility] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-0 group-hover:opacity-100 group-hover:visible group-focus-within:translate-y-0 group-focus-within:opacity-100 group-focus-within:visible pointer-events-none group-hover:pointer-events-auto group-focus-within:pointer-events-auto`}>
               {information}
