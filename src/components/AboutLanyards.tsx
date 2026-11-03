@@ -27,9 +27,9 @@ export function AboutLanyards({ items }: { items: Experience[] }) {
     <section className="relative isolate min-h-[calc(100svh-85px)] overflow-hidden bg-[#090909] text-white pt-10 md:pt-14 pb-16">
       <div aria-hidden="true" className="absolute inset-0 pointer-events-none opacity-50" style={{ backgroundImage: 'radial-gradient(#343434 1.5px, transparent 1.5px)', backgroundSize: '36px 36px', maskImage: 'linear-gradient(transparent, black 25%, black 90%)' }}/>
       <header className="relative z-10 text-center px-4 mb-12 md:mb-16">
-        <p className="text-[11px] uppercase tracking-[0.35em] text-neutral-500 mb-5">MY JOURNEY · FIVE EXPERIENCES</p>
-        <h1 className="text-3xl md:text-5xl lg:text-6xl tracking-tight font-semibold">Five chapters of my career.</h1>
-        <p className="text-xs text-neutral-500 mt-5">Drag a lanyard to swing it. Tap a badge to flip it.</p>
+        <p className="text-[11px] uppercase tracking-[0.35em] text-neutral-500 mb-5">A LITTLE ABOUT ME</p>
+        <h1 className="text-3xl md:text-5xl lg:text-6xl tracking-tight font-semibold">I skipped the usual route.</h1>
+        <p className="text-xs text-neutral-500 mt-5">I jumped straight into content and marketing after high school. Creativity led the way — from ideas and visuals to stories worth sharing.</p>
       </header>
       <div className="relative overflow-visible pb-8">
         <div className="relative mx-auto w-max min-w-full px-8 md:px-14">
