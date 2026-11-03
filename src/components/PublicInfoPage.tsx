@@ -34,9 +34,9 @@ function ContactExperience() {
             }}
             onMouseEnter={() => setHovered(true)}
             onMouseLeave={() => setHovered(false)}
-            animate={{ width: opened ? 160 : undefined, backgroundColor: hovered ? '#ffffff' : 'rgba(255,255,255,0)', color: hovered ? '#000000' : '#ffffff' }}
+            animate={{ backgroundColor: hovered ? '#ffffff' : 'rgba(255,255,255,0)', color: hovered ? '#000000' : '#ffffff' }}
             transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-            className="relative flex h-16 w-16 sm:h-20 sm:w-20 shrink-0 items-center justify-center overflow-hidden rounded-full border border-white/30 cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-white"
+            className={`relative flex h-16 sm:h-20 shrink-0 items-center justify-center overflow-hidden rounded-full border border-white/30 cursor-pointer transition-[width] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-white ${opened ? 'w-40' : 'w-16 sm:w-20'}`}
             aria-label={opened ? 'Call +976 8079 2969' : "Let's work together"}
           >
             <motion.span
