@@ -40,7 +40,6 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
   const [mediaUrl, setMediaUrl] = useState(project.mediaUrl || '');
   const [coverUrl, setCoverUrl] = useState(project.coverUrl || '');
   const [aspectRatio, setAspectRatio] = useState<AspectRatio>(project.aspectRatio || '16/9');
-  const [tagsInput, setTagsInput] = useState((project.tags || []).join(', '));
   const [externalLink, setExternalLink] = useState(project.externalLink || '');
   const [googleDriveUrl, setGoogleDriveUrl] = useState(project.googleDriveUrl || '');
   const [socialUrl, setSocialUrl] = useState(project.socialUrl || '');
@@ -166,7 +165,6 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
       client: client.trim() || undefined,
       year: year.trim() || undefined,
       description: description.trim() || undefined,
-      tags: tagsInput.split(',').map(t => t.trim()).filter(Boolean),
       coverUrl: coverUrl.trim() || mediaUrl.trim() || project.coverUrl,
       mediaType,
       mediaUrl: mediaUrl.trim() || project.mediaUrl,
@@ -292,12 +290,13 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
             </div>
             <div className="space-y-1.5">
               <label className="block text-xs font-mono uppercase tracking-wider text-neutral-400">
-                Client / Brand
+                Client / Brands
               </label>
               <input
                 type="text"
                 value={client}
                 onChange={e => setClient(e.target.value)}
+                placeholder="Brand name, another brand"
                 className="w-full bg-black/60 border border-white/15 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-white font-mono"
               />
             </div>
@@ -456,19 +455,6 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-1.5">
-              <label className="block text-xs font-mono uppercase tracking-wider text-neutral-400">
-                Tags (comma separated)
-              </label>
-              <input
-                type="text"
-                value={tagsInput}
-                onChange={e => setTagsInput(e.target.value)}
-                placeholder="Social Media, 3D, Design"
-                className="w-full bg-black/60 border border-white/15 rounded-xl px-4 py-2 text-xs text-white focus:outline-none focus:border-white font-mono"
-              />
-            </div>
-
             <div className="space-y-1.5">
               <label className="block text-xs font-mono uppercase tracking-wider text-neutral-400">
                 Year
