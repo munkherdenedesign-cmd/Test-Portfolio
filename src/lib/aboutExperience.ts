@@ -11,22 +11,58 @@ export const SEED_EXPERIENCES: Experience[] = [
   { id: 'seed-5', company: 'Experience 05', role: 'Your job title', period: 'Start — End', image: '', location: 'Location', socialLabel: 'Instagram', socialUrl: '', color: '#6c7a70' }
 ];
 export const emptyExperience = (): Experience => ({ id: crypto.randomUUID(), company: '', role: '', period: '', image: '', location: '', socialLabel: '', socialUrl: '', description: '', keywords: ['', '', ''], color: '#71717a' });
-export function localExperiences(): Experience[] {
-  try { const raw = localStorage.getItem(KEY); if (raw === null) return SEED_EXPERIENCES; const data = JSON.parse(raw); return Array.isArray(data) ? data.slice(0, 5) : SEED_EXPERIENCES; } catch { return SEED_EXPERIENCES; }
+export type AboutIntro = { eyebrow: string; heading: string; description: string };
+export const DEFAULT_ABOUT_INTRO: AboutIntro = {
+  eyebrow: 'A LITTLE ABOUT ME',
+  heading: 'I skipped the usual route.',
+  description: 'I jumped straight into content and marketing after high school. Creativity led the way — from ideas and visuals to stories worth sharing.'
+};
+const INTRO_ID = '__about_intro__';
+const INTRO_KEY = 'portfolio_about_intro_v1';
+type StoredIntro = AboutIntro & { id: string };
+function isIntro(value: any): value is StoredIntro { return value?.id === INTRO_ID; }
+function splitStored(value: unknown): { items: Experience[]; intro: AboutIntro } {
+  const array = Array.isArray(value) ? value : [];
+  const stored = array.find(isIntro);
+  return {
+    items: array.filter((entry: any) => !isIntro(entry)).slice(0, 5) as Experience[],
+    intro: stored ? { eyebrow: stored.eyebrow ?? DEFAULT_ABOUT_INTRO.eyebrow, heading: stored.heading ?? DEFAULT_ABOUT_INTRO.heading, description: stored.description ?? DEFAULT_ABOUT_INTRO.description } : DEFAULT_ABOUT_INTRO
+  };
 }
-export async function loadExperiences(): Promise<Experience[]> {
+function localStored(): any[] {
+  try { const raw = localStorage.getItem(KEY); return raw === null ? SEED_EXPERIENCES : JSON.parse(raw); }
+  catch { return SEED_EXPERIENCES; }
+}
+export function localExperiences(): Experience[] { return splitStored(localStored()).items; }
+export function localAboutIntro(): AboutIntro {
+  try { return JSON.parse(localStorage.getItem(INTRO_KEY) || 'null') || splitStored(localStored()).intro; }
+  catch { return DEFAULT_ABOUT_INTRO; }
+}
+export async function loadAboutData(): Promise<{ items: Experience[]; intro: AboutIntro }> {
   const client = getSupabaseClient();
   if (client) {
     const { data, error } = await client.from('about_experiences').select('items').eq('id', 1).maybeSingle();
-    if (!error && data) { localStorage.setItem(KEY, JSON.stringify(data.items)); return (data.items || []).slice(0, 5); }
+    if (!error && data) {
+      const parsed = splitStored(data.items);
+      localStorage.setItem(KEY, JSON.stringify(data.items));
+      localStorage.setItem(INTRO_KEY, JSON.stringify(parsed.intro));
+      return parsed;
+    }
   }
-  return localExperiences();
+  return { items: localExperiences(), intro: localAboutIntro() };
+}
+export async function loadExperiences(): Promise<Experience[]> { return (await loadAboutData()).items; }
+export async function loadAboutIntro(): Promise<AboutIntro> { return (await loadAboutData()).intro; }
+export async function saveAboutData(items: Experience[], intro: AboutIntro) {
+  const client = getSupabaseClient();
+  if (!client) throw new Error('Connect Supabase before publishing About page changes.');
+  const stored = [...items.slice(0, 5), { id: INTRO_ID, ...intro }];
+  const { error } = await client.from('about_experiences').upsert({ id: 1, items: stored, updated_at: new Date().toISOString() });
+  if (error) throw new Error(error.message + ' — check the About experiences table and admin permissions.');
+  localStorage.setItem(KEY, JSON.stringify(stored));
+  localStorage.setItem(INTRO_KEY, JSON.stringify(intro));
 }
 export async function saveExperiences(items: Experience[]) {
-  const client = getSupabaseClient();
-  if (!client) throw new Error('Connect Supabase before publishing work experience.');
-  const { error } = await client.from('about_experiences').upsert({ id: 1, items: items.slice(0, 5), updated_at: new Date().toISOString() });
-  if (error) throw new Error(error.message + ' — run supabase/about_experiences.sql in Supabase SQL Editor.');
-  localStorage.setItem(KEY, JSON.stringify(items.slice(0, 5)));
+  await saveAboutData(items, await loadAboutIntro());
 }
 export { uploadAssetToSupabase };
