@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
 import { Portfolio, Project } from './types/portfolio';
 import { PublicPortfolioView } from './components/PublicPortfolioView';
 import { PublicSiteNavigation } from './components/PublicSiteNavigation';
@@ -15,6 +16,9 @@ import {
 import { INITIAL_PORTFOLIOS, INITIAL_PROJECTS } from './data/seedData';
 
 export default function App() {
+  const reducedMotion = useReducedMotion();
+  const [transition, setTransition] = useState<{ phase: 'in' | 'out'; destination: string; side: 'left' | 'right' } | null>(null);
+  const transitionTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [currentPath, setCurrentPath] = useState<string>(window.location.pathname);
   const [portfolioData, setPortfolioData] = useState<{ portfolio: Portfolio | null; projects: Project[] }>({
     portfolio: null,
@@ -61,6 +65,39 @@ export default function App() {
     setCurrentPath(path);
     setPreviewStaged(null);
   };
+
+  const navigateWithTransition = (path: string) => {
+    if (path === currentPath || transition) return;
+    if (reducedMotion) { navigate(path); return; }
+    const side = path === '/contact' || (currentPath === '/contact' && path === '/') ? 'right' : 'left';
+    setTransition({ phase: 'in', destination: path, side });
+    if (transitionTimer.current) clearTimeout(transitionTimer.current);
+    transitionTimer.current = setTimeout(() => {
+      navigate(path);
+      setTransition({ phase: 'out', destination: path, side });
+      transitionTimer.current = setTimeout(() => setTransition(null), 750);
+    }, 850);
+  };
+
+  useEffect(() => () => { if (transitionTimer.current) clearTimeout(transitionTimer.current); }, []);
+
+  const transitionOverlay = (
+    <AnimatePresence>
+      {transition && (
+        <motion.div key={transition.destination + transition.side}
+          aria-hidden="true"
+          className="fixed inset-0 z-[100] pointer-events-none overflow-hidden bg-[#0a0a0c]"
+          style={{ transformOrigin: transition.side === 'right' ? '85% 50%' : '15% 50%' }}
+          initial={{ opacity: 0, scale: 0.68, x: transition.side === 'right' ? '35%' : '-35%', borderRadius: '50%' }}
+          animate={transition.phase === 'in'
+            ? { opacity: 1, scale: 1.35, x: '0%', borderRadius: '0%' }
+            : { opacity: 0, scale: 1.8, x: transition.side === 'right' ? '-12%' : '12%', borderRadius: '0%' }}
+          transition={{ duration: transition.phase === 'in' ? 0.85 : 0.72, ease: [0.76, 0, 0.24, 1] }}>
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_50%,rgba(90,90,100,0.17),transparent_55%)]" />
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
 
   // Route resolution
   const isAdminRoute = currentPath.startsWith('/admin');
@@ -160,12 +197,13 @@ export default function App() {
   }
 
   // Shared navigation is present on every public route, including About and Contact.
-  const publicNav = <PublicSiteNavigation currentPath={currentPath} />;
+  const publicNav = <PublicSiteNavigation currentPath={currentPath} onNavigate={navigateWithTransition} />;
   if (currentPath === '/about' || currentPath === '/contact') {
     return (
       <>
         {publicNav}
-        <PublicInfoPage page={currentPath === '/about' ? 'about' : 'contact'} signatureUrl={portfolioData.portfolio?.signatureUrl} />
+        <PublicInfoPage page={currentPath === '/about' ? 'about' : 'contact'} signatureUrl={portfolioData.portfolio?.signatureUrl} onNavigate={navigateWithTransition} />
+        {transitionOverlay}
       </>
     );
   }
@@ -197,6 +235,7 @@ export default function App() {
   return (
     <>
       {publicNav}
+      {transitionOverlay}
       <PublicPortfolioView
         portfolio={portfolioData.portfolio}
         projects={portfolioData.projects}
