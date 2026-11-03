@@ -5,6 +5,7 @@ import { EditProjectModal } from './EditProjectModal';
 import { SupabaseSetup } from './SupabaseSetup';
 import { BackupAndSync } from './BackupAndSync';
 import { Signature } from '../Signature';
+import { AboutExperienceEditor } from './AboutExperienceEditor';
 import { addBrand, removeBrand, fetchBrandCatalog, getBrandOptions } from '../../lib/brandCatalog';
 import {
   fetchAdminData,
@@ -64,6 +65,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const [newRoleSlug, setNewRoleSlug] = useState('');
   const [showDbModal, setShowDbModal] = useState(false);
   const [showBrandsModal, setShowBrandsModal] = useState(false);
+  const [showAboutEditor, setShowAboutEditor] = useState(false);
   const [brands, setBrands] = useState<string[]>([]);
   const [newBrand, setNewBrand] = useState('');
   const [brandBusy, setBrandBusy] = useState(false);
@@ -342,6 +344,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     );
   });
 
+  if (showAboutEditor) return <div className="min-h-screen bg-[#0a0a0c] text-white"><AboutExperienceEditor onBack={() => setShowAboutEditor(false)} /></div>;
+
   return (
     <div className="min-h-screen bg-[#0a0a0c] text-[#eaeaea] selection:bg-white selection:text-black pb-20">
       {/* NAVBAR WITH ROLES / PAGES */}
@@ -396,6 +400,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
         {/* Right side controls */}
         <div className="flex items-center gap-2 shrink-0 ml-3">
+          <button type="button" onClick={() => setShowAboutEditor(true)} className="px-2.5 py-1 bg-white/5 hover:bg-white/10 text-neutral-300 hover:text-white text-xs font-mono rounded-lg border border-white/10">About</button>
           <button type="button" onClick={() => { setBrandError(''); setShowBrandsModal(true); }}
             className="px-2.5 py-1 bg-white/5 hover:bg-white/10 text-neutral-300 hover:text-white text-xs font-mono rounded-lg border border-white/10">
             Brands
