@@ -284,15 +284,16 @@ export const ProjectViewerModal: React.FC<ProjectViewerModalProps> = ({
         {/* Project Info & Jump-Out Actions Sidebar */}
         <div className="w-full lg:w-80 flex flex-col justify-between py-1 text-left shrink-0">
           <div>
-            <div className="flex items-center gap-2 text-xs text-neutral-500 mb-2">
-              {project.year && <span>{project.year}</span>}
-              {project.client && (
-                <>
-                  <span>/</span>
-                  <span className="text-neutral-400">{project.client}</span>
-                </>
-              )}
-            </div>
+            {project.year && <div className="text-xs text-neutral-500 mb-2">{project.year}</div>}
+            {project.client && (
+              <div className="flex flex-wrap gap-1.5 mb-3" aria-label="Client brands">
+                {project.client.split(',').map(name => name.trim()).filter(Boolean).map((name, index) => (
+                  <span key={index} className="inline-flex max-w-full items-center rounded-md border border-white/15 bg-white/[0.07] px-2.5 py-1 text-[11px] text-neutral-200 break-words">
+                    {name}
+                  </span>
+                ))}
+              </div>
+            )}
 
             <h2 className="text-lg md:text-xl font-mono text-white font-semibold tracking-tight leading-snug">
               {project.title}
