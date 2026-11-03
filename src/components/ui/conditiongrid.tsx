@@ -21,9 +21,9 @@ const ProjectTile: React.FC<{project: Project; onSelect: (project: Project) => v
   >
     <img src={project.coverUrl} alt={project.title} loading="lazy"
       className="block w-full h-auto object-contain transition-transform duration-500 group-hover:scale-[1.015]"/>
-    <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-1 p-1.5 sm:gap-2 sm:p-3.5 bg-gradient-to-t from-black/45 via-transparent to-transparent">
-      <span className="min-w-0 max-w-[calc(100%-30px)] sm:max-w-[calc(100%-48px)] truncate rounded-md sm:rounded-lg bg-black/90 px-1.5 py-1.5 text-[10px] sm:px-3 sm:py-2 sm:text-sm font-medium text-white shadow-lg">{project.title}</span>
-      <span className="flex h-7 w-7 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-full bg-black text-white shadow-lg transition-transform group-hover:rotate-45">
+    <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-1 p-1 sm:gap-2 sm:p-3.5 bg-gradient-to-t from-black/45 via-transparent to-transparent">
+      <span className="min-w-0 max-w-full sm:max-w-[calc(100%-48px)] truncate rounded-md sm:rounded-lg bg-black/90 px-1 py-1 text-[9px] sm:px-3 sm:py-2 sm:text-sm font-medium text-white shadow-lg">{project.title}</span>
+      <span className="flex hidden sm:flex sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-full bg-black text-white shadow-lg transition-transform group-hover:rotate-45">
         <MoveUpRight className="h-3.5 w-3.5 sm:h-[18px] sm:w-[18px]"/>
       </span>
     </div>
@@ -35,14 +35,26 @@ export default function ConditionGrid({projects, onSelect}: ConditionGridProps) 
   const left = projects.filter((_, i) => i % 2 === 0);
   const right = projects.filter((_, i) => i % 2 === 1);
   if (!projects.length) return null;
+  const mobileColumns = [0, 1, 2].map(column => projects.filter((_, index) => index % 3 === column));
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-12 gap-2 sm:gap-4 w-full">
-      <div className="sm:col-span-5 flex flex-col gap-2 sm:gap-4">
-        {left.map(project => <ProjectTile key={project.id} project={project} onSelect={onSelect}/>)}
+    <>
+      {/* Compact mobile gallery: three thumbnails per row rather than oversized cards. */}
+      <div className="grid grid-cols-3 gap-1.5 w-full sm:hidden">
+        {mobileColumns.map((column, index) => (
+          <div key={index} className="flex min-w-0 flex-col gap-1.5">
+            {column.map(project => <ProjectTile key={project.id} project={project} onSelect={onSelect}/>)}
+          </div>
+        ))}
       </div>
-      <div className="sm:col-span-7 flex flex-col gap-3 sm:gap-4">
-        {right.map(project => <ProjectTile key={project.id} project={project} onSelect={onSelect}/>)}
+      {/* Keep the existing asymmetric editorial layout on desktop. */}
+      <div className="hidden sm:grid sm:grid-cols-12 sm:gap-4 w-full">
+        <div className="sm:col-span-5 flex flex-col sm:gap-4">
+          {left.map(project => <ProjectTile key={project.id} project={project} onSelect={onSelect}/>)}
+        </div>
+        <div className="sm:col-span-7 flex flex-col sm:gap-4">
+          {right.map(project => <ProjectTile key={project.id} project={project} onSelect={onSelect}/>)}
+        </div>
       </div>
-    </div>
+    </>
   );
 }
