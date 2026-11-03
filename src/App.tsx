@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Portfolio, Project } from './types/portfolio';
 import { PublicPortfolioView } from './components/PublicPortfolioView';
 import { AdminAuth } from './components/admin/AdminAuth';
+import { PasswordReset } from './components/admin/PasswordReset';
 import { AdminDashboard } from './components/admin/AdminDashboard';
 import {
   fetchPublishedPortfolio,
@@ -139,6 +140,8 @@ export default function App() {
     window.history.pushState({}, '', targetUrl);
     setCurrentPath(targetUrl);
   };
+
+  if (currentPath === '/admin/reset-password') return <PasswordReset />;
 
   // 1. Render Admin Portal
   if (isAdminRoute && !previewStaged) {
