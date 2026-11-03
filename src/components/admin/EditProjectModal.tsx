@@ -515,7 +515,7 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
           </div>
 
           {/* Carousel pages are saved within this project, not as separate projects. */}
-          <details open={isCarousel} className="group rounded-xl border border-white/10 bg-white/[0.025] overflow-hidden">
+          <details defaultOpen={isCarousel} className="group rounded-xl border border-white/10 bg-white/[0.025] overflow-hidden">
             <summary className="flex items-center justify-between gap-4 px-5 py-4 cursor-pointer select-none list-none [&::-webkit-details-marker]:hidden">
               <span className="min-w-0"><span className="block text-sm font-medium text-white">Carousel pages</span><span className="block mt-1 text-[11px] text-neutral-500">Optional · Multiple images in one project</span></span>
               <span className="flex items-center gap-3 shrink-0"><span className="text-[11px] text-neutral-400">{isCarousel ? `${carouselPages.length + 1} pages` : 'Off'}</span><ChevronDown size={16} className="text-neutral-400 transition-transform group-open:rotate-180"/></span>
