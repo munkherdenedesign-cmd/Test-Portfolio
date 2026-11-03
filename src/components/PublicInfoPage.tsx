@@ -21,7 +21,7 @@ export function PublicInfoPage({ page, signatureUrl }: { page: 'about' | 'contac
         ) : (
           <div className="space-y-6 text-sm md:text-base text-neutral-400">
             <p>For projects, collaborations, or just to say hello.</p>
-            <a className="inline-block text-white border-b border-white/40 pb-1 hover:border-white transition-colors" href="mailto:munkherdenedesign@gmail.com">munkherdenedesign@gmail.com</a>
+            <p className="text-neutral-500 text-xs">Contact details will be added here.</p>
           </div>
         )}
       </main>
