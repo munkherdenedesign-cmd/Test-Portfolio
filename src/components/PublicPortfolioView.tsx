@@ -5,6 +5,8 @@ import { ProjectViewerModal } from './ProjectViewerModal';
 import { Signature } from './Signature';
 import ConditionGrid from './ui/conditiongrid';
 import { Compass, Grid, Shield } from 'lucide-react';
+import { motion, useReducedMotion } from 'motion/react';
+import { LiquidSurface } from './ui/LiquidSurface';
 
 interface PublicPortfolioViewProps {
   portfolio: Portfolio;
@@ -20,6 +22,7 @@ export const PublicPortfolioView: React.FC<PublicPortfolioViewProps> = ({
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [viewMode, setViewMode] = useState<'sphere' | 'index'>('sphere');
   const [sphereSize, setSphereSize] = useState<number>(500);
+  const reducedMotion = useReducedMotion();
 
   // Responsive sphere sizing based on window width
   useEffect(() => {
@@ -75,10 +78,9 @@ export const PublicPortfolioView: React.FC<PublicPortfolioViewProps> = ({
       {/* Top Center: Signature with Exclusion Effect */}
       <header className="w-full pt-6 md:pt-8 pb-3 px-6 flex items-center justify-center relative z-20 pointer-events-none">
         <a href="/" className="pointer-events-auto inline-flex rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-white" aria-label="Go to home page" title="Home">
-          <Signature
-            signatureUrl={portfolio.signatureUrl}
-            className="cursor-pointer"
-          />
+          <LiquidSurface className="cursor-pointer">
+            <Signature signatureUrl={portfolio.signatureUrl} className="cursor-pointer" />
+          </LiquidSurface>
         </a>
       </header>
 
@@ -124,33 +126,25 @@ export const PublicPortfolioView: React.FC<PublicPortfolioViewProps> = ({
         )}
       </main>
 
-      {/* Floating Bottom-Center View Toggle (continuous gentle circular orbit motion) */}
-      <div className="fixed bottom-6 left-1/2 z-30 animate-orbit-floating pointer-events-auto">
-        <div className="flex items-center gap-1.5 p-1 rounded-full bg-neutral-900/85 backdrop-blur-md border border-white/15 shadow-2xl shadow-black/80">
-          <button
-            onClick={() => setViewMode('sphere')}
-            className={`w-9 h-9 rounded-full flex items-center justify-center transition-all cursor-pointer ${
-              viewMode === 'sphere'
-                ? 'bg-white text-black shadow-md'
-                : 'text-neutral-400 hover:text-white hover:bg-white/10'
-            }`}
-            title="Sphere View"
-            aria-label="Sphere View"
-          >
-            <Compass size={16} />
-          </button>
-          <button
-            onClick={() => setViewMode('index')}
-            className={`w-9 h-9 rounded-full flex items-center justify-center transition-all cursor-pointer ${
-              viewMode === 'index'
-                ? 'bg-white text-black shadow-md'
-                : 'text-neutral-400 hover:text-white hover:bg-white/10'
-            }`}
-            title="Index Grid View"
-            aria-label="Index Grid View"
-          >
-            <Grid size={16} />
-          </button>
+      {/* Bottom view switch: liquid SVG icons and a spring-moving selection pill */}
+      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-30 pointer-events-auto">
+        <div role="group" aria-label="Portfolio view" className="flex items-center gap-1 p-1 rounded-full bg-neutral-900/90 backdrop-blur-md border border-white/15 shadow-2xl shadow-black/80">
+          {([
+            { id: 'sphere' as const, label: 'Sphere View', Icon: Compass },
+            { id: 'index' as const, label: 'Grid View', Icon: Grid }
+          ]).map(({ id, label, Icon }) => (
+            <button key={id} type="button" onClick={() => setViewMode(id)}
+              title={label} aria-label={label} aria-pressed={viewMode === id}
+              className={`relative isolate w-10 h-10 rounded-full flex items-center justify-center cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-white ${viewMode === id ? 'text-black' : 'text-neutral-400 hover:text-white'}`}>
+              {viewMode === id && (
+                <motion.span layoutId="liquid-view-selection" className="absolute inset-0 rounded-full bg-white -z-10"
+                  transition={reducedMotion ? { duration: 0 } : { type: 'spring', stiffness: 320, damping: 24 }} />
+              )}
+              <LiquidSurface>
+                <Icon size={17} strokeWidth={1.8} aria-hidden="true" />
+              </LiquidSurface>
+            </button>
+          ))}
         </div>
       </div>
 
