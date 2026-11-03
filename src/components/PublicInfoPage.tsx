@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ArrowUpRight, Phone } from 'lucide-react';
 import { Signature } from './Signature';
+import { LiquidSurface } from './ui/LiquidSurface';
 import { AboutLanyards } from './AboutLanyards';
 import { loadExperiences, type Experience } from '../lib/aboutExperience';
 
@@ -53,7 +54,7 @@ export function PublicInfoPage({ page, signatureUrl, onNavigate }: { page: 'abou
     <div className="min-h-screen bg-[#0a0a0c] text-[#eaeaea] font-mono flex flex-col">
       <header className="pt-6 md:pt-8 flex justify-center">
         <a href="/" onClick={(e) => { if (onNavigate && !e.metaKey && !e.ctrlKey) { e.preventDefault(); onNavigate('/'); } }} aria-label="Home" className="inline-flex focus-visible:outline focus-visible:outline-2 focus-visible:outline-white">
-          <Signature signatureUrl={signatureUrl} />
+          <LiquidSurface className="cursor-pointer"><Signature signatureUrl={signatureUrl} className="cursor-pointer" /></LiquidSurface>
         </a>
       </header>
       {about ? <AboutLanyards items={experiences} /> : <ContactExperience />}
