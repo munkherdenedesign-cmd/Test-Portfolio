@@ -42,19 +42,33 @@ export const PublicPortfolioView: React.FC<PublicPortfolioViewProps> = ({
       setSignatureHoverOffset(0);
       return;
     }
+
+    let frame = 0;
     const updateSignaturePosition = () => {
-      const sphereTop = sphereRef.current?.getBoundingClientRect().top;
-      const signatureRect = signatureRef.current?.getBoundingClientRect();
-      if (sphereTop == null || !signatureRect) return;
-      // Place the enlarged signature just above the sphere, with a small visual gap.
-      const enlargedHeight = signatureRect.height * 3;
-      const targetCenter = sphereTop - 30 - enlargedHeight / 2;
-      const currentCenter = signatureRect.top + signatureRect.height / 2;
-      setSignatureHoverOffset(Math.max(0, targetCenter - currentCenter));
+      const anchor = signatureRef.current;
+      const sphere = sphereRef.current;
+      const signatureImage = anchor?.querySelector('img');
+      if (anchor && sphere && signatureImage) {
+        const visibleCircles = Array.from(sphere.querySelectorAll<HTMLElement>('[data-sphere-circle]'));
+        const circleTops = visibleCircles
+          .filter(circle => Number.parseFloat(getComputedStyle(circle).opacity) > 0.05)
+          .map(circle => circle.getBoundingClientRect().top);
+        if (circleTops.length) {
+          const nearestCircleTop = Math.min(...circleTops);
+          const anchorRect = anchor.getBoundingClientRect();
+          // Signature's image is scaled 3x around its center; the anchor itself stays unscaled.
+          const enlargedHeight = signatureImage.offsetHeight * 3;
+          const anchorCenter = anchorRect.top + anchorRect.height / 2;
+          const destination = nearestCircleTop - 60 - enlargedHeight / 2;
+          setSignatureHoverOffset(previous =>
+            Math.abs(previous - (destination - anchorCenter)) > 1 ? destination - anchorCenter : previous
+          );
+        }
+      }
+      frame = requestAnimationFrame(updateSignaturePosition);
     };
-    updateSignaturePosition();
-    window.addEventListener('resize', updateSignaturePosition);
-    return () => window.removeEventListener('resize', updateSignaturePosition);
+    frame = requestAnimationFrame(updateSignaturePosition);
+    return () => cancelAnimationFrame(frame);
   }, [viewMode, sphereCircleHovered]);
   const handleSphereCircleHover = useCallback((hovering: boolean) => {
     setSphereCircleHovered(hovering);
