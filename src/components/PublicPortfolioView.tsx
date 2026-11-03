@@ -126,22 +126,22 @@ export const PublicPortfolioView: React.FC<PublicPortfolioViewProps> = ({
         )}
       </main>
 
-      {/* Bottom view switch: liquid SVG icons and a spring-moving selection pill */}
+      {/* Floating liquid view switch */}
       <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-30 pointer-events-auto">
-        <div role="group" aria-label="Portfolio view" className="flex items-center gap-1 p-1 rounded-full bg-neutral-900/90 backdrop-blur-md border border-white/15 shadow-2xl shadow-black/80">
+        <div role="group" aria-label="Portfolio view" className="relative flex items-center gap-1 p-1 rounded-full bg-neutral-900/95 backdrop-blur-md border border-white/20 shadow-2xl shadow-black/80">
+          <motion.span aria-hidden="true"
+            className="absolute top-1 left-1 w-10 h-10 rounded-full bg-white shadow-[0_0_18px_rgba(255,255,255,0.25)]"
+            animate={{ x: viewMode === 'sphere' ? 0 : 44, scaleX: 1 }}
+            transition={reducedMotion ? { duration: 0 } : { type: 'spring', stiffness: 260, damping: 19, mass: 0.8 }} />
           {([
             { id: 'sphere' as const, label: 'Sphere View', Icon: Compass },
             { id: 'index' as const, label: 'Grid View', Icon: Grid }
           ]).map(({ id, label, Icon }) => (
             <button key={id} type="button" onClick={() => setViewMode(id)}
               title={label} aria-label={label} aria-pressed={viewMode === id}
-              className={`relative isolate w-10 h-10 rounded-full flex items-center justify-center cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-white ${viewMode === id ? 'text-black' : 'text-neutral-400 hover:text-white'}`}>
-              {viewMode === id && (
-                <motion.span layoutId="liquid-view-selection" className="absolute inset-0 rounded-full bg-white -z-10"
-                  transition={reducedMotion ? { duration: 0 } : { type: 'spring', stiffness: 320, damping: 24 }} />
-              )}
+              className={`relative z-10 w-10 h-10 rounded-full flex items-center justify-center cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-white transition-colors duration-200 ${viewMode === id ? 'text-black' : 'text-neutral-300 hover:text-white'}`}>
               <LiquidSurface>
-                <Icon size={17} strokeWidth={1.8} aria-hidden="true" />
+                <Icon size={19} strokeWidth={2} aria-hidden="true" />
               </LiquidSurface>
             </button>
           ))}
