@@ -33,7 +33,14 @@ export function AboutLanyards({ items }: { items: Experience[] }) {
       </header>
       <div className="relative overflow-x-auto pb-8">
         <div className="relative mx-auto w-max min-w-full px-8 md:px-14">
-          <div aria-hidden="true" className="absolute top-0 left-0 right-0 h-4 z-10 border-y border-white/30 shadow-[0_5px_13px_#000] pointer-events-none" style={{ background: 'repeating-linear-gradient(90deg,#555 0px,#aaa 2px,#555 5px,#282828 11px,#777 15px)' }}/>
+          <div aria-hidden="true" className="absolute top-[-18px] left-4 right-4 h-[54px] z-10 pointer-events-none">
+            <div className="absolute left-[20px] right-[20px] top-[18px] h-[19px] rounded-full border-y border-white/30 shadow-[0_5px_8px_#000b,inset_0_2px_2px_#fff5,inset_0_-3px_4px_#000a]" style={{background:'linear-gradient(180deg,#3c3d3e 0%,#e5e6e5 15%,#999b9d 29%,#45484a 46%,#777a7d 62%,#232526 85%,#686a6b 100%)'}}/>
+            {[0,1].map(side => <div key={side} className={`absolute top-[11px] ${side ? 'right-0' : 'left-0'} w-[47px] h-[34px] flex items-center justify-center`}>
+              <div className="absolute inset-y-[4px] left-[9px] right-[9px] rounded-[6px] border border-[#a5a7a7]/70 shadow-[0_4px_8px_#000c,inset_0_2px_2px_#fff5]" style={{background:'linear-gradient(180deg,#bbbdbd,#525657 36%,#292c2e 67%,#858889)'}}/>
+              <div className={`absolute top-[8px] ${side ? 'right-0' : 'left-0'} w-[15px] h-[23px] rounded-[5px] border border-[#777] shadow-[0_2px_5px_#000a]`} style={{background:'linear-gradient(90deg,#3d4042,#d0d1d0 45%,#56595b)'}}/>
+              <div className="relative w-[7px] h-[7px] rounded-full border border-[#b5b7b7] bg-[#353738] shadow-[inset_0_1px_2px_#000,0_1px_1px_#fff4]"/>
+            </div>)}
+          </div>
           <div className="relative flex justify-center gap-0">
             {items.slice(0,5).map((item,index) => {
               const color = item.color && item.color !== '#71717a' ? item.color : COLORS[index];
