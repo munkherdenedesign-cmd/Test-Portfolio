@@ -307,6 +307,35 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
             </div>
           </div>
 
+          {/* Carousel pages are saved within this project, not as separate projects. */}
+          <div className="rounded-xl border border-white/30 bg-white/[0.065] p-4 space-y-3">
+            <label className="flex items-center gap-3 cursor-pointer">
+              <input type="checkbox" checked={isCarousel} onChange={e => setIsCarousel(e.target.checked)} className="accent-white w-4 h-4" />
+              <span className="text-sm font-medium text-white">Carousel project · multiple images</span>
+            </label>
+            {isCarousel && <>
+              <p className="text-[11px] leading-relaxed text-neutral-400">The main media image is page 1. Add the remaining pages here now or later. All pages belong to this single project.</p>
+              <div className="flex flex-wrap gap-3">
+                {(mediaUrl || coverUrl) && <div className="w-20 space-y-1"><img src={mediaUrl || coverUrl} alt="Page 1" className="w-20 h-24 object-contain bg-black rounded-lg border border-white/15"/><p className="text-[10px] text-center text-neutral-400">Page 1</p></div>}
+                {carouselPages.map((url, index) => <div key={url + index} className="w-20 space-y-1">
+                  <img src={url} alt={`Page ${index + 2}`} className="w-20 h-24 object-contain bg-black rounded-lg border border-white/15"/>
+                  <div className="flex justify-between items-center text-[10px] text-neutral-400"><span>{index + 2}</span>
+                    <div className="flex gap-1">
+                      <button type="button" disabled={index === 0} onClick={() => setCarouselPages(p => { const a = [...p]; [a[index - 1], a[index]] = [a[index], a[index - 1]]; return a; })} aria-label="Move page earlier">←</button>
+                      <button type="button" disabled={index === carouselPages.length - 1} onClick={() => setCarouselPages(p => { const a = [...p]; [a[index], a[index + 1]] = [a[index + 1], a[index]]; return a; })} aria-label="Move page later">→</button>
+                      <button type="button" onClick={() => setCarouselPages(p => p.filter((_, i) => i !== index))} aria-label="Remove page" className="text-red-300">×</button>
+                    </div>
+                  </div>
+                </div>)}
+              </div>
+              <label className="inline-flex items-center gap-2 rounded-lg border border-white/20 px-3 py-2 text-xs cursor-pointer hover:bg-white/10">
+                <Upload size={13}/>{uploadingPages ? 'Uploading pages...' : 'Add carousel pages'}
+                <input type="file" multiple accept="image/*" className="hidden" disabled={uploadingPages} onChange={e => { void uploadCarouselPages(e.target.files); e.target.value = ''; }}/>
+              </label>
+              {carouselError && <p className="text-xs text-red-300">{carouselError}</p>}
+            </>}
+          </div>
+
           {/* Section 2: Title, Client, Year */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
             <div className="md:col-span-2 space-y-1.5">
@@ -415,35 +444,6 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
                 <span>Detected: {detectedMedia.label} ({detectedMedia.aspectRatio})</span>
               </div>
             )}
-          </div>
-
-          {/* Carousel pages are saved within this project, not as separate projects. */}
-          <div className="rounded-xl border border-white/15 bg-white/[0.035] p-4 space-y-3">
-            <label className="flex items-center gap-3 cursor-pointer">
-              <input type="checkbox" checked={isCarousel} onChange={e => setIsCarousel(e.target.checked)} className="accent-white w-4 h-4" />
-              <span className="text-sm text-white">Carousel project</span>
-            </label>
-            {isCarousel && <>
-              <p className="text-[11px] leading-relaxed text-neutral-400">The main media image is page 1. Add the remaining pages here now or later. All pages belong to this single project.</p>
-              <div className="flex flex-wrap gap-3">
-                {(mediaUrl || coverUrl) && <div className="w-20 space-y-1"><img src={mediaUrl || coverUrl} alt="Page 1" className="w-20 h-24 object-contain bg-black rounded-lg border border-white/15"/><p className="text-[10px] text-center text-neutral-400">Page 1</p></div>}
-                {carouselPages.map((url, index) => <div key={url + index} className="w-20 space-y-1">
-                  <img src={url} alt={`Page ${index + 2}`} className="w-20 h-24 object-contain bg-black rounded-lg border border-white/15"/>
-                  <div className="flex justify-between items-center text-[10px] text-neutral-400"><span>{index + 2}</span>
-                    <div className="flex gap-1">
-                      <button type="button" disabled={index === 0} onClick={() => setCarouselPages(p => { const a = [...p]; [a[index - 1], a[index]] = [a[index], a[index - 1]]; return a; })} aria-label="Move page earlier">←</button>
-                      <button type="button" disabled={index === carouselPages.length - 1} onClick={() => setCarouselPages(p => { const a = [...p]; [a[index], a[index + 1]] = [a[index + 1], a[index]]; return a; })} aria-label="Move page later">→</button>
-                      <button type="button" onClick={() => setCarouselPages(p => p.filter((_, i) => i !== index))} aria-label="Remove page" className="text-red-300">×</button>
-                    </div>
-                  </div>
-                </div>)}
-              </div>
-              <label className="inline-flex items-center gap-2 rounded-lg border border-white/20 px-3 py-2 text-xs cursor-pointer hover:bg-white/10">
-                <Upload size={13}/>{uploadingPages ? 'Uploading pages...' : 'Add carousel pages'}
-                <input type="file" multiple accept="image/*" className="hidden" disabled={uploadingPages} onChange={e => { void uploadCarouselPages(e.target.files); e.target.value = ''; }}/>
-              </label>
-              {carouselError && <p className="text-xs text-red-300">{carouselError}</p>}
-            </>}
           </div>
 
           {/* Section 4: Cover Thumbnail & Aspect Ratio */}
