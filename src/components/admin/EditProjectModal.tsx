@@ -540,7 +540,7 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
 
           </div>
           <div className="space-y-3">
-            <p className="text-[10px] uppercase tracking-[0.2em] text-neutral-500">Optional</p>
+
             {/* Carousel pages are saved within this project, not as separate projects. */}
           <div className="rounded-xl border border-white/10 bg-white/[0.025] overflow-hidden">
             <div className="flex flex-wrap items-center justify-between gap-3 px-5 py-4">
