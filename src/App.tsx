@@ -236,11 +236,18 @@ export default function App() {
     <>
       {publicNav}
       {transitionOverlay}
-      <PublicPortfolioView
-        portfolio={portfolioData.portfolio}
-        projects={portfolioData.projects}
-        previewMode={Boolean(previewStaged)}
-      />
+      <motion.div
+        style={{ transformOrigin: transition?.side === 'right' ? '72% 55%' : '28% 55%' }}
+        animate={transition?.phase === 'in'
+          ? { scale: 1.8, x: transition.side === 'right' ? '-18%' : '18%', opacity: 0.55, filter: 'blur(5px)' }
+          : { scale: 1, x: '0%', opacity: 1, filter: 'blur(0px)' }}
+        transition={{ duration: 0.85, ease: [0.76, 0, 0.24, 1] }}>
+        <PublicPortfolioView
+          portfolio={portfolioData.portfolio}
+          projects={portfolioData.projects}
+          previewMode={Boolean(previewStaged)}
+        />
+      </motion.div>
     </>
   );
 }
