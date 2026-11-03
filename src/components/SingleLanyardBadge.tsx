@@ -653,7 +653,7 @@ export default function LanyardBadge({
   return (
     <section
       ref={rootRef}
-      className={"relative w-full overflow-hidden select-none " + className}
+      className={"relative w-full overflow-visible select-none bg-transparent " + className}
       style={{ height }}
     >
       <canvas
