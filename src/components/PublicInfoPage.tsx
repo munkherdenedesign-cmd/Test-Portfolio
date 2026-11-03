@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ArrowUpRight, Phone } from 'lucide-react';
 import { LiquidSurface } from './ui/LiquidSurface';
+import { Signature } from './Signature';
 import { AboutLanyards } from './AboutLanyards';
 import { loadAboutData, DEFAULT_ABOUT_INTRO, type AboutIntro, type Experience } from '../lib/aboutExperience';
 
@@ -52,6 +53,11 @@ export function PublicInfoPage({ page, signatureUrl, onNavigate }: { page: 'abou
   React.useEffect(() => { if (about) loadAboutData().then(data => { setExperiences(data.items); setIntro(data.intro); }); }, [about]);
   return (
     <div className="min-h-screen bg-[#0a0a0c] text-[#eaeaea] font-mono flex flex-col">
+      <header className="pt-6 md:pt-8 flex justify-center">
+        <a href="/" onClick={(e) => { if (onNavigate && !e.metaKey && !e.ctrlKey) { e.preventDefault(); onNavigate('/'); } }} aria-label="Home" className="inline-flex focus-visible:outline focus-visible:outline-2 focus-visible:outline-white">
+          <LiquidSurface className="cursor-pointer"><Signature signatureUrl={signatureUrl} className="cursor-pointer" /></LiquidSurface>
+        </a>
+      </header>
       {about ? <AboutLanyards items={experiences} intro={intro} /> : <ContactExperience />}
     </div>
   );
