@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { ArrowUpRight, Phone } from 'lucide-react';
+import { motion } from 'motion/react';
 import { LiquidSurface } from './ui/LiquidSurface';
 import { Signature } from './Signature';
 import { AboutLanyards } from './AboutLanyards';
@@ -25,16 +26,16 @@ function ContactExperience() {
 
         {/* One element morphs from the circular arrow into the Call pill, without moving its center. */}
         {opened ? (
-          <a href="tel:+97680792969"
+          <motion.a layoutId="contact-primary-action" transition={{ type: "spring", stiffness: 340, damping: 30 }} href="tel:+97680792969"
             className="group relative z-10 flex h-16 sm:h-20 w-36 sm:w-40 items-center justify-center gap-2.5 rounded-full border border-white/30 text-white hover:bg-white hover:text-black hover:border-white transition-[width,background-color,color,border-color,box-shadow] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:shadow-[0_0_30px_rgba(255,255,255,0.18)]"
             aria-label="Call +976 8079 2969">
             <Phone size={19} strokeWidth={1.5} /><span className="text-sm tracking-wide">Call</span><ArrowUpRight size={17} strokeWidth={1.5} className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-          </a>
+          </motion.a>
         ) : (
-          <button type="button" onClick={() => { setOpened(true); setHovered(false); }} onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}
+          <motion.button layoutId="contact-primary-action" transition={{ type: "spring", stiffness: 340, damping: 30 }} type="button" onClick={() => { setOpened(true); setHovered(false); }} onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}
             className={`group relative z-10 flex h-16 w-16 sm:h-20 sm:w-20 items-center justify-center rounded-full border cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-white transition-[width,background-color,color,border-color,box-shadow,transform] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${hovered ? 'scale-110 bg-white border-white text-black shadow-[0_0_35px_rgba(255,255,255,0.2)]' : 'border-white/30 text-white'}`} aria-label="Let's work together">
             <ArrowUpRight size={27} strokeWidth={1.5} className={`transition-transform duration-500 ${hovered ? 'translate-x-1 -translate-y-1' : ''}`} />
-          </button>
+          </motion.button>
         )}
 
         <div className={`absolute top-full mt-9 sm:mt-10 flex w-full flex-col items-center gap-4 transition-all duration-500 ${opened ? 'opacity-0 -translate-y-3 pointer-events-none' : 'opacity-100 translate-y-0'}`}>
