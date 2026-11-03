@@ -504,7 +504,6 @@ export const SphereImageGrid: React.FC<SphereImageGridProps> = ({
     return (
       <div
         key={image.id}
-        data-sphere-circle
         className="absolute cursor-pointer select-none transition-transform duration-300 ease-out group"
         style={{
           width: `${imageSize}px`,
