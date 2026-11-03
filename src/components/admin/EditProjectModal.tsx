@@ -227,13 +227,13 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md overflow-y-auto font-mono">
-      <div className="bg-[#121215] border border-white/20 rounded-2xl w-full max-w-3xl my-3 sm:my-6 overflow-hidden shadow-2xl flex flex-col max-h-[94vh] sm:max-h-[90vh]">
+      <div className="bg-[#121215] border border-white/20 rounded-2xl w-full max-w-4xl my-3 sm:my-6 overflow-hidden shadow-2xl flex flex-col max-h-[94vh] sm:max-h-[90vh]">
         {/* Header */}
         <div className="px-5 sm:px-7 py-4 border-b border-white/10 flex items-center justify-between bg-neutral-950/60 sticky top-0 z-10">
           <div>
             <h3 className="text-base font-mono font-medium text-white">Edit Project</h3>
             <p className="text-xs text-neutral-400 font-mono mt-0.5">
-              Manage project details, preview and where it appears
+              Edit the visuals, details and visibility of this project
             </p>
           </div>
           <button
@@ -245,9 +245,235 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
         </div>
 
         {/* Scrollable Form Body */}
-        <form onSubmit={handleSave} className="px-5 sm:px-7 py-5 overflow-y-auto space-y-6 flex-1 min-w-0">
-          {/* Section 1: Portfolio Roles Assignment */}
-          <div className="p-4 bg-white/[0.035] border border-white/10 rounded-xl space-y-3">
+        <form onSubmit={handleSave} className="px-5 sm:px-7 py-5 overflow-y-auto space-y-8 flex-1 min-w-0">
+          <div className="space-y-2">
+            <p className="text-[10px] uppercase tracking-[0.2em] text-neutral-500">01 / Project</p>
+            {/* Section 2: Title, Client, Year */}
+          <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] gap-5">
+            <div className="min-w-0 space-y-1.5">
+              <label className="block text-xs font-mono uppercase tracking-wider text-neutral-400">
+                Project Title *
+              </label>
+              <input
+                type="text"
+                required
+                value={title}
+                onChange={e => setTitle(e.target.value)}
+                className="w-full bg-black/60 border border-white/15 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-white font-medium"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <label className="block text-xs font-mono uppercase tracking-wider text-neutral-400">
+                Client / Brands
+              </label>
+              <div className="rounded-xl border border-white/15 bg-black/40 p-2 space-y-2">
+                <div className="flex flex-wrap gap-1.5">
+                  {splitBrands(client).map(name => (
+                    <button key={name} type="button" onClick={() => setClient(splitBrands(client).filter(s => s !== name).join(', '))}
+                      title={'Remove ' + name}
+                      className="rounded-md bg-white text-black px-2 py-1 text-[11px] flex items-center gap-1.5">{name} <X size={11}/></button>
+                  ))}
+                  {!client.trim() && <span className="text-[11px] text-neutral-500 px-1 py-1">Select brands below</span>}
+                </div>
+                <input type="text" value={brandSearch} onChange={e => setBrandSearch(e.target.value)}
+                  placeholder="Search brands..." className="w-full rounded-lg border border-white/10 bg-neutral-950 px-3 py-2 text-xs text-white outline-none focus:border-white/40"/>
+                <div className="max-h-28 overflow-y-auto flex flex-wrap gap-1.5">
+                  {brandOptions.filter(name => name.toLowerCase().includes(brandSearch.toLowerCase()) && !splitBrands(client).some(s => s.toLowerCase() === name.toLowerCase())).map(name => (
+                    <button key={name} type="button" onClick={() => { setClient([...splitBrands(client), name].join(', ')); setBrandSearch(''); }}
+                      className="rounded-md border border-white/15 px-2 py-1 text-[11px] text-neutral-300 hover:bg-white/10">{name}</button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+          </div>
+          <div className="space-y-4">
+            <p className="text-[10px] uppercase tracking-[0.2em] text-neutral-500">02 / Visuals</p>
+            <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-4 sm:p-5 space-y-5">
+              {/* Section 4: Cover Thumbnail & Aspect Ratio */}
+          <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_180px] gap-5">
+            <div className="min-w-0 space-y-1.5">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <label className="block text-xs font-mono uppercase tracking-wider text-neutral-400">Cover image</label>
+                {isInstagramReelUrl(mediaUrl || socialUrl || externalLink) && (
+                  <button type="button" disabled={autoCoverLoading || uploadingCover} onClick={handleAutoCover}
+                    className="rounded-lg border border-white/15 px-3 py-1.5 text-xs text-neutral-200 hover:bg-white/10 disabled:opacity-50">
+                    {autoCoverLoading ? 'Finding cover...' : 'Get Reel cover'}
+                  </button>
+                )}
+              </div>
+              {autoCoverError && <p className="text-[11px] text-amber-400">{autoCoverError}</p>}
+              <div className="flex flex-col sm:flex-row sm:items-end gap-4">
+                <div className="w-full sm:w-56 h-48 sm:h-56 rounded-xl bg-neutral-900 border border-white/20 overflow-hidden shrink-0 flex items-center justify-center">
+                  {coverUrl ? (
+                    <img src={coverUrl} alt="Cover Preview" className="w-full h-full object-contain" />
+                  ) : (
+                    <ImageIcon size={20} className="text-neutral-500" />
+                  )}
+                </div>
+                <div className="min-w-0 flex-1 space-y-3">
+                  <input
+                    type="url"
+                    value={coverUrl}
+                    onChange={e => setCoverUrl(e.target.value)}
+                    placeholder="Cover Image URL"
+                    className="w-full min-w-0 bg-black/60 border border-white/15 rounded-lg px-3 py-2.5 text-xs text-white focus:outline-none focus:border-white font-mono"
+                  />
+                  <div className="relative">
+                    <input
+                      type="file"
+                      id="edit-cover-file"
+                      className="hidden"
+                      accept="image/*"
+                      onChange={e => handleFileUpload(e, 'cover')}
+                    />
+                    <label
+                      htmlFor="edit-cover-file"
+                      className="text-[11px] font-mono text-neutral-400 hover:text-white cursor-pointer underline"
+                    >
+                      {uploadingCover ? 'Uploading...' : 'Upload cover image'}
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="block text-xs font-mono uppercase tracking-wider text-neutral-400">
+                Aspect Ratio
+              </label>
+              <select
+                value={aspectRatio}
+                onChange={e => setAspectRatio(e.target.value as AspectRatio)}
+                className="w-full bg-black/60 border border-white/15 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-white font-mono"
+              >
+                <option value="9/16">9:16</option>
+                <option value="1:1">1:1</option>
+                <option value="16/9">16:9</option>
+                <option value="4/5">4:5</option>
+                <option value="4/3">4:3</option>
+                <option value="auto">Auto</option>
+              </select>
+            </div>
+          </div>
+
+
+              <div className="border-t border-white/10 pt-4">
+                {/* Section 3: Media URL & Embed */}
+          <div className="space-y-3">
+            <label className="block text-xs font-mono uppercase tracking-wider text-neutral-400">
+              Media Link or Direct Asset URL
+            </label>
+            <div className="grid grid-cols-1 sm:grid-cols-[minmax(0,1fr)_auto] gap-3 min-w-0">
+              <input
+                type="text"
+                value={mediaUrl}
+                onChange={e => handleMediaUrlChange(e.target.value)}
+                placeholder="Paste a media link…"
+                className="min-w-0 flex-1 bg-black/60 border border-white/15 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-white font-mono"
+              />
+              <div className="relative">
+                <input
+                  type="file"
+                  id="edit-media-file"
+                  className="hidden"
+                  accept="image/*,video/mp4,video/webm,application/pdf"
+                  onChange={e => handleFileUpload(e, 'media')}
+                />
+                <label
+                  htmlFor="edit-media-file"
+                  className="px-3 py-2.5 bg-white/10 hover:bg-white/20 text-neutral-300 hover:text-white rounded-xl text-xs font-mono flex items-center gap-1.5 cursor-pointer border border-white/10"
+                >
+                  <Upload size={13} />
+                  <span>{uploadingMedia ? 'Uploading...' : 'Replace File'}</span>
+                </label>
+              </div>
+            </div>
+
+            {detectedMedia && (
+              <div className="flex items-center gap-2 text-xs font-mono text-amber-400 px-3 py-1.5 bg-amber-950/20 rounded-lg border border-amber-500/20">
+                <Sparkles size={13} />
+                <span>Detected: {detectedMedia.label} ({detectedMedia.aspectRatio})</span>
+              </div>
+            )}
+          </div>
+
+
+              </div>
+            </div>
+          </div>
+          <div className="space-y-3">
+            <p className="text-[10px] uppercase tracking-[0.2em] text-neutral-500">03 / Details</p>
+            {/* Section 5: Description & Year */}
+          <div className="space-y-1.5">
+            <label className="block text-xs font-mono uppercase tracking-wider text-neutral-400">
+              Description
+            </label>
+            <textarea
+              rows={3}
+              value={description}
+              onChange={e => setDescription(e.target.value)}
+              placeholder="Detailed description of the project, concept and deliverables..."
+              className="w-full bg-black/60 border border-white/15 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-white font-mono"
+            />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 min-w-0">
+            <div className="space-y-1.5">
+              <label className="block text-xs font-mono uppercase tracking-wider text-neutral-400">
+                Year
+              </label>
+              <input
+                type="text"
+                value={year}
+                onChange={e => setYear(e.target.value)}
+                placeholder="2026"
+                className="w-full bg-black/60 border border-white/15 rounded-xl px-4 py-2 text-xs text-white focus:outline-none focus:border-white font-mono"
+              />
+            </div>
+          </div>
+
+
+            {/* Quick Jump Links: Google Drive & Social Media */}
+          <details className="rounded-xl border border-white/10 bg-white/[0.025] p-4 space-y-3">
+            <summary className="text-xs font-mono text-neutral-300 cursor-pointer select-none">Additional links <span className="text-neutral-500">(optional)</span></summary>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-3">
+              <div className="space-y-1">
+                <label className="block text-[11px] font-mono uppercase tracking-wider text-neutral-400">
+                  Google Drive Folder / Link
+                </label>
+                <input
+                  type="url"
+                  value={googleDriveUrl}
+                  onChange={e => setGoogleDriveUrl(e.target.value)}
+                  placeholder="https://drive.google.com/drive/folders/..."
+                  className="w-full bg-black/60 border border-white/15 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-white font-mono"
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="block text-[11px] font-mono uppercase tracking-wider text-neutral-400">
+                  Social Media Link (Instagram / YouTube / TikTok)
+                </label>
+                <input
+                  type="url"
+                  value={socialUrl}
+                  onChange={e => setSocialUrl(e.target.value)}
+                  placeholder="https://www.instagram.com/p/... or https://..."
+                  className="w-full bg-black/60 border border-white/15 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-white font-mono"
+                />
+              </div>
+            </div>
+          </details>
+
+
+          </div>
+          <div className="space-y-3">
+            <p className="text-[10px] uppercase tracking-[0.2em] text-neutral-500">04 / Visibility</p>
+            {/* Section 1: Portfolio Roles Assignment */}
+          <div className="p-5 bg-white/[0.025] border border-white/10 rounded-xl space-y-3">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
                 <span className="text-xs font-mono uppercase tracking-wider text-white font-medium">
@@ -307,213 +533,11 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
             </div>
           </div>
 
-          {/* Section 2: Title, Client, Year */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            <div className="min-w-0 space-y-1.5">
-              <label className="block text-xs font-mono uppercase tracking-wider text-neutral-400">
-                Project Title *
-              </label>
-              <input
-                type="text"
-                required
-                value={title}
-                onChange={e => setTitle(e.target.value)}
-                className="w-full bg-black/60 border border-white/15 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-white font-medium"
-              />
-            </div>
-            <div className="space-y-1.5">
-              <label className="block text-xs font-mono uppercase tracking-wider text-neutral-400">
-                Client / Brands
-              </label>
-              <div className="rounded-xl border border-white/15 bg-black/40 p-2 space-y-2">
-                <div className="flex flex-wrap gap-1.5">
-                  {splitBrands(client).map(name => (
-                    <button key={name} type="button" onClick={() => setClient(splitBrands(client).filter(s => s !== name).join(', '))}
-                      title={'Remove ' + name}
-                      className="rounded-md bg-white text-black px-2 py-1 text-[11px] flex items-center gap-1.5">{name} <X size={11}/></button>
-                  ))}
-                  {!client.trim() && <span className="text-[11px] text-neutral-500 px-1 py-1">Select brands below</span>}
-                </div>
-                <input type="text" value={brandSearch} onChange={e => setBrandSearch(e.target.value)}
-                  placeholder="Search brands..." className="w-full rounded-lg border border-white/10 bg-neutral-950 px-3 py-2 text-xs text-white outline-none focus:border-white/40"/>
-                <div className="max-h-28 overflow-y-auto flex flex-wrap gap-1.5">
-                  {brandOptions.filter(name => name.toLowerCase().includes(brandSearch.toLowerCase()) && !splitBrands(client).some(s => s.toLowerCase() === name.toLowerCase())).map(name => (
-                    <button key={name} type="button" onClick={() => { setClient([...splitBrands(client), name].join(', ')); setBrandSearch(''); }}
-                      className="rounded-md border border-white/15 px-2 py-1 text-[11px] text-neutral-300 hover:bg-white/10">{name}</button>
-                  ))}
-                </div>
-              </div>
-            </div>
+
           </div>
-
-          {/* Quick Jump Links: Google Drive & Social Media */}
-          <details className="p-4 bg-white/5 border border-white/10 rounded-xl space-y-3">
-            <summary className="text-xs font-mono text-neutral-300 cursor-pointer select-none">Additional links <span className="text-neutral-500">(optional)</span></summary>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              <div className="space-y-1">
-                <label className="block text-[11px] font-mono uppercase tracking-wider text-neutral-400">
-                  Google Drive Folder / Link
-                </label>
-                <input
-                  type="url"
-                  value={googleDriveUrl}
-                  onChange={e => setGoogleDriveUrl(e.target.value)}
-                  placeholder="https://drive.google.com/drive/folders/..."
-                  className="w-full bg-black/60 border border-white/15 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-white font-mono"
-                />
-              </div>
-
-              <div className="space-y-1">
-                <label className="block text-[11px] font-mono uppercase tracking-wider text-neutral-400">
-                  Social Media Link (Instagram / YouTube / TikTok)
-                </label>
-                <input
-                  type="url"
-                  value={socialUrl}
-                  onChange={e => setSocialUrl(e.target.value)}
-                  placeholder="https://www.instagram.com/p/... or https://..."
-                  className="w-full bg-black/60 border border-white/15 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-white font-mono"
-                />
-              </div>
-            </div>
-          </details>
-
-          {/* Section 3: Media URL & Embed */}
           <div className="space-y-3">
-            <label className="block text-xs font-mono uppercase tracking-wider text-neutral-400">
-              Media Link or Direct Asset URL
-            </label>
-            <div className="flex flex-col sm:flex-row gap-2 min-w-0">
-              <input
-                type="text"
-                value={mediaUrl}
-                onChange={e => handleMediaUrlChange(e.target.value)}
-                placeholder="https://www.instagram.com/reel/... or https://..."
-                className="min-w-0 flex-1 bg-black/60 border border-white/15 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-white font-mono"
-              />
-              <div className="relative">
-                <input
-                  type="file"
-                  id="edit-media-file"
-                  className="hidden"
-                  accept="image/*,video/mp4,video/webm,application/pdf"
-                  onChange={e => handleFileUpload(e, 'media')}
-                />
-                <label
-                  htmlFor="edit-media-file"
-                  className="px-3 py-2.5 bg-white/10 hover:bg-white/20 text-neutral-300 hover:text-white rounded-xl text-xs font-mono flex items-center gap-1.5 cursor-pointer border border-white/10"
-                >
-                  <Upload size={13} />
-                  <span>{uploadingMedia ? 'Uploading...' : 'Replace File'}</span>
-                </label>
-              </div>
-            </div>
-
-            {detectedMedia && (
-              <div className="flex items-center gap-2 text-xs font-mono text-amber-400 px-3 py-1.5 bg-amber-950/20 rounded-lg border border-amber-500/20">
-                <Sparkles size={13} />
-                <span>Detected: {detectedMedia.label} ({detectedMedia.aspectRatio})</span>
-              </div>
-            )}
-          </div>
-
-          {/* Section 4: Cover Thumbnail & Aspect Ratio */}
-          <div className="grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_180px] gap-5">
-            <div className="min-w-0 space-y-1.5">
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <label className="block text-xs font-mono uppercase tracking-wider text-neutral-400">Cover image</label>
-                {isInstagramReelUrl(mediaUrl || socialUrl || externalLink) && (
-                  <button type="button" disabled={autoCoverLoading || uploadingCover} onClick={handleAutoCover}
-                    className="rounded-lg border border-white/15 px-3 py-1.5 text-xs text-neutral-200 hover:bg-white/10 disabled:opacity-50">
-                    {autoCoverLoading ? 'Finding cover...' : 'Get Reel cover'}
-                  </button>
-                )}
-              </div>
-              {autoCoverError && <p className="text-[11px] text-amber-400">{autoCoverError}</p>}
-              <div className="flex flex-col sm:flex-row sm:items-center gap-3">
-                <div className="w-24 h-24 rounded-xl bg-neutral-900 border border-white/20 overflow-hidden shrink-0 flex items-center justify-center">
-                  {coverUrl ? (
-                    <img src={coverUrl} alt="Cover Preview" className="w-full h-full object-cover" />
-                  ) : (
-                    <ImageIcon size={20} className="text-neutral-500" />
-                  )}
-                </div>
-                <div className="min-w-0 flex-1 space-y-1">
-                  <input
-                    type="url"
-                    value={coverUrl}
-                    onChange={e => setCoverUrl(e.target.value)}
-                    placeholder="Cover Image URL"
-                    className="w-full bg-black/60 border border-white/15 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-white font-mono"
-                  />
-                  <div className="relative">
-                    <input
-                      type="file"
-                      id="edit-cover-file"
-                      className="hidden"
-                      accept="image/*"
-                      onChange={e => handleFileUpload(e, 'cover')}
-                    />
-                    <label
-                      htmlFor="edit-cover-file"
-                      className="text-[11px] font-mono text-neutral-400 hover:text-white cursor-pointer underline"
-                    >
-                      {uploadingCover ? 'Uploading...' : 'Upload cover image'}
-                    </label>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="space-y-1.5">
-              <label className="block text-xs font-mono uppercase tracking-wider text-neutral-400">
-                Aspect Ratio
-              </label>
-              <select
-                value={aspectRatio}
-                onChange={e => setAspectRatio(e.target.value as AspectRatio)}
-                className="w-full bg-black/60 border border-white/15 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-white font-mono"
-              >
-                <option value="9/16">9:16</option>
-                <option value="1:1">1:1</option>
-                <option value="16/9">16:9</option>
-                <option value="4/5">4:5</option>
-                <option value="4/3">4:3</option>
-                <option value="auto">Auto</option>
-              </select>
-            </div>
-          </div>
-
-          {/* Section 5: Description & Year */}
-          <div className="space-y-1.5">
-            <label className="block text-xs font-mono uppercase tracking-wider text-neutral-400">
-              Description
-            </label>
-            <textarea
-              rows={3}
-              value={description}
-              onChange={e => setDescription(e.target.value)}
-              placeholder="Detailed description of the project, concept and deliverables..."
-              className="w-full bg-black/60 border border-white/15 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-white font-mono"
-            />
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 min-w-0">
-            <div className="space-y-1.5">
-              <label className="block text-xs font-mono uppercase tracking-wider text-neutral-400">
-                Year
-              </label>
-              <input
-                type="text"
-                value={year}
-                onChange={e => setYear(e.target.value)}
-                placeholder="2026"
-                className="w-full bg-black/60 border border-white/15 rounded-xl px-4 py-2 text-xs text-white focus:outline-none focus:border-white font-mono"
-              />
-            </div>
-          </div>
-
-          {/* Carousel pages are saved within this project, not as separate projects. */}
+            <p className="text-[10px] uppercase tracking-[0.2em] text-neutral-500">05 / Optional</p>
+            {/* Carousel pages are saved within this project, not as separate projects. */}
           <div className="rounded-xl border border-white/10 bg-white/[0.025] overflow-hidden">
             <div className="flex flex-wrap items-center justify-between gap-3 px-5 py-4">
               <label className="flex min-w-0 items-center gap-3 cursor-pointer">
@@ -543,6 +567,9 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
               </label>
               {carouselError && <p className="text-xs text-red-300">{carouselError}</p>}
             </div>}
+          </div>
+
+
           </div>
 
           {/* Footer Actions */}
