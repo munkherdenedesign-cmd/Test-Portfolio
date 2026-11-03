@@ -55,6 +55,7 @@ export interface SphereImageGridProps {
   autoRotateSpeed?: number;
   className?: string;
   onSelectImage?: (image: ImageData, index: number) => void;
+  onCircleHoverChange?: (hovering: boolean) => void;
 }
 
 interface RotationState {
@@ -118,7 +119,8 @@ export const SphereImageGrid: React.FC<SphereImageGridProps> = ({
   autoRotate = true,
   autoRotateSpeed = 0.25,
   className = '',
-  onSelectImage
+  onSelectImage,
+  onCircleHoverChange
 }) => {
 
   // ==========================================
@@ -512,8 +514,8 @@ export const SphereImageGrid: React.FC<SphereImageGridProps> = ({
           transform: `translate(-50%, -50%) scale(${finalScale})`,
           zIndex: nodeZIndex
         }}
-        onMouseEnter={() => setHoveredIndex(index)}
-        onMouseLeave={() => setHoveredIndex(null)}
+        onMouseEnter={() => { setHoveredIndex(index); onCircleHoverChange?.(true); }}
+        onMouseLeave={() => { setHoveredIndex(null); onCircleHoverChange?.(false); }}
         onTouchStart={() => {
           touchStartTimeRef.current = Date.now();
         }}
@@ -536,7 +538,7 @@ export const SphereImageGrid: React.FC<SphereImageGridProps> = ({
         </div>
       </div>
     );
-  }, [worldPositions, baseImageSize, containerSize, hoveredIndex, onSelectImage]);
+  }, [worldPositions, baseImageSize, containerSize, hoveredIndex, onSelectImage, onCircleHoverChange]);
 
   const renderSpotlightModal = () => {
     if (!selectedImage || onSelectImage) return null;
