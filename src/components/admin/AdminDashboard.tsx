@@ -3,6 +3,7 @@ import { Project, Portfolio } from '../../types/portfolio';
 import { SimpleAddProject } from './SimpleAddProject';
 import { EditProjectModal } from './EditProjectModal';
 import { SupabaseSetup } from './SupabaseSetup';
+import { BackupAndSync } from './BackupAndSync';
 import { Signature } from '../Signature';
 import {
   fetchAdminData,
@@ -754,6 +755,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               </button>
             </div>
             <div className="p-6 max-h-[75vh] overflow-y-auto">
+              <BackupAndSync />
               <SupabaseSetup />
             </div>
           </div>
