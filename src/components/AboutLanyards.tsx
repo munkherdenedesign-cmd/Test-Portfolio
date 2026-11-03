@@ -31,7 +31,7 @@ export function AboutLanyards({ items }: { items: Experience[] }) {
         <h1 className="text-3xl md:text-5xl lg:text-6xl tracking-tight font-semibold">Five chapters of my career.</h1>
         <p className="text-xs text-neutral-500 mt-5">Drag a lanyard to swing it. Tap a badge to flip it.</p>
       </header>
-      <div className="relative overflow-x-auto pb-8">
+      <div className="relative overflow-visible pb-8">
         <div className="relative mx-auto w-max min-w-full px-8 md:px-14">
           <div aria-hidden="true" className="absolute top-[-18px] left-4 right-4 h-[54px] z-10 pointer-events-none">
             <div className="absolute left-[20px] right-[20px] top-[18px] h-[19px] rounded-full border-y border-white/30 shadow-[0_5px_8px_#000b,inset_0_2px_2px_#fff5,inset_0_-3px_4px_#000a]" style={{background:'linear-gradient(180deg,#3c3d3e 0%,#e5e6e5 15%,#999b9d 29%,#45484a 46%,#777a7d 62%,#232526 85%,#686a6b 100%)'}}/>
@@ -69,7 +69,7 @@ export function AboutLanyards({ items }: { items: Experience[] }) {
                   </div>
                 </div>
               </div>;
-              return <div key={item.id} className="w-[255px] shrink-0 bg-transparent overflow-visible">
+              return <div key={item.id} className="w-[340px] shrink-0 bg-transparent overflow-visible -mx-[35px]">
                 <LanyardBadge
                   front={front}
                   back={back}
