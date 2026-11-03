@@ -233,13 +233,13 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md overflow-y-auto font-mono">
-      <div className="bg-[#121215] border border-white/20 rounded-2xl w-full max-w-4xl my-3 sm:my-6 overflow-hidden shadow-2xl flex flex-col max-h-[94vh] sm:max-h-[90vh]">
+      <div className="bg-[#121215] border border-white/20 rounded-2xl w-full max-w-[800px] h-[min(640px,90dvh)] overflow-hidden shadow-2xl flex flex-col">
         {/* Header */}
         <div className="px-5 sm:px-7 py-4 border-b border-white/10 flex items-center justify-between bg-neutral-950/60 sticky top-0 z-10">
           <div>
             <h3 className="text-base font-mono font-medium text-white">Edit Project</h3>
             <p className="text-xs text-neutral-400 font-mono mt-0.5">
-              Edit the visuals, details and visibility of this project
+              {["Project information", "Media & appearance", "Additional settings"][activePage]}
             </p>
           </div>
           <button
@@ -250,8 +250,8 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
           </button>
         </div>
 
-        {/* Scrollable Form Body */}
-        <form id="edit-project-form" onSubmit={handleSave} className="px-5 sm:px-7 py-5 overflow-y-auto space-y-8 flex-1 min-h-0 min-w-0">
+        <form id="edit-project-form" onSubmit={handleSave} className="px-5 sm:px-7 py-5 overflow-y-auto flex-1 min-h-0 min-w-0">
+          <div className={activePage === 0 ? 'space-y-6' : 'hidden'}>
           <div className="space-y-3">
             {/* Section 1: Portfolio Roles Assignment */}
           <div className="space-y-3">
@@ -363,6 +363,51 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
 
 
           </div>
+          <div className="space-y-3">
+            <label className="block text-xs font-mono uppercase tracking-wider text-neutral-400">
+              Media Link or Direct Asset URL
+            </label>
+            <div className="grid grid-cols-1 sm:grid-cols-[minmax(0,1fr)_auto] gap-3 min-w-0">
+              <input
+                type="text"
+                value={mediaUrl}
+                onChange={e => handleMediaUrlChange(e.target.value)}
+                placeholder="Paste a media link…"
+                className="min-w-0 flex-1 bg-black/60 border border-white/15 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-white font-mono"
+              />
+              <div className="relative">
+                <input
+                  type="file"
+                  id="edit-media-file"
+                  className="hidden"
+                  accept="image/*,video/mp4,video/webm,application/pdf"
+                  onChange={e => handleFileUpload(e, 'media')}
+                />
+                <label
+                  htmlFor="edit-media-file"
+                  className="px-3 py-2.5 bg-white/10 hover:bg-white/20 text-neutral-300 hover:text-white rounded-xl text-xs font-mono flex items-center gap-1.5 cursor-pointer border border-white/10"
+                >
+                  <Upload size={13} />
+                  <span>{uploadingMedia ? 'Uploading...' : 'Replace File'}</span>
+                </label>
+              </div>
+            </div>
+
+            {detectedMedia && (
+              <div className="flex items-center gap-2 text-xs font-mono text-amber-400 px-3 py-1.5 bg-amber-950/20 rounded-lg border border-amber-500/20">
+                <Sparkles size={13} />
+                <span>Detected: {detectedMedia.label} ({detectedMedia.aspectRatio})</span>
+              </div>
+            )}
+          </div>
+
+
+              </div>
+            </div>
+          </div>
+          </div>
+          </div>
+          <div className={activePage === 1 ? 'space-y-6' : 'hidden'}>
           <div className="space-y-4">
             <div className="space-y-5">
               {/* Section 4: Cover Thumbnail & Aspect Ratio */}
@@ -431,48 +476,8 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
 
               <div className="border-t border-white/10 pt-4">
                 {/* Section 3: Media URL & Embed */}
-          <div className="space-y-3">
-            <label className="block text-xs font-mono uppercase tracking-wider text-neutral-400">
-              Media Link or Direct Asset URL
-            </label>
-            <div className="grid grid-cols-1 sm:grid-cols-[minmax(0,1fr)_auto] gap-3 min-w-0">
-              <input
-                type="text"
-                value={mediaUrl}
-                onChange={e => handleMediaUrlChange(e.target.value)}
-                placeholder="Paste a media link…"
-                className="min-w-0 flex-1 bg-black/60 border border-white/15 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-white font-mono"
-              />
-              <div className="relative">
-                <input
-                  type="file"
-                  id="edit-media-file"
-                  className="hidden"
-                  accept="image/*,video/mp4,video/webm,application/pdf"
-                  onChange={e => handleFileUpload(e, 'media')}
-                />
-                <label
-                  htmlFor="edit-media-file"
-                  className="px-3 py-2.5 bg-white/10 hover:bg-white/20 text-neutral-300 hover:text-white rounded-xl text-xs font-mono flex items-center gap-1.5 cursor-pointer border border-white/10"
-                >
-                  <Upload size={13} />
-                  <span>{uploadingMedia ? 'Uploading...' : 'Replace File'}</span>
-                </label>
-              </div>
-            </div>
-
-            {detectedMedia && (
-              <div className="flex items-center gap-2 text-xs font-mono text-amber-400 px-3 py-1.5 bg-amber-950/20 rounded-lg border border-amber-500/20">
-                <Sparkles size={13} />
-                <span>Detected: {detectedMedia.label} ({detectedMedia.aspectRatio})</span>
-              </div>
-            )}
           </div>
-
-
-              </div>
-            </div>
-          </div>
+          <div className={activePage === 2 ? 'space-y-6' : 'hidden'}>
           <div className="space-y-3">
             {/* Section 5: Description & Year */}
           <div className="space-y-1.5">
@@ -575,6 +580,8 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
 
           </div>
 
+
+          </div>
         </form>
 
           {/* Footer Actions */}
