@@ -3,6 +3,7 @@ import { Project, Portfolio, MediaType, AspectRatio } from '../../types/portfoli
 import { uploadAssetToSupabase, isSupabaseConfigured } from '../../lib/supabase';
 import { parseSocialOrMediaUrl, ParsedMediaLink } from '../../lib/socialMediaParser';
 import { extractInstagramReelCover, isInstagramReelUrl } from '../../lib/reelCover';
+import { splitBrands } from '../../lib/brandCatalog';
 import {
   X,
   Check,
@@ -19,6 +20,7 @@ import {
 interface EditProjectModalProps {
   project: Project;
   portfolios: Portfolio[];
+  brandOptions?: string[];
   onClose: () => void;
   onUpdateProject: (project: Project, assignedPortfolioIds: string[]) => Promise<void> | void;
   onDeleteProject: (projectId: string) => Promise<void> | void;
@@ -27,6 +29,7 @@ interface EditProjectModalProps {
 export const EditProjectModal: React.FC<EditProjectModalProps> = ({
   project,
   portfolios,
+  brandOptions = [],
   onClose,
   onUpdateProject,
   onDeleteProject
@@ -34,6 +37,7 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
   // Form fields
   const [title, setTitle] = useState(project.title);
   const [client, setClient] = useState(project.client || '');
+  const [brandSearch, setBrandSearch] = useState('');
   const [year, setYear] = useState(project.year || '');
   const [description, setDescription] = useState(project.description || '');
   const [mediaType, setMediaType] = useState<MediaType>(project.mediaType);
@@ -292,13 +296,24 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
               <label className="block text-xs font-mono uppercase tracking-wider text-neutral-400">
                 Client / Brands
               </label>
-              <input
-                type="text"
-                value={client}
-                onChange={e => setClient(e.target.value)}
-                placeholder="Brand name, another brand"
-                className="w-full bg-black/60 border border-white/15 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-white font-mono"
-              />
+              <div className="rounded-xl border border-white/15 bg-black/40 p-2 space-y-2">
+                <div className="flex flex-wrap gap-1.5">
+                  {splitBrands(client).map(name => (
+                    <button key={name} type="button" onClick={() => setClient(splitBrands(client).filter(s => s !== name).join(', '))}
+                      title={'Remove ' + name}
+                      className="rounded-md bg-white text-black px-2 py-1 text-[11px] flex items-center gap-1.5">{name} <X size={11}/></button>
+                  ))}
+                  {!client.trim() && <span className="text-[11px] text-neutral-500 px-1 py-1">Select brands below</span>}
+                </div>
+                <input type="text" value={brandSearch} onChange={e => setBrandSearch(e.target.value)}
+                  placeholder="Search brands..." className="w-full rounded-lg border border-white/10 bg-neutral-950 px-3 py-2 text-xs text-white outline-none focus:border-white/40"/>
+                <div className="max-h-28 overflow-y-auto flex flex-wrap gap-1.5">
+                  {brandOptions.filter(name => name.toLowerCase().includes(brandSearch.toLowerCase()) && !splitBrands(client).some(s => s.toLowerCase() === name.toLowerCase())).map(name => (
+                    <button key={name} type="button" onClick={() => { setClient([...splitBrands(client), name].join(', ')); setBrandSearch(''); }}
+                      className="rounded-md border border-white/15 px-2 py-1 text-[11px] text-neutral-300 hover:bg-white/10">{name}</button>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
 
