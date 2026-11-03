@@ -69,7 +69,7 @@ export function AboutLanyards({ items }: { items: Experience[] }) {
                   </div>
                 </div>
               </div>;
-              return <div key={item.id} className="w-[340px] shrink-0 bg-transparent overflow-visible -mx-[35px]">
+              return <div key={item.id} className="w-[900px] shrink-0 bg-transparent overflow-visible -mx-[315px]">
                 <LanyardBadge
                   front={front}
                   back={back}
