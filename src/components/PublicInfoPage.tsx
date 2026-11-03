@@ -24,19 +24,41 @@ function ContactExperience() {
           </h1>
         </div>
 
-        {/* One element morphs from the circular arrow into the Call pill, without moving its center. */}
-        {opened ? (
-          <motion.a layoutId="contact-primary-action" transition={{ type: "spring", stiffness: 340, damping: 30 }} href="tel:+97680792969"
-            className="group relative z-10 flex h-16 sm:h-20 w-36 sm:w-40 items-center justify-center gap-2.5 rounded-full border border-white/30 text-white hover:bg-white hover:text-black hover:border-white transition-[width,background-color,color,border-color,box-shadow] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:shadow-[0_0_30px_rgba(255,255,255,0.18)]"
-            aria-label="Call +976 8079 2969">
-            <Phone size={19} strokeWidth={1.5} /><span className="text-sm tracking-wide">Call</span><ArrowUpRight size={17} strokeWidth={1.5} className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-          </motion.a>
-        ) : (
-          <motion.button layoutId="contact-primary-action" transition={{ type: "spring", stiffness: 340, damping: 30 }} type="button" onClick={() => { setOpened(true); setHovered(false); }} onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}
-            className={`group relative z-10 flex h-16 w-16 sm:h-20 sm:w-20 items-center justify-center rounded-full border cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-white transition-[width,background-color,color,border-color,box-shadow,transform] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${hovered ? 'scale-110 bg-white border-white text-black shadow-[0_0_35px_rgba(255,255,255,0.2)]' : 'border-white/30 text-white'}`} aria-label="Let's work together">
-            <ArrowUpRight size={27} strokeWidth={1.5} className={`transition-transform duration-500 ${hovered ? 'translate-x-1 -translate-y-1' : ''}`} />
+        {/* One persistent control stays centered while its shape and content morph. */}
+        <div className="relative z-10 flex h-16 sm:h-20 w-full items-center justify-center">
+          <motion.button
+            type="button"
+            onClick={() => {
+              if (opened) window.location.href = 'tel:+97680792969';
+              else { setOpened(true); setHovered(false); }
+            }}
+            onMouseEnter={() => setHovered(true)}
+            onMouseLeave={() => setHovered(false)}
+            animate={{ width: opened ? 160 : undefined, backgroundColor: hovered ? '#ffffff' : 'rgba(255,255,255,0)', color: hovered ? '#000000' : '#ffffff' }}
+            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+            className="relative flex h-16 w-16 sm:h-20 sm:w-20 shrink-0 items-center justify-center overflow-hidden rounded-full border border-white/30 cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-white"
+            aria-label={opened ? 'Call +976 8079 2969' : "Let's work together"}
+          >
+            <motion.span
+              animate={{ opacity: opened ? 0 : 1, scale: opened ? 0.65 : 1 }}
+              transition={{ duration: 0.2 }}
+              className="absolute inset-0 flex items-center justify-center"
+              aria-hidden="true"
+            >
+              <ArrowUpRight size={27} strokeWidth={1.5} />
+            </motion.span>
+            <motion.span
+              animate={{ opacity: opened ? 1 : 0, scale: opened ? 1 : 0.8 }}
+              transition={{ duration: 0.3, delay: opened ? 0.12 : 0 }}
+              className="absolute inset-0 flex items-center justify-center gap-2.5 whitespace-nowrap"
+              aria-hidden="true"
+            >
+              <Phone size={19} strokeWidth={1.5} />
+              <span className="text-sm tracking-wide">Call</span>
+              <ArrowUpRight size={17} strokeWidth={1.5} />
+            </motion.span>
           </motion.button>
-        )}
+        </div>
 
         <div className={`absolute top-full mt-9 sm:mt-10 flex w-full flex-col items-center gap-4 transition-all duration-500 ${opened ? 'opacity-0 -translate-y-3 pointer-events-none' : 'opacity-100 translate-y-0'}`}>
           <p className="px-2 text-center text-sm text-neutral-400 max-w-md leading-relaxed">Have a project in mind? I'd love to hear about it. Let's create something exceptional together.</p>
