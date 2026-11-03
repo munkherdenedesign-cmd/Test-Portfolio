@@ -364,45 +364,32 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
 
           </div>
           <div className="space-y-3">
+            {/* Section 5: Description & Year */}
+          <div className="space-y-1.5">
             <label className="block text-xs font-mono uppercase tracking-wider text-neutral-400">
-              Media Link or Direct Asset URL
+              Description
             </label>
-            <div className="grid grid-cols-1 sm:grid-cols-[minmax(0,1fr)_auto] gap-3 min-w-0">
-              <input
-                type="text"
-                value={mediaUrl}
-                onChange={e => handleMediaUrlChange(e.target.value)}
-                placeholder="Paste a media link…"
-                className="min-w-0 flex-1 bg-black/60 border border-white/15 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-white font-mono"
-              />
-              <div className="relative">
-                <input
-                  type="file"
-                  id="edit-media-file"
-                  className="hidden"
-                  accept="image/*,video/mp4,video/webm,application/pdf"
-                  onChange={e => handleFileUpload(e, 'media')}
-                />
-                <label
-                  htmlFor="edit-media-file"
-                  className="px-3 py-2.5 bg-white/10 hover:bg-white/20 text-neutral-300 hover:text-white rounded-xl text-xs font-mono flex items-center gap-1.5 cursor-pointer border border-white/10"
-                >
-                  <Upload size={13} />
-                  <span>{uploadingMedia ? 'Uploading...' : 'Replace File'}</span>
-                </label>
-              </div>
-            </div>
-
-            {detectedMedia && (
-              <div className="flex items-center gap-2 text-xs font-mono text-amber-400 px-3 py-1.5 bg-amber-950/20 rounded-lg border border-amber-500/20">
-                <Sparkles size={13} />
-                <span>Detected: {detectedMedia.label} ({detectedMedia.aspectRatio})</span>
-              </div>
-            )}
+            <textarea
+              rows={3}
+              value={description}
+              onChange={e => setDescription(e.target.value)}
+              placeholder="Detailed description of the project, concept and deliverables..."
+              className="w-full bg-black/60 border border-white/15 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-white font-mono"
+            />
           </div>
 
-
-              </div>
+          <div className="w-full max-w-[150px]">
+            <div className="space-y-1.5">
+              <label className="block text-xs font-mono uppercase tracking-wider text-neutral-400">
+                Year
+              </label>
+              <input
+                type="text"
+                value={year}
+                onChange={e => setYear(e.target.value)}
+                placeholder="2026"
+                className="w-full bg-black/60 border border-white/15 rounded-xl px-4 py-2 text-xs text-white focus:outline-none focus:border-white font-mono"
+              />
             </div>
           </div>
           </div>
@@ -476,73 +463,50 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
 
               <div className="border-t border-white/10 pt-4">
                 {/* Section 3: Media URL & Embed */}
-          </div>
-          <div className={activePage === 2 ? 'space-y-6' : 'hidden'}>
           <div className="space-y-3">
-            {/* Section 5: Description & Year */}
-          <div className="space-y-1.5">
             <label className="block text-xs font-mono uppercase tracking-wider text-neutral-400">
-              Description
+              Media Link or Direct Asset URL
             </label>
-            <textarea
-              rows={3}
-              value={description}
-              onChange={e => setDescription(e.target.value)}
-              placeholder="Detailed description of the project, concept and deliverables..."
-              className="w-full bg-black/60 border border-white/15 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-white font-mono"
-            />
-          </div>
-
-          <div className="w-full max-w-[150px]">
-            <div className="space-y-1.5">
-              <label className="block text-xs font-mono uppercase tracking-wider text-neutral-400">
-                Year
-              </label>
+            <div className="grid grid-cols-1 sm:grid-cols-[minmax(0,1fr)_auto] gap-3 min-w-0">
               <input
                 type="text"
-                value={year}
-                onChange={e => setYear(e.target.value)}
-                placeholder="2026"
-                className="w-full bg-black/60 border border-white/15 rounded-xl px-4 py-2 text-xs text-white focus:outline-none focus:border-white font-mono"
+                value={mediaUrl}
+                onChange={e => handleMediaUrlChange(e.target.value)}
+                placeholder="Paste a media link…"
+                className="min-w-0 flex-1 bg-black/60 border border-white/15 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-white font-mono"
               />
+              <div className="relative">
+                <input
+                  type="file"
+                  id="edit-media-file"
+                  className="hidden"
+                  accept="image/*,video/mp4,video/webm,application/pdf"
+                  onChange={e => handleFileUpload(e, 'media')}
+                />
+                <label
+                  htmlFor="edit-media-file"
+                  className="px-3 py-2.5 bg-white/10 hover:bg-white/20 text-neutral-300 hover:text-white rounded-xl text-xs font-mono flex items-center gap-1.5 cursor-pointer border border-white/10"
+                >
+                  <Upload size={13} />
+                  <span>{uploadingMedia ? 'Uploading...' : 'Replace File'}</span>
+                </label>
+              </div>
             </div>
+
+            {detectedMedia && (
+              <div className="flex items-center gap-2 text-xs font-mono text-amber-400 px-3 py-1.5 bg-amber-950/20 rounded-lg border border-amber-500/20">
+                <Sparkles size={13} />
+                <span>Detected: {detectedMedia.label} ({detectedMedia.aspectRatio})</span>
+              </div>
+            )}
           </div>
 
 
-            {/* Quick Jump Links: Google Drive & Social Media */}
-          <details className="border-t border-white/10 pt-4 space-y-3">
-            <summary className="text-xs font-mono text-neutral-300 cursor-pointer select-none">Additional links <span className="text-neutral-500">(optional)</span></summary>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-3">
-              <div className="space-y-1">
-                <label className="block text-[11px] font-mono uppercase tracking-wider text-neutral-400">
-                  Google Drive Folder / Link
-                </label>
-                <input
-                  type="url"
-                  value={googleDriveUrl}
-                  onChange={e => setGoogleDriveUrl(e.target.value)}
-                  placeholder="https://drive.google.com/drive/folders/..."
-                  className="w-full bg-black/60 border border-white/15 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-white font-mono"
-                />
-              </div>
-
-              <div className="space-y-1">
-                <label className="block text-[11px] font-mono uppercase tracking-wider text-neutral-400">
-                  Social Media Link (Instagram / YouTube / TikTok)
-                </label>
-                <input
-                  type="url"
-                  value={socialUrl}
-                  onChange={e => setSocialUrl(e.target.value)}
-                  placeholder="https://www.instagram.com/p/... or https://..."
-                  className="w-full bg-black/60 border border-white/15 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-white font-mono"
-                />
               </div>
             </div>
-          </details>
-
-
           </div>
+          </div>
+          <div className={activePage === 2 ? 'space-y-6' : 'hidden'}>
           <div className="space-y-3">
 
             {/* Carousel pages are saved within this project, not as separate projects. */}
@@ -580,7 +544,37 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
 
           </div>
 
+            {/* Quick Jump Links: Google Drive & Social Media */}
+          <details className="border-t border-white/10 pt-4 space-y-3">
+            <summary className="text-xs font-mono text-neutral-300 cursor-pointer select-none">Additional links <span className="text-neutral-500">(optional)</span></summary>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-3">
+              <div className="space-y-1">
+                <label className="block text-[11px] font-mono uppercase tracking-wider text-neutral-400">
+                  Google Drive Folder / Link
+                </label>
+                <input
+                  type="url"
+                  value={googleDriveUrl}
+                  onChange={e => setGoogleDriveUrl(e.target.value)}
+                  placeholder="https://drive.google.com/drive/folders/..."
+                  className="w-full bg-black/60 border border-white/15 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-white font-mono"
+                />
+              </div>
 
+              <div className="space-y-1">
+                <label className="block text-[11px] font-mono uppercase tracking-wider text-neutral-400">
+                  Social Media Link (Instagram / YouTube / TikTok)
+                </label>
+                <input
+                  type="url"
+                  value={socialUrl}
+                  onChange={e => setSocialUrl(e.target.value)}
+                  placeholder="https://www.instagram.com/p/... or https://..."
+                  className="w-full bg-black/60 border border-white/15 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-white font-mono"
+                />
+              </div>
+            </div>
+          </details>
           </div>
         </form>
 
