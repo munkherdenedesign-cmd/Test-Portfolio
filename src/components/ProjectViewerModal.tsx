@@ -152,9 +152,6 @@ export const ProjectViewerModal: React.FC<ProjectViewerModalProps> = ({ project,
             <div className={`hidden md:block absolute inset-x-0 bottom-0 z-20 max-h-[min(60dvh,520px)] overflow-y-auto overscroll-contain rounded-b-xl bg-[#101012]/97 border border-white/15 backdrop-blur-2xl ${compactDetails ? 'px-4 py-4' : 'px-7 py-7 lg:px-10 lg:py-9'} translate-y-[12px] opacity-0 invisible transition-[transform,opacity,visibility] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-0 group-hover:opacity-100 group-hover:visible group-focus-within:translate-y-0 group-focus-within:opacity-100 group-focus-within:visible pointer-events-none group-hover:pointer-events-auto group-focus-within:pointer-events-auto`}>
               {information}
             </div>
-            {carousel && pages.length > 1 && <div className="w-full flex justify-center gap-2 mt-3">
-              {pages.map((_, i) => <button key={i} type="button" onClick={() => setActivePage(i)} aria-label={`Show carousel page ${i + 1}`} aria-current={i === activePage ? 'true' : undefined} className="flex h-6 w-6 items-center justify-center" ><span className={`block rounded-full transition-all ${i === activePage ? 'h-1.5 w-1.5 bg-white' : 'h-1 w-1 bg-white/40'}`} /></button>)}
-            </div>}
             {/* Mobile: no hover dependency. Details are always shown underneath the full media. */}
             <section className="md:hidden w-[min(90vw,440px)] max-w-[90vw] px-3 pt-5 pb-20">{information}</section>
           </div>
