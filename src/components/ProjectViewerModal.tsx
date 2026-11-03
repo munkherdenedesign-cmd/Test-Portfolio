@@ -135,25 +135,25 @@ export const ProjectViewerModal: React.FC<ProjectViewerModalProps> = ({ project,
 
   return (
     <div className="fixed inset-0 z-50 bg-black/95 backdrop-blur-lg font-mono text-white" role="dialog" aria-modal="true" aria-label={project.title} onClick={onClose}>
-      <div className="absolute inset-0 overflow-y-auto overscroll-contain" onClick={e => e.stopPropagation()}>
+      <div className="absolute inset-0 overflow-y-auto overscroll-contain" >
         <div className="min-h-full flex flex-col items-center justify-center px-4 md:px-16 py-12 md:py-10">
-          <div className="group relative w-full max-w-[80vw] flex flex-col items-center" style={{ width: fittedWidth }}>
-            <button type="button" onClick={onClose} aria-label="Close project" title="Close project" className="absolute top-3 right-3 z-40 inline-flex h-10 w-10 items-center justify-center rounded-full bg-black/85 border border-white/30 text-white shadow-lg backdrop-blur-md transition-colors hover:bg-white hover:text-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-white"><X size={20} /></button>
+          <div className="group relative w-full max-w-[80vw] flex flex-col items-center" style={{ width: fittedWidth }} onClick={e => e.stopPropagation()}>
+            <button type="button" onClick={onClose} aria-label="Close project" title="Close project" className="absolute top-3 right-3 z-40 inline-flex h-10 w-10 items-center justify-center text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)] transition-opacity hover:opacity-65 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white"><X size={20} /></button>
             <div className={`relative w-full flex items-center justify-center bg-[#101012] border border-white/10 rounded-xl overflow-hidden ${isPortraitSocial ? "aspect-[9/16]" : ""}`}
               onTouchStart={e => { touchStart.current = e.touches[0]?.clientX ?? null; }}
               onTouchEnd={e => { if (!carousel || touchStart.current === null) return; const delta = (e.changedTouches[0]?.clientX ?? touchStart.current) - touchStart.current; if (Math.abs(delta) > 45) setActivePage(p => Math.max(0, Math.min(pages.length - 1, p + (delta < 0 ? 1 : -1)))); touchStart.current = null; }}>
               {media}
+              {carousel && pages.length > 1 && <>
+                <button type="button" onClick={() => setActivePage(p => Math.max(0, p - 1))} disabled={activePage === 0} aria-label="Previous carousel page" className="absolute left-2 md:left-3 top-1/2 -translate-y-1/2 z-30 flex h-10 w-10 items-center justify-center text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)] hover:opacity-70 disabled:opacity-20 transition-opacity"><ChevronLeft size={25} strokeWidth={1.8}/></button>
+                <button type="button" onClick={() => setActivePage(p => Math.min(pages.length - 1, p + 1))} disabled={activePage === pages.length - 1} aria-label="Next carousel page" className="absolute right-2 md:right-3 top-1/2 -translate-y-1/2 z-30 flex h-10 w-10 items-center justify-center text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)] hover:opacity-70 disabled:opacity-20 transition-opacity"><ChevronRight size={25} strokeWidth={1.8}/></button>
+              </>}
             </div>
             {/* Details are a separate overlay so media dimensions never clip or resize them. */}
             <div className={`hidden md:block absolute inset-x-0 bottom-0 z-20 max-h-[min(60dvh,520px)] overflow-y-auto overscroll-contain rounded-b-xl bg-[#101012]/97 border border-white/15 backdrop-blur-2xl ${compactDetails ? 'px-4 py-4' : 'px-7 py-7 lg:px-10 lg:py-9'} translate-y-[12px] opacity-0 invisible transition-[transform,opacity,visibility] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-0 group-hover:opacity-100 group-hover:visible group-focus-within:translate-y-0 group-focus-within:opacity-100 group-focus-within:visible pointer-events-none group-hover:pointer-events-auto group-focus-within:pointer-events-auto`}>
               {information}
             </div>
-            {carousel && pages.length > 1 && <div className="w-full flex items-center gap-2 mt-4">
-              <button type="button" onClick={() => setActivePage(p => Math.max(0, p - 1))} disabled={activePage === 0} aria-label="Previous carousel page" className="shrink-0 p-2 border border-white/20 rounded-full disabled:opacity-30"><ChevronLeft size={16}/></button>
-              <div className="flex-1 min-w-0 flex gap-2 overflow-x-auto py-1">
-                {pages.map((url, i) => <button key={url + i} type="button" onClick={() => setActivePage(i)} aria-label={`Show carousel page ${i + 1}`} aria-current={i === activePage ? 'true' : undefined} className={`shrink-0 w-14 h-16 rounded-md border-2 overflow-hidden bg-neutral-900 ${i === activePage ? 'border-white' : 'border-transparent opacity-60 hover:opacity-100'}`}><img src={url} alt={`Page ${i + 1}`} className="w-full h-full object-contain"/></button>)}
-              </div>
-              <button type="button" onClick={() => setActivePage(p => Math.min(pages.length - 1, p + 1))} disabled={activePage === pages.length - 1} aria-label="Next carousel page" className="shrink-0 p-2 border border-white/20 rounded-full disabled:opacity-30"><ChevronRight size={16}/></button>
+            {carousel && pages.length > 1 && <div className="w-full flex justify-center gap-2 mt-3">
+              {pages.map((_, i) => <button key={i} type="button" onClick={() => setActivePage(i)} aria-label={`Show carousel page ${i + 1}`} aria-current={i === activePage ? 'true' : undefined} className="flex h-6 w-6 items-center justify-center" ><span className={`block rounded-full transition-all ${i === activePage ? 'h-1.5 w-1.5 bg-white' : 'h-1 w-1 bg-white/40'}`} /></button>)}
             </div>}
             {/* Mobile: no hover dependency. Details are always shown underneath the full media. */}
             <section className="md:hidden w-[min(90vw,440px)] max-w-[90vw] px-3 pt-5 pb-20">{information}</section>
