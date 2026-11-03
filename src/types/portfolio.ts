@@ -23,6 +23,8 @@ export interface Project {
     role?: string;
     deliverables?: string[];
     credits?: string;
+    isCarousel?: boolean;
+    carouselPages?: string[];
   };
   createdAt: string;
   updatedAt: string;
