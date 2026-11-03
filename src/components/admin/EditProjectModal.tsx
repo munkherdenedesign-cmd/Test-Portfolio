@@ -48,6 +48,10 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
   const [googleDriveUrl, setGoogleDriveUrl] = useState(project.googleDriveUrl || '');
   const [socialUrl, setSocialUrl] = useState(project.socialUrl || '');
   const [embedCode, setEmbedCode] = useState(project.embedCode || '');
+  const [isCarousel, setIsCarousel] = useState(Boolean(project.details?.isCarousel));
+  const [carouselPages, setCarouselPages] = useState<string[]>(project.details?.carouselPages || []);
+  const [uploadingPages, setUploadingPages] = useState(false);
+  const [carouselError, setCarouselError] = useState('');
 
   // Assigned portfolios for this project
   const [assignedPortfolioIds, setAssignedPortfolioIds] = useState<string[]>(() => {
@@ -141,6 +145,30 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
     }
   };
 
+  const uploadCarouselPages = async (files: FileList | null) => {
+    if (!files?.length) return;
+    setUploadingPages(true);
+    setCarouselError('');
+    try {
+      const urls: string[] = [];
+      for (const file of Array.from(files)) {
+        if (!file.type.startsWith('image/')) throw new Error('Carousel pages must be images.');
+        if (isSupabaseConfigured()) urls.push(await uploadAssetToSupabase(file, 'carousel'));
+        else urls.push(await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result as string);
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        }));
+      }
+      setCarouselPages(prev => [...prev, ...urls]);
+    } catch (error) {
+      setCarouselError(error instanceof Error ? error.message : 'Upload failed.');
+    } finally {
+      setUploadingPages(false);
+    }
+  };
+
   const togglePortfolio = (portfolioId: string) => {
     setAssignedPortfolioIds(prev =>
       prev.includes(portfolioId)
@@ -159,7 +187,7 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!title.trim()) return;
+    if (!title.trim() || uploadingPages) return;
 
     setIsSaving(true);
 
@@ -177,6 +205,7 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
       googleDriveUrl: googleDriveUrl.trim() || undefined,
       socialUrl: socialUrl.trim() || undefined,
       embedCode: embedCode.trim() || undefined,
+      details: { ...project.details, isCarousel, carouselPages },
       updatedAt: new Date().toISOString()
     };
 
@@ -386,6 +415,35 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
                 <span>Detected: {detectedMedia.label} ({detectedMedia.aspectRatio})</span>
               </div>
             )}
+          </div>
+
+          {/* Carousel pages are saved within this project, not as separate projects. */}
+          <div className="rounded-xl border border-white/15 bg-white/[0.035] p-4 space-y-3">
+            <label className="flex items-center gap-3 cursor-pointer">
+              <input type="checkbox" checked={isCarousel} onChange={e => setIsCarousel(e.target.checked)} className="accent-white w-4 h-4" />
+              <span className="text-sm text-white">Carousel project</span>
+            </label>
+            {isCarousel && <>
+              <p className="text-[11px] leading-relaxed text-neutral-400">The main media image is page 1. Add the remaining pages here now or later. All pages belong to this single project.</p>
+              <div className="flex flex-wrap gap-3">
+                {(mediaUrl || coverUrl) && <div className="w-20 space-y-1"><img src={mediaUrl || coverUrl} alt="Page 1" className="w-20 h-24 object-contain bg-black rounded-lg border border-white/15"/><p className="text-[10px] text-center text-neutral-400">Page 1</p></div>}
+                {carouselPages.map((url, index) => <div key={url + index} className="w-20 space-y-1">
+                  <img src={url} alt={`Page ${index + 2}`} className="w-20 h-24 object-contain bg-black rounded-lg border border-white/15"/>
+                  <div className="flex justify-between items-center text-[10px] text-neutral-400"><span>{index + 2}</span>
+                    <div className="flex gap-1">
+                      <button type="button" disabled={index === 0} onClick={() => setCarouselPages(p => { const a = [...p]; [a[index - 1], a[index]] = [a[index], a[index - 1]]; return a; })} aria-label="Move page earlier">←</button>
+                      <button type="button" disabled={index === carouselPages.length - 1} onClick={() => setCarouselPages(p => { const a = [...p]; [a[index], a[index + 1]] = [a[index + 1], a[index]]; return a; })} aria-label="Move page later">→</button>
+                      <button type="button" onClick={() => setCarouselPages(p => p.filter((_, i) => i !== index))} aria-label="Remove page" className="text-red-300">×</button>
+                    </div>
+                  </div>
+                </div>)}
+              </div>
+              <label className="inline-flex items-center gap-2 rounded-lg border border-white/20 px-3 py-2 text-xs cursor-pointer hover:bg-white/10">
+                <Upload size={13}/>{uploadingPages ? 'Uploading pages...' : 'Add carousel pages'}
+                <input type="file" multiple accept="image/*" className="hidden" disabled={uploadingPages} onChange={e => { void uploadCarouselPages(e.target.files); e.target.value = ''; }}/>
+              </label>
+              {carouselError && <p className="text-xs text-red-300">{carouselError}</p>}
+            </>}
           </div>
 
           {/* Section 4: Cover Thumbnail & Aspect Ratio */}
