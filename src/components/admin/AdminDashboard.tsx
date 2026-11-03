@@ -30,7 +30,6 @@ import {
   Check,
   Eye,
   Send,
-  PenTool,
   Upload,
   X
 } from 'lucide-react';
