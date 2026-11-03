@@ -56,19 +56,7 @@ export function PublicInfoPage({ page, signatureUrl, onNavigate }: { page: 'abou
           <Signature signatureUrl={signatureUrl} />
         </a>
       </header>
-      {about ? (
-        <main className="flex-1 w-full mx-auto pt-20 md:pt-24 pb-24">
-          <div className="max-w-2xl mx-auto px-7">
-          <p className="text-[10px] tracking-[0.25em] uppercase text-neutral-500 mb-5">The person behind the work</p>
-          <h1 className="text-4xl md:text-6xl font-normal tracking-tight mb-9">About me.</h1>
-          <div className="space-y-5 text-sm md:text-base leading-relaxed text-neutral-400 max-w-lg">
-            <p>I'm Munkherdene. I work across social media, design, photography, video, and digital experiences.</p>
-            <p>This portfolio brings together selected projects and the ideas behind them.</p>
-          </div>
-          </div>
-          <AboutLanyards items={experiences} />
-        </main>
-      ) : <ContactExperience />}
+      {about ? <AboutLanyards items={experiences} /> : <ContactExperience />}
     </div>
   );
 }
