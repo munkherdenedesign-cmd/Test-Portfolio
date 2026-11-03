@@ -179,13 +179,13 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md overflow-y-auto font-mono">
-      <div className="bg-[#121215] border border-white/20 rounded-2xl w-full max-w-3xl my-8 overflow-hidden shadow-2xl flex flex-col max-h-[90vh]">
+      <div className="bg-[#121215] border border-white/20 rounded-2xl w-full max-w-4xl my-3 sm:my-6 overflow-hidden shadow-2xl flex flex-col max-h-[94vh] sm:max-h-[90vh]">
         {/* Header */}
-        <div className="px-6 py-4 border-b border-white/10 flex items-center justify-between bg-neutral-950/60 sticky top-0 z-10">
+        <div className="px-5 sm:px-7 py-4 border-b border-white/10 flex items-center justify-between bg-neutral-950/60 sticky top-0 z-10">
           <div>
             <h3 className="text-base font-mono font-medium text-white">Edit Project</h3>
             <p className="text-xs text-neutral-400 font-mono mt-0.5">
-              Edits automatically update across all checked portfolio role pages
+              Manage project details, preview and where it appears
             </p>
           </div>
           <button
@@ -197,9 +197,9 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
         </div>
 
         {/* Scrollable Form Body */}
-        <form onSubmit={handleSave} className="p-6 overflow-y-auto space-y-6 flex-1">
+        <form onSubmit={handleSave} className="px-5 sm:px-7 py-5 overflow-y-auto space-y-5 flex-1">
           {/* Section 1: Portfolio Roles Assignment */}
-          <div className="p-4 bg-white/5 border border-white/10 rounded-xl space-y-3">
+          <div className="p-4 bg-white/[0.035] border border-white/10 rounded-xl space-y-3">
             <div className="flex items-center justify-between">
               <div>
                 <span className="text-xs font-mono uppercase tracking-wider text-white font-medium">
@@ -228,7 +228,7 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
               </div>
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 pt-1">
+            <div className="flex flex-wrap gap-2 pt-1">
               {portfolios.map(port => {
                 const isSelected = assignedPortfolioIds.includes(port.id);
                 return (
@@ -236,7 +236,7 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
                     type="button"
                     key={port.id}
                     onClick={() => togglePortfolio(port.id)}
-                    className={`p-2.5 rounded-lg border text-left transition-all cursor-pointer flex items-center justify-between ${
+                    className={`px-3 py-2 rounded-lg border text-left transition-all cursor-pointer flex items-center justify-between gap-2 ${
                       isSelected
                         ? 'bg-white text-black border-white font-medium'
                         : 'bg-black/40 text-neutral-400 border-white/10 hover:border-white/30 hover:text-white'
@@ -244,9 +244,7 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
                   >
                     <div className="truncate mr-2">
                       <div className="text-xs truncate">{port.title}</div>
-                      <div className={`text-[10px] font-mono ${isSelected ? 'text-neutral-600' : 'text-neutral-500'}`}>
-                        {port.slug ? `/p/${port.slug}` : '/'}
-                      </div>
+                      
                     </div>
                     <span
                       className={`w-3.5 h-3.5 rounded-full flex items-center justify-center shrink-0 ${
@@ -262,7 +260,7 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
           </div>
 
           {/* Section 2: Title, Client, Year */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
             <div className="md:col-span-2 space-y-1.5">
               <label className="block text-xs font-mono uppercase tracking-wider text-neutral-400">
                 Project Title *
@@ -272,7 +270,7 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
                 required
                 value={title}
                 onChange={e => setTitle(e.target.value)}
-                className="w-full bg-black/60 border border-white/15 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-white font-mono font-medium"
+                className="w-full bg-black/60 border border-white/15 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-white font-medium"
               />
             </div>
             <div className="space-y-1.5">
@@ -289,10 +287,8 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
           </div>
 
           {/* Quick Jump Links: Google Drive & Social Media */}
-          <div className="p-4 bg-white/5 border border-white/10 rounded-xl space-y-3">
-            <span className="text-xs font-mono uppercase tracking-wider text-white font-medium block">
-              Quick Jump Links (Customer Popup Preview)
-            </span>
+          <details className="p-4 bg-white/5 border border-white/10 rounded-xl space-y-3">
+            <summary className="text-xs font-mono text-neutral-300 cursor-pointer select-none">Additional links <span className="text-neutral-500">(optional)</span></summary>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <div className="space-y-1">
                 <label className="block text-[11px] font-mono uppercase tracking-wider text-neutral-400">
@@ -320,7 +316,7 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
                 />
               </div>
             </div>
-          </div>
+          </details>
 
           {/* Section 3: Media URL & Embed */}
           <div className="space-y-3">
@@ -365,10 +361,10 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="space-y-1.5 md:col-span-2">
               <label className="block text-xs font-mono uppercase tracking-wider text-neutral-400">
-                Cover Thumbnail (3D Sphere & Card Preview)
+                Cover image
               </label>
               <div className="flex items-center gap-3">
-                <div className="w-16 h-16 rounded-xl bg-neutral-900 border border-white/20 overflow-hidden shrink-0 flex items-center justify-center">
+                <div className="w-24 h-24 rounded-xl bg-neutral-900 border border-white/20 overflow-hidden shrink-0 flex items-center justify-center">
                   {coverUrl ? (
                     <img src={coverUrl} alt="Cover Preview" className="w-full h-full object-cover" />
                   ) : (
@@ -395,7 +391,7 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
                       htmlFor="edit-cover-file"
                       className="text-[11px] font-mono text-neutral-400 hover:text-white cursor-pointer underline"
                     >
-                      {uploadingCover ? 'Uploading...' : 'Upload custom thumbnail image'}
+                      {uploadingCover ? 'Uploading...' : 'Upload cover image'}
                     </label>
                   </div>
                 </div>
@@ -464,7 +460,7 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
           </div>
 
           {/* Footer Actions */}
-          <div className="pt-4 border-t border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="sticky bottom-0 z-20 -mx-5 sm:-mx-7 -mb-5 px-5 sm:px-7 py-4 bg-[#121215] border-t border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-[0_-12px_28px_rgba(0,0,0,0.4)]">
             {/* Delete button */}
             <div>
               {confirmDelete ? (
@@ -511,12 +507,12 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
               <button
                 type="submit"
                 disabled={isSaving || !title.trim()}
-                className="px-6 py-2.5 rounded-xl bg-white text-black hover:bg-neutral-200 text-xs font-mono font-medium flex items-center gap-1.5 transition-all cursor-pointer shadow-md disabled:opacity-50"
+                className="min-w-36 justify-center px-5 py-2.5 rounded-xl bg-white text-black hover:bg-neutral-200 text-xs font-mono font-medium flex items-center gap-1.5 transition-all cursor-pointer shadow-md disabled:opacity-50"
               >
                 {isSaving ? (
                   <>
                     <Loader2 size={14} className="animate-spin text-black" />
-                    <span>Saving to all roles...</span>
+                    <span>Saving...</span>
                   </>
                 ) : (
                   <>
