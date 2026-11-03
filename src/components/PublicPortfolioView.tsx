@@ -35,6 +35,27 @@ export const PublicPortfolioView: React.FC<PublicPortfolioViewProps> = ({
   const [hoveredView, setHoveredView] = useState<'sphere' | 'index' | null>(null);
   const [sphereCircleHovered, setSphereCircleHovered] = useState(false);
   const sphereRef = useRef<HTMLDivElement>(null);
+  const signatureRef = useRef<HTMLAnchorElement>(null);
+  const [signatureHoverOffset, setSignatureHoverOffset] = useState(0);
+  useEffect(() => {
+    if (viewMode !== 'sphere' || !sphereCircleHovered) {
+      setSignatureHoverOffset(0);
+      return;
+    }
+    const updateSignaturePosition = () => {
+      const sphereTop = sphereRef.current?.getBoundingClientRect().top;
+      const signatureRect = signatureRef.current?.getBoundingClientRect();
+      if (sphereTop == null || !signatureRect) return;
+      // Place the enlarged signature just above the sphere, with a small visual gap.
+      const enlargedHeight = signatureRect.height * 3;
+      const targetCenter = sphereTop - 18 - enlargedHeight / 2;
+      const currentCenter = signatureRect.top + signatureRect.height / 2;
+      setSignatureHoverOffset(Math.max(0, targetCenter - currentCenter));
+    };
+    updateSignaturePosition();
+    window.addEventListener('resize', updateSignaturePosition);
+    return () => window.removeEventListener('resize', updateSignaturePosition);
+  }, [viewMode, sphereCircleHovered]);
   const handleSphereCircleHover = useCallback((hovering: boolean) => {
     setSphereCircleHovered(hovering);
   }, []);
@@ -96,10 +117,10 @@ export const PublicPortfolioView: React.FC<PublicPortfolioViewProps> = ({
 
       {/* Real uploaded signature only; Signature has no placeholder fallback. */}
       <header className="w-full pt-6 md:pt-8 pb-3 px-6 flex items-center justify-center relative z-40 pointer-events-none">
-        <a href="/" className="pointer-events-auto inline-flex rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-white" aria-label="Go to home page" title="Home">
+        <a ref={signatureRef} href="/" className="pointer-events-auto inline-flex rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-white" aria-label="Go to home page" title="Home">
           <motion.span
             className="inline-flex origin-center"
-            animate={{ scale: 1 }}
+            animate={{ scale: 1, y: sphereCircleHovered && viewMode === "sphere" ? signatureHoverOffset : 0 }}
             transition={{ type: 'spring', stiffness: 220, damping: 20 }}
           >
             <LiquidSurface className="cursor-pointer" active={sphereCircleHovered} subtle>
