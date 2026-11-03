@@ -13,7 +13,10 @@ import {
   Loader2,
   Image as ImageIcon,
   CheckSquare,
-  Square
+  Square,
+  ArrowLeft,
+  ArrowRight,
+  Pencil,
 } from 'lucide-react';
 
 interface EditProjectModalProps {
@@ -263,17 +266,16 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
                 <button
                   type="button"
                   onClick={selectAllPortfolios}
-                  className="hover:text-white underline cursor-pointer"
+                  aria-label="Select all portfolio roles" title="Select all" className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 hover:bg-white/10 hover:text-white cursor-pointer"
                 >
-                  All
+                  <CheckSquare size={15}/>
                 </button>
-                <span>/</span>
                 <button
                   type="button"
                   onClick={clearAllPortfolios}
-                  className="hover:text-white underline cursor-pointer"
+                  aria-label="Clear portfolio roles" title="Clear all" className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 hover:bg-white/10 hover:text-white cursor-pointer"
                 >
-                  None
+                  <Square size={15}/>
                 </button>
               </div>
             </div>
@@ -335,7 +337,7 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
                 {client.trim() && !clientPickerOpen ? (
                   <div className="flex items-center justify-between gap-3 rounded-xl border border-white/20 bg-white/[0.06] px-3 py-3">
                     <span className="min-w-0 truncate text-sm text-white">{client.split(',')[0].trim()}</span>
-                    <button type="button" onClick={() => { setClientPickerOpen(true); setBrandSearch(''); }} className="shrink-0 text-xs text-neutral-400 hover:text-white">Change</button>
+                    <button type="button" onClick={() => { setClientPickerOpen(true); setBrandSearch(''); }} title="Change client" aria-label="Change client" className="shrink-0 inline-flex h-8 w-8 items-center justify-center rounded-lg text-neutral-400 hover:bg-white/10 hover:text-white"><Pencil size={15}/></button>
                   </div>
                 ) : (
                   <div className="rounded-xl border border-white/15 bg-black/40 p-2">
@@ -560,9 +562,9 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
                   <img src={url} alt={`Page ${index + 2}`} className="w-20 h-24 object-contain bg-black rounded-lg border border-white/15"/>
                   <div className="flex justify-between items-center text-[10px] text-neutral-400"><span>{index + 2}</span>
                     <div className="flex gap-1">
-                      <button type="button" disabled={index === 0} onClick={() => setCarouselPages(p => { const a = [...p]; [a[index - 1], a[index]] = [a[index], a[index - 1]]; return a; })} aria-label="Move page earlier">←</button>
-                      <button type="button" disabled={index === carouselPages.length - 1} onClick={() => setCarouselPages(p => { const a = [...p]; [a[index], a[index + 1]] = [a[index + 1], a[index]]; return a; })} aria-label="Move page later">→</button>
-                      <button type="button" onClick={() => setCarouselPages(p => p.filter((_, i) => i !== index))} aria-label="Remove page" className="text-red-300">×</button>
+                      <button type="button" disabled={index === 0} onClick={() => setCarouselPages(p => { const a = [...p]; [a[index - 1], a[index]] = [a[index], a[index - 1]]; return a; })} title="Move left" className="inline-flex h-6 w-6 items-center justify-center rounded hover:bg-white/10 disabled:opacity-25" aria-label="Move page earlier"><ArrowLeft size={14}/></button>
+                      <button type="button" disabled={index === carouselPages.length - 1} onClick={() => setCarouselPages(p => { const a = [...p]; [a[index], a[index + 1]] = [a[index + 1], a[index]]; return a; })} title="Move right" className="inline-flex h-6 w-6 items-center justify-center rounded hover:bg-white/10 disabled:opacity-25" aria-label="Move page later"><ArrowRight size={14}/></button>
+                      <button type="button" onClick={() => setCarouselPages(p => p.filter((_, i) => i !== index))} aria-label="Remove page" title="Remove page" className="inline-flex h-6 w-6 items-center justify-center rounded text-red-300 hover:bg-red-500/10"><X size={14}/></button>
                     </div>
                   </div>
                 </div>)}
@@ -605,10 +607,9 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
                 <button
                   type="button"
                   onClick={() => setConfirmDelete(true)}
-                  className="text-xs font-mono text-rose-400/80 hover:text-rose-400 flex items-center gap-1.5 cursor-pointer p-1"
+                  title="Delete project" aria-label="Delete project" className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-rose-400/80 hover:bg-rose-500/10 hover:text-rose-400 cursor-pointer"
                 >
                   <Trash2 size={13} />
-                  <span>Delete Project</span>
                 </button>
               )}
             </div>
@@ -618,9 +619,9 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
               <button
                 type="button"
                 onClick={onClose}
-                className="px-4 py-2 text-xs font-mono text-neutral-400 hover:text-white cursor-pointer"
+                title="Discard changes" aria-label="Cancel editing" className="inline-flex h-10 w-10 items-center justify-center rounded-lg text-neutral-400 hover:bg-white/10 hover:text-white cursor-pointer"
               >
-                Cancel
+                <X size={18}/>
               </button>
 
               <button
