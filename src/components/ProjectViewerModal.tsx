@@ -54,6 +54,7 @@ export const ProjectViewerModal: React.FC<ProjectViewerModalProps> = ({ project,
   const fittedWidth = mediaRatio && ['image', 'video', 'embed'].includes(project.mediaType)
     ? `min(80vw, calc(70dvh * ${mediaRatio}))`
     : '80vw';
+  const compactDetails = mediaRatio !== null && mediaRatio < 0.9;
   const socialCover = project.coverUrl && !/instagram[.]com[/]|facebook[.]com[/]/i.test(project.coverUrl) ? project.coverUrl : '';
   const socialUrl = project.socialUrl || (/instagram\.com|facebook\.com|youtu\.be|youtube\.com|tiktok\.com/.test(source) ? source : '');
   const driveUrl = project.googleDriveUrl || (project.externalLink?.includes('drive.google.com') ? project.externalLink : '');
@@ -93,7 +94,7 @@ export const ProjectViewerModal: React.FC<ProjectViewerModalProps> = ({ project,
         } catch { /* invalid link */ }
       }
       if (isPortraitSocial) {
-        return <div className="relative mx-auto w-full w-full aspect-[9/16] bg-[#171719] overflow-hidden">
+        return <div className="relative mx-auto w-full aspect-[9/16] bg-[#171719] overflow-hidden">
           {!showSocialEmbed && socialCover ? <>
             <img src={socialCover} alt={project.title + ' reel cover'} className="absolute inset-0 h-full w-full object-contain" />
             <button type="button" onClick={() => setShowSocialEmbed(true)} aria-label="Play reel" className="absolute inset-0 flex items-center justify-center bg-black/10 hover:bg-black/25 transition-colors">
@@ -111,17 +112,17 @@ export const ProjectViewerModal: React.FC<ProjectViewerModalProps> = ({ project,
 
   const information = (
     <div className="w-full text-left">
-      <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1.5fr)_minmax(220px,0.8fr)] gap-7 lg:gap-12">
+      <div className={`grid grid-cols-1 gap-4 ${compactDetails ? "" : "lg:grid-cols-[minmax(0,1.5fr)_minmax(220px,0.8fr)] lg:gap-8"}`}>
         <div className="min-w-0">
           <div className="flex flex-wrap gap-x-3 gap-y-1 text-[10px] uppercase tracking-[0.16em] text-neutral-400 mb-3">
             {project.client && <span>{project.client}</span>}
             {project.client && project.year && <span className="text-neutral-600">/</span>}
             {project.year && <span>{project.year}</span>}
           </div>
-          <h2 className="text-[22px] md:text-[28px] leading-[1.15] tracking-[-0.04em] font-medium text-white break-words">{project.title}</h2>
+          <h2 className={`leading-[1.2] tracking-[-0.035em] font-medium text-white break-words ${compactDetails ? "text-[17px] md:text-[19px]" : "text-[22px] md:text-[28px]"}`}>{project.title}</h2>
           {project.description && <p className="mt-4 text-[12px] md:text-[13px] leading-[1.8] text-neutral-300 whitespace-pre-line max-w-[58ch]">{project.description}</p>}
         </div>
-        <div className="min-w-0 lg:border-l lg:border-white/15 lg:pl-7 flex flex-col gap-5">
+        <div className={`min-w-0 flex flex-col gap-4 ${compactDetails ? "border-t border-white/15 pt-4" : "lg:border-l lg:border-white/15 lg:pl-7"}`}>
           {project.details?.role && <div><p className="text-[10px] uppercase tracking-[0.15em] text-neutral-500 mb-1.5">My role</p><p className="text-xs leading-relaxed text-neutral-200">{project.details.role}</p></div>}
           {Boolean(project.details?.deliverables?.length) && <div><p className="text-[10px] uppercase tracking-[0.15em] text-neutral-500 mb-1.5">What I made</p><p className="text-xs leading-[1.8] text-neutral-200">{project.details?.deliverables?.join(' · ')}</p></div>}
           {project.details?.credits && <div><p className="text-[10px] uppercase tracking-[0.15em] text-neutral-500 mb-1.5">Credits</p><p className="text-xs leading-relaxed text-neutral-200">{project.details.credits}</p></div>}
@@ -142,10 +143,10 @@ export const ProjectViewerModal: React.FC<ProjectViewerModalProps> = ({ project,
               onTouchStart={e => { touchStart.current = e.touches[0]?.clientX ?? null; }}
               onTouchEnd={e => { if (!carousel || touchStart.current === null) return; const delta = (e.changedTouches[0]?.clientX ?? touchStart.current) - touchStart.current; if (Math.abs(delta) > 45) setActivePage(p => Math.max(0, Math.min(pages.length - 1, p + (delta < 0 ? 1 : -1)))); touchStart.current = null; }}>
               {media}
-              {/* On desktop the project remains uncropped; information floats over the bottom on hover or keyboard focus. */}
-              <div className="hidden md:block absolute inset-x-0 bottom-0 z-10 max-h-[70%] overflow-y-auto bg-[#101012]/95 border-t border-white/15 backdrop-blur-2xl px-7 py-7 lg:px-10 lg:py-9 translate-y-[18px] opacity-0 invisible transition-[transform,opacity,visibility] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] will-change-transform group-hover:translate-y-0 group-hover:opacity-100 group-hover:visible group-focus-within:translate-y-0 group-focus-within:opacity-100 group-focus-within:visible pointer-events-none group-hover:pointer-events-auto group-focus-within:pointer-events-auto motion-reduce:transition-none motion-reduce:transform-none">
-                {information}
-              </div>
+            </div>
+            {/* Details are a separate overlay so media dimensions never clip or resize them. */}
+            <div className={`hidden md:block absolute inset-x-0 bottom-0 z-20 max-h-[min(60dvh,520px)] overflow-y-auto overscroll-contain rounded-b-xl bg-[#101012]/97 border border-white/15 backdrop-blur-2xl ${compactDetails ? 'px-4 py-4' : 'px-7 py-7 lg:px-10 lg:py-9'} translate-y-[12px] opacity-0 invisible transition-[transform,opacity,visibility] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-0 group-hover:opacity-100 group-hover:visible group-focus-within:translate-y-0 group-focus-within:opacity-100 group-focus-within:visible pointer-events-none group-hover:pointer-events-auto group-focus-within:pointer-events-auto`}>
+              {information}
             </div>
             {carousel && pages.length > 1 && <div className="w-full flex items-center gap-2 mt-4">
               <button type="button" onClick={() => setActivePage(p => Math.max(0, p - 1))} disabled={activePage === 0} aria-label="Previous carousel page" className="shrink-0 p-2 border border-white/20 rounded-full disabled:opacity-30"><ChevronLeft size={16}/></button>
@@ -155,7 +156,7 @@ export const ProjectViewerModal: React.FC<ProjectViewerModalProps> = ({ project,
               <button type="button" onClick={() => setActivePage(p => Math.min(pages.length - 1, p + 1))} disabled={activePage === pages.length - 1} aria-label="Next carousel page" className="shrink-0 p-2 border border-white/20 rounded-full disabled:opacity-30"><ChevronRight size={16}/></button>
             </div>}
             {/* Mobile: no hover dependency. Details are always shown underneath the full media. */}
-            <section className="md:hidden w-full px-1 pt-7 pb-20">{information}</section>
+            <section className="md:hidden w-[min(90vw,440px)] max-w-[90vw] px-3 pt-5 pb-20">{information}</section>
           </div>
         </div>
       </div>
