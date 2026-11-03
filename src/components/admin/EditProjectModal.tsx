@@ -615,9 +615,8 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
             <nav aria-label="Edit project pages" className="inline-flex items-center gap-1 rounded-full border border-white/15 bg-black/50 p-1">
               {([{ label: 'Info', Icon: FileText }, { label: 'Media', Icon: ImageIcon }, { label: 'More', Icon: SlidersHorizontal }] as const).map(({ label, Icon }, index) => (
                 <button key={label} type="button" onClick={() => setActivePage(index as 0 | 1 | 2)} aria-label={label} aria-current={activePage === index ? 'page' : undefined} title={label}
-                  className={`h-9 min-w-11 px-3 inline-flex items-center justify-center gap-2 rounded-full text-xs font-medium transition-all ${activePage === index ? 'bg-white text-black shadow-sm' : 'text-neutral-400 hover:text-white hover:bg-white/10'}`}>
+                  className={`h-9 w-10 inline-flex items-center justify-center rounded-full transition-all ${activePage === index ? 'bg-white text-black shadow-sm' : 'text-neutral-400 hover:text-white hover:bg-white/10'}`}>
                   <Icon size={16}/>
-                  <span className="hidden md:inline">{label}</span>
                 </button>
               ))}
             </nav>
