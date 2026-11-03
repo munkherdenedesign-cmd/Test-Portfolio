@@ -7,6 +7,7 @@ import ConditionGrid from './ui/conditiongrid';
 import { Compass, Grid, Shield } from 'lucide-react';
 import { motion, useReducedMotion } from 'motion/react';
 import { LiquidSurface } from './ui/LiquidSurface';
+import { Signature } from './Signature';
 
 interface PublicPortfolioViewProps {
   portfolio: Portfolio;
@@ -92,6 +93,15 @@ export const PublicPortfolioView: React.FC<PublicPortfolioViewProps> = ({
           </button>
         </div>
       )}
+
+      {/* Real uploaded signature only; Signature has no placeholder fallback. */}
+      <header className="w-full pt-6 md:pt-8 pb-3 px-6 flex items-center justify-center relative z-20 pointer-events-none">
+        <a href="/" className="pointer-events-auto inline-flex rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-white" aria-label="Go to home page" title="Home">
+          <LiquidSurface className="cursor-pointer" active={sphereCircleHovered} subtle>
+            <Signature signatureUrl={portfolio.signatureUrl} className="cursor-pointer" />
+          </LiquidSurface>
+        </a>
+      </header>
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col items-center justify-center px-4 md:px-10 pt-5 pb-4 sm:py-2 max-w-6xl mx-auto w-full relative">
