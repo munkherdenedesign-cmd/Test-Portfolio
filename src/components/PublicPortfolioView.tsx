@@ -3,7 +3,6 @@ import { createPortal } from 'react-dom';
 import { Portfolio, Project } from '../types/portfolio';
 import SphereImageGrid, { ImageData } from './SphereImageGrid';
 import { ProjectViewerModal } from './ProjectViewerModal';
-import { Signature } from './Signature';
 import ConditionGrid from './ui/conditiongrid';
 import { Compass, Grid, Shield } from 'lucide-react';
 import { motion, useReducedMotion } from 'motion/react';
@@ -34,19 +33,8 @@ export const PublicPortfolioView: React.FC<PublicPortfolioViewProps> = ({
   const reducedMotion = useReducedMotion();
   const [hoveredView, setHoveredView] = useState<'sphere' | 'index' | null>(null);
   const [sphereCircleHovered, setSphereCircleHovered] = useState(false);
-  const [expandedSignatureScale, setExpandedSignatureScale] = useState(3);
-  const signatureRef = useRef<HTMLSpanElement>(null);
   const sphereRef = useRef<HTMLDivElement>(null);
   const handleSphereCircleHover = useCallback((hovering: boolean) => {
-    if (hovering && signatureRef.current && sphereRef.current) {
-      const signature = signatureRef.current.getBoundingClientRect();
-      const sphere = sphereRef.current.getBoundingClientRect();
-      const gap = 14;
-      const availableHeight = sphere.top - signature.top - gap;
-      const heightScale = availableHeight / Math.max(signature.height, 1);
-      const widthScale = (window.innerWidth - 32) / Math.max(signature.width, 1);
-      setExpandedSignatureScale(Math.max(1, Math.min(5, heightScale, widthScale)));
-    }
     setSphereCircleHovered(hovering);
   }, []);
 
@@ -104,17 +92,6 @@ export const PublicPortfolioView: React.FC<PublicPortfolioViewProps> = ({
           </button>
         </div>
       )}
-
-      {/* Top Center: Signature with Exclusion Effect */}
-      <header className="w-full pt-6 md:pt-8 pb-3 px-6 flex items-center justify-center relative z-20 pointer-events-none">
-        <a href="/" className="pointer-events-auto inline-flex rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-white" aria-label="Go to home page" title="Home">
-          <motion.span ref={signatureRef} className="inline-flex origin-top items-center justify-center relative z-30" animate={{ scale: sphereCircleHovered && !reducedMotion ? expandedSignatureScale : 1 }} transition={{ type: "spring", stiffness: 520, damping: 38, mass: 0.5 }}>
-            <LiquidSurface className="cursor-pointer" active={sphereCircleHovered} subtle>
-              <Signature signatureUrl={portfolio.signatureUrl} className="cursor-pointer" />
-            </LiquidSurface>
-          </motion.span>
-        </a>
-      </header>
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col items-center justify-center px-4 md:px-10 pt-5 pb-4 sm:py-2 max-w-6xl mx-auto w-full relative">
