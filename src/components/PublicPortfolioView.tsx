@@ -36,40 +36,34 @@ export const PublicPortfolioView: React.FC<PublicPortfolioViewProps> = ({
   const [sphereCircleHovered, setSphereCircleHovered] = useState(false);
   const sphereRef = useRef<HTMLDivElement>(null);
   const signatureRef = useRef<HTMLAnchorElement>(null);
-  const [signatureHoverOffset, setSignatureHoverOffset] = useState(0);
+  const [signatureHoverOffset, setSignatureHoverOffset] = useState({ x: 0, y: 0 });
+
   useEffect(() => {
     if (viewMode !== 'sphere' || !sphereCircleHovered) {
-      setSignatureHoverOffset(0);
+      setSignatureHoverOffset({ x: 0, y: 0 });
       return;
     }
 
-    let frame = 0;
-    const updateSignaturePosition = () => {
-      const anchor = signatureRef.current;
-      const sphere = sphereRef.current;
-      const signatureImage = anchor?.querySelector('img');
-      if (anchor && sphere && signatureImage) {
-        const visibleCircles = Array.from(sphere.querySelectorAll<HTMLElement>('[data-sphere-circle]'));
-        const circleTops = visibleCircles
-          .filter(circle => Number.parseFloat(getComputedStyle(circle).opacity) > 0.05)
-          .map(circle => circle.getBoundingClientRect().top);
-        if (circleTops.length) {
-          const nearestCircleTop = Math.min(...circleTops);
-          const anchorRect = anchor.getBoundingClientRect();
-          // Signature's image is scaled 3x around its center; the anchor itself stays unscaled.
-          const enlargedHeight = signatureImage.offsetHeight * 3;
-          const anchorCenter = anchorRect.top + anchorRect.height / 2;
-          const destination = nearestCircleTop - 60 - enlargedHeight / 2;
-          setSignatureHoverOffset(previous =>
-            Math.abs(previous - (destination - anchorCenter)) > 1 ? destination - anchorCenter : previous
-          );
-        }
-      }
-      frame = requestAnimationFrame(updateSignaturePosition);
+    const updatePosition = () => {
+      const sphere = sphereRef.current?.getBoundingClientRect();
+      const anchor = signatureRef.current?.getBoundingClientRect();
+      const image = signatureRef.current?.querySelector('img');
+      if (!sphere || !anchor || !image) return;
+
+      // Position the 3x signature above the overall sphere, never individual images.
+      const signatureHeight = image.offsetHeight * 3;
+      const signatureCenterY = anchor.top + anchor.height / 2;
+      const signatureCenterX = anchor.left + anchor.width / 2;
+      setSignatureHoverOffset({
+        x: sphere.left + sphere.width / 2 - signatureCenterX,
+        y: sphere.top - 100 - signatureHeight / 2 - signatureCenterY
+      });
     };
-    frame = requestAnimationFrame(updateSignaturePosition);
-    return () => cancelAnimationFrame(frame);
-  }, [viewMode, sphereCircleHovered]);
+
+    updatePosition();
+    window.addEventListener('resize', updatePosition);
+    return () => window.removeEventListener('resize', updatePosition);
+  }, [viewMode, sphereCircleHovered, sphereSize]);
   const handleSphereCircleHover = useCallback((hovering: boolean) => {
     setSphereCircleHovered(hovering);
   }, []);
@@ -134,7 +128,7 @@ export const PublicPortfolioView: React.FC<PublicPortfolioViewProps> = ({
         <a ref={signatureRef} href="/" className="pointer-events-auto inline-flex rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-white" aria-label="Go to home page" title="Home">
           <motion.span
             className="inline-flex origin-center"
-            animate={{ scale: 1, y: sphereCircleHovered && viewMode === "sphere" ? signatureHoverOffset : 0 }}
+            animate={{ scale: 1, x: sphereCircleHovered && viewMode === "sphere" ? signatureHoverOffset.x : 0, y: sphereCircleHovered && viewMode === "sphere" ? signatureHoverOffset.y : 0 }}
             transition={{ type: 'spring', stiffness: 220, damping: 20 }}
           >
             <LiquidSurface className="cursor-pointer" active={sphereCircleHovered} subtle>
