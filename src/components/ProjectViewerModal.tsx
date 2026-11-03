@@ -43,8 +43,8 @@ export const ProjectViewerModal: React.FC<ProjectViewerModalProps> = ({ project,
   const carousel = Boolean(project.details?.isCarousel && project.mediaType === 'image');
   const pages = carousel ? [project.mediaUrl || project.coverUrl, ...(project.details?.carouselPages || [])].filter(Boolean) : [];
   const source = carousel ? pages[Math.min(activePage, pages.length - 1)] : project.mediaUrl || project.coverUrl;
-  const isPortraitSocial = project.mediaType === 'embed' && (/instagram\\.com\\/(reel|p|tv)\\//i.test(source) || /facebook\\.com\\/(reel|videos)\\//i.test(source));
-  const socialCover = project.coverUrl && !/instagram\\.com\\/|facebook\\.com\\//i.test(project.coverUrl) ? project.coverUrl : '';
+  const isPortraitSocial = project.mediaType === 'embed' && (/instagram[.]com[/](reel|p|tv)[/]/i.test(source) || /facebook[.]com[/](reel|videos)[/]/i.test(source));
+  const socialCover = project.coverUrl && !/instagram[.]com[/]|facebook[.]com[/]/i.test(project.coverUrl) ? project.coverUrl : '';
   const socialUrl = project.socialUrl || (/instagram\.com|facebook\.com|youtu\.be|youtube\.com|tiktok\.com/.test(source) ? source : '');
   const driveUrl = project.googleDriveUrl || (project.externalLink?.includes('drive.google.com') ? project.externalLink : '');
   const websiteUrl = project.externalLink && !project.externalLink.includes('drive.google.com')
