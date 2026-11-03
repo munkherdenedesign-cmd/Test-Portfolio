@@ -3,7 +3,7 @@ import { ArrowUpRight, Phone } from 'lucide-react';
 import { Signature } from './Signature';
 import { LiquidSurface } from './ui/LiquidSurface';
 import { AboutLanyards } from './AboutLanyards';
-import { loadExperiences, type Experience } from '../lib/aboutExperience';
+import { loadAboutData, DEFAULT_ABOUT_INTRO, type AboutIntro, type Experience } from '../lib/aboutExperience';
 
 function ContactExperience() {
   const [opened, setOpened] = useState(false);
@@ -49,7 +49,8 @@ function ContactExperience() {
 export function PublicInfoPage({ page, signatureUrl, onNavigate }: { page: 'about' | 'contact'; signatureUrl?: string; onNavigate?: (path: string) => void }) {
   const about = page === 'about';
   const [experiences, setExperiences] = useState<Experience[]>([]);
-  React.useEffect(() => { if (about) loadExperiences().then(setExperiences); }, [about]);
+  const [intro, setIntro] = useState<AboutIntro>(DEFAULT_ABOUT_INTRO);
+  React.useEffect(() => { if (about) loadAboutData().then(data => { setExperiences(data.items); setIntro(data.intro); }); }, [about]);
   return (
     <div className="min-h-screen bg-[#0a0a0c] text-[#eaeaea] font-mono flex flex-col">
       <header className="pt-6 md:pt-8 flex justify-center">
@@ -57,7 +58,7 @@ export function PublicInfoPage({ page, signatureUrl, onNavigate }: { page: 'abou
           <LiquidSurface className="cursor-pointer"><Signature signatureUrl={signatureUrl} className="cursor-pointer" /></LiquidSurface>
         </a>
       </header>
-      {about ? <AboutLanyards items={experiences} /> : <ContactExperience />}
+      {about ? <AboutLanyards items={experiences} intro={intro} /> : <ContactExperience />}
     </div>
   );
 }
