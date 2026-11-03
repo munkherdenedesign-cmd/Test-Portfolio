@@ -250,7 +250,6 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
         {/* Scrollable Form Body */}
         <form onSubmit={handleSave} className="px-5 sm:px-7 py-5 overflow-y-auto space-y-8 flex-1 min-w-0">
           <div className="space-y-3">
-            <p className="text-[10px] uppercase tracking-[0.2em] text-neutral-500">Visibility</p>
             {/* Section 1: Portfolio Roles Assignment */}
           <div className="p-5 bg-white/[0.025] border border-white/10 rounded-xl space-y-3">
             <div className="flex flex-wrap items-center justify-between gap-3">
@@ -314,7 +313,6 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
 
           </div>
           <div className="space-y-2">
-            <p className="text-[10px] uppercase tracking-[0.2em] text-neutral-500">Project</p>
             {/* Section 2: Title, Client, Year */}
           <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] gap-5">
             <div className="min-w-0 space-y-1.5">
@@ -363,7 +361,6 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
 
           </div>
           <div className="space-y-4">
-            <p className="text-[10px] uppercase tracking-[0.2em] text-neutral-500">Visuals</p>
             <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-4 sm:p-5 space-y-5">
               {/* Section 4: Cover Thumbnail & Aspect Ratio */}
           <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_180px] gap-5">
@@ -478,7 +475,6 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
             </div>
           </div>
           <div className="space-y-3">
-            <p className="text-[10px] uppercase tracking-[0.2em] text-neutral-500">Details</p>
             {/* Section 5: Description & Year */}
           <div className="space-y-1.5">
             <label className="block text-xs font-mono uppercase tracking-wider text-neutral-400">
