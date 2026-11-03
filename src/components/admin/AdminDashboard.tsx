@@ -351,7 +351,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       {/* NAVBAR WITH ROLES / PAGES */}
       <header className="px-6 md:px-10 py-3 bg-neutral-950/90 backdrop-blur-md sticky top-0 z-40 flex items-center justify-between border-b border-white/5">
         <div className="flex items-center gap-4 overflow-x-auto no-scrollbar py-0.5 font-mono">
-          <span className="text-sm font-mono font-medium text-white shrink-0">Admin</span>
+          <span className="shrink-0 inline-flex items-center justify-center min-w-[90px]"><Signature signatureUrl={signatureUrlInput} className="max-w-[125px] [&_img]:!h-7" /></span>
 
           {/* Role Pages inside Navbar */}
           <div className="flex items-center gap-1 bg-white/5 p-1 rounded-xl border border-white/10 text-xs font-mono shrink-0">
