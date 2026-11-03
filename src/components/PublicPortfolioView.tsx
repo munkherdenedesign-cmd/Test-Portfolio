@@ -23,6 +23,7 @@ export const PublicPortfolioView: React.FC<PublicPortfolioViewProps> = ({
   const [viewMode, setViewMode] = useState<'sphere' | 'index'>('sphere');
   const [sphereSize, setSphereSize] = useState<number>(500);
   const reducedMotion = useReducedMotion();
+  const [hoveredView, setHoveredView] = useState<'sphere' | 'index' | null>(null);
 
   // Responsive sphere sizing based on window width
   useEffect(() => {
@@ -131,7 +132,7 @@ export const PublicPortfolioView: React.FC<PublicPortfolioViewProps> = ({
         <div role="group" aria-label="Portfolio view" className="relative flex items-center gap-1 p-1 rounded-full bg-neutral-900/95 backdrop-blur-md border border-white/20 shadow-2xl shadow-black/80">
           <motion.span aria-hidden="true"
             className="absolute top-1 left-1 w-10 h-10 rounded-full bg-white shadow-[0_0_18px_rgba(255,255,255,0.25)]"
-            animate={{ x: viewMode === 'sphere' ? 0 : 44, scaleX: 1 }}
+            animate={{ x: viewMode === 'sphere' ? 0 : 44, scale: hoveredView === viewMode ? 1.16 : 1, boxShadow: hoveredView === viewMode ? "0 0 24px 6px rgba(255,255,255,0.55)" : "0 0 12px 2px rgba(255,255,255,0.16)" }}
             transition={reducedMotion ? { duration: 0 } : { type: 'spring', stiffness: 260, damping: 19, mass: 0.8 }} />
           {([
             { id: 'sphere' as const, label: 'Sphere View', Icon: Compass },
@@ -139,7 +140,14 @@ export const PublicPortfolioView: React.FC<PublicPortfolioViewProps> = ({
           ]).map(({ id, label, Icon }) => (
             <button key={id} type="button" onClick={() => setViewMode(id)}
               title={label} aria-label={label} aria-pressed={viewMode === id}
+              onMouseEnter={() => setHoveredView(id)} onMouseLeave={() => setHoveredView(null)}
+              onFocus={() => setHoveredView(id)} onBlur={() => setHoveredView(null)}
               className={`relative z-10 w-10 h-10 rounded-full flex items-center justify-center cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-white transition-colors duration-200 ${viewMode === id ? 'text-black' : 'text-neutral-300 hover:text-white'}`}>
+              {hoveredView === id && viewMode !== id && (
+                <motion.span aria-hidden="true" className="absolute inset-0 rounded-full bg-white/15"
+                  initial={{ scale: 0.85, opacity: 0 }} animate={{ scale: 1.16, opacity: 1, boxShadow: "0 0 20px 4px rgba(255,255,255,0.28)" }}
+                  exit={{ opacity: 0 }} transition={{ duration: reducedMotion ? 0 : 0.18 }} />
+              )}
               <LiquidSurface>
                 <Icon size={19} strokeWidth={2} aria-hidden="true" />
               </LiquidSurface>
