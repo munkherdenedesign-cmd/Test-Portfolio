@@ -243,13 +243,14 @@ export const PublicPortfolioView: React.FC<PublicPortfolioViewProps> = ({
       </div>}
 
       {/* Project Viewer Popup Modal */}
-      {selectedProject && (
+      {selectedProject && createPortal(
         <ProjectViewerModal
           project={selectedProject}
           projectsList={projects}
           onClose={() => setSelectedProject(null)}
           onNavigate={(p) => setSelectedProject(p)}
-        />
+        />,
+        document.body
       )}
     </div>
   );
