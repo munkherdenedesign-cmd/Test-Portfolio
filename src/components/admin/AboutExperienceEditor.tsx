@@ -19,7 +19,7 @@ export function AboutExperienceEditor({ onBack }: { onBack: () => void }) {
     <div className="flex items-center justify-between gap-4 mb-3"><h1 className="text-2xl font-medium">About page — Work experience</h1>
       <button onClick={() => setItems(v => v.length < 5 ? [...v, emptyExperience()] : v)} disabled={items.length >= 5} className="flex items-center gap-2 text-xs bg-white text-black rounded-lg px-3 py-2 disabled:opacity-30"><Plus size={14}/> Add experience</button>
     </div>
-    <p className="text-xs text-neutral-500 mb-8">Up to five hanging badges. Dragging isn't needed: badges appear in this order. Front: image, company, role, timeline. Back: location and social link.</p>
+    <p className="text-xs text-neutral-500 mb-8">Up to five hanging badges. Dragging isn't needed: badges appear in this order. Front: image, company, role, timeline. Back: description, three keywords, location, social link, and QR.</p>
     <div className="space-y-5">{items.map((item, index) => <section key={item.id} className="rounded-2xl bg-[#141417] border border-white/10 p-5">
       <div className="flex justify-between items-center mb-5"><h2 className="text-sm">Experience {index + 1}</h2><button onClick={() => setItems(v => v.filter(x => x.id !== item.id))} className="text-neutral-500 hover:text-red-400" title="Remove experience"><Trash2 size={16}/></button></div>
       <div className="grid md:grid-cols-[150px_1fr] gap-6">
@@ -32,6 +32,8 @@ export function AboutExperienceEditor({ onBack }: { onBack: () => void }) {
           {field(item, 'Company / organization', 'company', 'Company name')}
           {field(item, 'Job title', 'role', 'Your role')}
           {field(item, 'Work timeline (replaces barcode)', 'period', '2023 — 2025')}
+          <label className="block space-y-1.5 sm:col-span-2"><span className="text-[10px] text-neutral-400">Short job description (back)</span><textarea rows={3} maxLength={240} className={input} value={item.description || ''} placeholder="What you did in this role" onChange={e => update(item.id, { description: e.target.value })}/></label>
+          <div className="sm:col-span-2"><span className="text-[10px] text-neutral-400">Three keywords (back)</span><div className="grid grid-cols-3 gap-2 mt-1.5">{[0,1,2].map(i => <input key={i} className={input} maxLength={24} value={(item.keywords || [])[i] || ''} placeholder={'Keyword ' + (i+1)} onChange={e => { const keywords = [...(item.keywords || ['', '', ''])]; keywords[i] = e.target.value; update(item.id, { keywords }); }}/>)}</div></div>
           {field(item, 'Location (back)', 'location', 'Ulaanbaatar, Mongolia')}
           {field(item, 'Social media label (back)', 'socialLabel', 'Instagram')}
           {field(item, 'Social media URL (back)', 'socialUrl', 'https://...')}
