@@ -146,7 +146,7 @@ export const PublicPortfolioView: React.FC<PublicPortfolioViewProps> = ({
           </div>
         ) : (
           /* Editorial grid: preserves uploaded aspect ratios without cropping */
-          <div className="w-full max-w-6xl sm:max-w-[850px] lg:max-w-[900px] my-3 sm:my-4 pb-24 sm:pb-20">
+          <div className="w-full max-w-6xl sm:max-w-[680px] lg:max-w-[720px] my-3 sm:my-4 pb-24 sm:pb-20">
             <ConditionGrid projects={projects} onSelect={setSelectedProject} />
           </div>
         )}
