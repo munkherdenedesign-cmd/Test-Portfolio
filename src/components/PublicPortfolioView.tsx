@@ -99,11 +99,11 @@ export const PublicPortfolioView: React.FC<PublicPortfolioViewProps> = ({
         <a href="/" className="pointer-events-auto inline-flex rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-white" aria-label="Go to home page" title="Home">
           <motion.span
             className="inline-flex origin-center"
-            animate={{ scale: viewMode === 'sphere' && sphereCircleHovered && !reducedMotion ? 3 : 1 }}
+            animate={{ scale: 1 }}
             transition={{ type: 'spring', stiffness: 220, damping: 20 }}
           >
             <LiquidSurface className="cursor-pointer" active={sphereCircleHovered} subtle>
-              <Signature signatureUrl={portfolio.signatureUrl} className="cursor-pointer" />
+              <Signature signatureUrl={portfolio.signatureUrl} enlarged={viewMode === "sphere" && sphereCircleHovered} className="cursor-pointer" />
             </LiquidSurface>
           </motion.span>
         </a>
