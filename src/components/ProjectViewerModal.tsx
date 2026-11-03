@@ -46,12 +46,14 @@ export const ProjectViewerModal: React.FC<ProjectViewerModalProps> = ({ project,
   const source = carousel ? pages[Math.min(activePage, pages.length - 1)] : project.mediaUrl || project.coverUrl;
   const portraitSource = [source, project.socialUrl, project.externalLink, project.embedCode].filter(Boolean).join(' ');
   const isPortraitSocial = project.mediaType === 'embed' && (/(?:www[.])?instagram[.]com[/](?:reel|p|tv)[/]/i.test(portraitSource) || /(?:www[.]|web[.])?facebook[.]com[/](?:reel|videos)[/]/i.test(portraitSource));
+  // One shared viewing zone for every project: max 80vw wide and 70dvh tall.
+  // Its actual dimensions follow the media's aspect ratio without cropping.
   const configuredRatio = project.aspectRatio && project.aspectRatio !== 'auto' ? project.aspectRatio : null;
   const numericRatio = configuredRatio ? (() => { const [w, h] = configuredRatio.split('/').map(Number); return w > 0 && h > 0 ? w / h : null; })() : null;
   const mediaRatio = isPortraitSocial ? 9 / 16 : (naturalRatio || numericRatio);
   const fittedWidth = mediaRatio && ['image', 'video', 'embed'].includes(project.mediaType)
-    ? `min(100%, calc(72dvh * ${mediaRatio}))`
-    : '100%';
+    ? `min(80vw, calc(70dvh * ${mediaRatio}))`
+    : '80vw';
   const socialCover = project.coverUrl && !/instagram[.]com[/]|facebook[.]com[/]/i.test(project.coverUrl) ? project.coverUrl : '';
   const socialUrl = project.socialUrl || (/instagram\.com|facebook\.com|youtu\.be|youtube\.com|tiktok\.com/.test(source) ? source : '');
   const driveUrl = project.googleDriveUrl || (project.externalLink?.includes('drive.google.com') ? project.externalLink : '');
@@ -67,7 +69,7 @@ export const ProjectViewerModal: React.FC<ProjectViewerModalProps> = ({ project,
 
   const media = (() => {
     if (project.mediaType === 'video') {
-      return <video key={source} src={source} controls playsInline preload="metadata" onLoadedMetadata={e => { const v = e.currentTarget; if (v.videoWidth && v.videoHeight) setNaturalRatio(v.videoWidth / v.videoHeight); }} className="block max-w-full w-auto h-auto max-h-[68dvh] md:max-h-[72dvh] object-contain" />;
+      return <video key={source} src={source} controls playsInline preload="metadata" onLoadedMetadata={e => { const v = e.currentTarget; if (v.videoWidth && v.videoHeight) setNaturalRatio(v.videoWidth / v.videoHeight); }} className="block max-w-full w-auto h-auto max-h-[70dvh] md:max-h-[70dvh] object-contain" />;
     }
     if (project.mediaType === 'pdf') {
       return <iframe title={project.title} src={source} className="block w-full h-[65dvh] md:h-[76dvh] border-0 bg-white" />;
@@ -134,14 +136,14 @@ export const ProjectViewerModal: React.FC<ProjectViewerModalProps> = ({ project,
     <div className="fixed inset-0 z-50 bg-black/95 backdrop-blur-lg font-mono text-white" role="dialog" aria-modal="true" aria-label={project.title} onClick={onClose}>
       <div className="absolute inset-0 overflow-y-auto overscroll-contain" onClick={e => e.stopPropagation()}>
         <div className="min-h-full flex flex-col items-center justify-center px-4 md:px-16 py-12 md:py-10">
-          <div className="group relative w-full max-w-6xl flex flex-col items-center" style={{ width: fittedWidth }}>
+          <div className="group relative w-full max-w-[80vw] flex flex-col items-center" style={{ width: fittedWidth }}>
             <button type="button" onClick={onClose} aria-label="Close project" title="Close project" className="absolute top-3 right-3 z-40 inline-flex h-10 w-10 items-center justify-center rounded-full bg-black/85 border border-white/30 text-white shadow-lg backdrop-blur-md transition-colors hover:bg-white hover:text-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-white"><X size={20} /></button>
             <div className={`relative w-full flex items-center justify-center bg-[#101012] border border-white/10 rounded-xl overflow-hidden ${isPortraitSocial ? "aspect-[9/16]" : ""}`}
               onTouchStart={e => { touchStart.current = e.touches[0]?.clientX ?? null; }}
               onTouchEnd={e => { if (!carousel || touchStart.current === null) return; const delta = (e.changedTouches[0]?.clientX ?? touchStart.current) - touchStart.current; if (Math.abs(delta) > 45) setActivePage(p => Math.max(0, Math.min(pages.length - 1, p + (delta < 0 ? 1 : -1)))); touchStart.current = null; }}>
               {media}
               {/* On desktop the project remains uncropped; information floats over the bottom on hover or keyboard focus. */}
-              <div className="hidden md:block absolute inset-x-0 bottom-0 z-10 max-h-[85%] overflow-y-auto bg-[#101012]/95 border-t border-white/15 backdrop-blur-2xl px-7 py-7 lg:px-10 lg:py-9 translate-y-[18px] opacity-0 invisible transition-[transform,opacity,visibility] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] will-change-transform group-hover:translate-y-0 group-hover:opacity-100 group-hover:visible group-focus-within:translate-y-0 group-focus-within:opacity-100 group-focus-within:visible pointer-events-none group-hover:pointer-events-auto group-focus-within:pointer-events-auto motion-reduce:transition-none motion-reduce:transform-none">
+              <div className="hidden md:block absolute inset-x-0 bottom-0 z-10 max-h-[70%] overflow-y-auto bg-[#101012]/95 border-t border-white/15 backdrop-blur-2xl px-7 py-7 lg:px-10 lg:py-9 translate-y-[18px] opacity-0 invisible transition-[transform,opacity,visibility] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] will-change-transform group-hover:translate-y-0 group-hover:opacity-100 group-hover:visible group-focus-within:translate-y-0 group-focus-within:opacity-100 group-focus-within:visible pointer-events-none group-hover:pointer-events-auto group-focus-within:pointer-events-auto motion-reduce:transition-none motion-reduce:transform-none">
                 {information}
               </div>
             </div>
