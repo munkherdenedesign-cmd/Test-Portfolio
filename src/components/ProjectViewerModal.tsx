@@ -12,8 +12,9 @@ interface ProjectViewerModalProps {
 export const ProjectViewerModal: React.FC<ProjectViewerModalProps> = ({ project, projectsList, onClose, onNavigate }) => {
   const [activePage, setActivePage] = useState(0);
   const [showSocialEmbed, setShowSocialEmbed] = useState(false);
+  const [naturalRatio, setNaturalRatio] = useState<number | null>(null);
   const touchStart = useRef<number | null>(null);
-  useEffect(() => { setActivePage(0); setShowSocialEmbed(false); }, [project?.id]);
+  useEffect(() => { setActivePage(0); setShowSocialEmbed(false); setNaturalRatio(null); }, [project?.id]);
   const currentIndex = project ? projectsList.findIndex(p => p.id === project.id) : -1;
   const hasPrev = currentIndex > 0;
   const hasNext = currentIndex >= 0 && currentIndex < projectsList.length - 1;
@@ -45,6 +46,12 @@ export const ProjectViewerModal: React.FC<ProjectViewerModalProps> = ({ project,
   const source = carousel ? pages[Math.min(activePage, pages.length - 1)] : project.mediaUrl || project.coverUrl;
   const portraitSource = [source, project.socialUrl, project.externalLink, project.embedCode].filter(Boolean).join(' ');
   const isPortraitSocial = project.mediaType === 'embed' && (/(?:www[.])?instagram[.]com[/](?:reel|p|tv)[/]/i.test(portraitSource) || /(?:www[.]|web[.])?facebook[.]com[/](?:reel|videos)[/]/i.test(portraitSource));
+  const configuredRatio = project.aspectRatio && project.aspectRatio !== 'auto' ? project.aspectRatio : null;
+  const numericRatio = configuredRatio ? (() => { const [w, h] = configuredRatio.split('/').map(Number); return w > 0 && h > 0 ? w / h : null; })() : null;
+  const mediaRatio = isPortraitSocial ? 9 / 16 : (naturalRatio || numericRatio);
+  const fittedWidth = mediaRatio && ['image', 'video', 'embed'].includes(project.mediaType)
+    ? `min(100%, calc(72dvh * ${mediaRatio}))`
+    : '100%';
   const socialCover = project.coverUrl && !/instagram[.]com[/]|facebook[.]com[/]/i.test(project.coverUrl) ? project.coverUrl : '';
   const socialUrl = project.socialUrl || (/instagram\.com|facebook\.com|youtu\.be|youtube\.com|tiktok\.com/.test(source) ? source : '');
   const driveUrl = project.googleDriveUrl || (project.externalLink?.includes('drive.google.com') ? project.externalLink : '');
@@ -60,7 +67,7 @@ export const ProjectViewerModal: React.FC<ProjectViewerModalProps> = ({ project,
 
   const media = (() => {
     if (project.mediaType === 'video') {
-      return <video key={source} src={source} controls playsInline preload="metadata" className="block max-w-full w-auto h-auto max-h-[68dvh] md:max-h-[78dvh] object-contain" />;
+      return <video key={source} src={source} controls playsInline preload="metadata" onLoadedMetadata={e => { const v = e.currentTarget; if (v.videoWidth && v.videoHeight) setNaturalRatio(v.videoWidth / v.videoHeight); }} className="block max-w-full w-auto h-auto max-h-[68dvh] md:max-h-[72dvh] object-contain" />;
     }
     if (project.mediaType === 'pdf') {
       return <iframe title={project.title} src={source} className="block w-full h-[65dvh] md:h-[76dvh] border-0 bg-white" />;
@@ -84,7 +91,7 @@ export const ProjectViewerModal: React.FC<ProjectViewerModalProps> = ({ project,
         } catch { /* invalid link */ }
       }
       if (isPortraitSocial) {
-        return <div className="relative mx-auto w-full max-w-[min(420px,calc(70dvh*9/16))] aspect-[9/16] bg-[#171719] overflow-hidden">
+        return <div className="relative mx-auto w-full w-full aspect-[9/16] bg-[#171719] overflow-hidden">
           {!showSocialEmbed && socialCover ? <>
             <img src={socialCover} alt={project.title + ' reel cover'} className="absolute inset-0 h-full w-full object-contain" />
             <button type="button" onClick={() => setShowSocialEmbed(true)} aria-label="Play reel" className="absolute inset-0 flex items-center justify-center bg-black/10 hover:bg-black/25 transition-colors">
@@ -97,7 +104,7 @@ export const ProjectViewerModal: React.FC<ProjectViewerModalProps> = ({ project,
         ? <iframe title={project.title} src={embedSrc} allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share" allowFullScreen className="block w-full h-[65dvh] md:h-[76dvh] border-0" />
         : <a href={source} target="_blank" rel="noopener noreferrer" className="p-10 text-sm underline underline-offset-4">Open original post ↗</a>;
     }
-    return <img src={source} alt={project.title} className="block max-w-full w-auto h-auto max-h-[68dvh] md:max-h-[78dvh] object-contain" />;
+    return <img src={source} alt={project.title} onLoad={e => { const img = e.currentTarget; if (img.naturalWidth && img.naturalHeight) setNaturalRatio(img.naturalWidth / img.naturalHeight); }} className="block max-w-full w-auto h-auto max-h-[68dvh] md:max-h-[72dvh] object-contain" />;
   })();
 
   const information = (
@@ -127,7 +134,7 @@ export const ProjectViewerModal: React.FC<ProjectViewerModalProps> = ({ project,
     <div className="fixed inset-0 z-50 bg-black/95 backdrop-blur-lg font-mono text-white" role="dialog" aria-modal="true" aria-label={project.title} onClick={onClose}>
       <div className="absolute inset-0 overflow-y-auto overscroll-contain" onClick={e => e.stopPropagation()}>
         <div className="min-h-full flex flex-col items-center justify-center px-4 md:px-16 py-12 md:py-10">
-          <div className={`group relative w-full flex flex-col items-center ${isPortraitSocial ? "max-w-[min(420px,calc(70dvh*9/16))]" : "max-w-6xl"}`}>
+          <div className="group relative w-full max-w-6xl flex flex-col items-center" style={{ width: fittedWidth }}>
             <button type="button" onClick={onClose} aria-label="Close project" title="Close project" className="absolute top-3 right-3 z-40 inline-flex h-10 w-10 items-center justify-center rounded-full bg-black/85 border border-white/30 text-white shadow-lg backdrop-blur-md transition-colors hover:bg-white hover:text-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-white"><X size={20} /></button>
             <div className={`relative w-full flex items-center justify-center bg-[#101012] border border-white/10 rounded-xl overflow-hidden ${isPortraitSocial ? "aspect-[9/16]" : ""}`}
               onTouchStart={e => { touchStart.current = e.touches[0]?.clientX ?? null; }}
