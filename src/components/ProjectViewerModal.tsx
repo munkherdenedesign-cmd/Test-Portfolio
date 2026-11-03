@@ -141,7 +141,6 @@ export const ProjectViewerModal: React.FC<ProjectViewerModalProps> = ({ project,
             </nav>}
             {/* Mobile: no hover dependency. Details are always shown underneath the full media. */}
             <section className="md:hidden w-full px-1 pt-7 pb-20">{information}</section>
-            <p className="hidden md:block mt-3 text-[10px] text-neutral-500 tracking-wider">HOVER TO EXPLORE PROJECT DETAILS</p>
           </div>
         </div>
       </div>
