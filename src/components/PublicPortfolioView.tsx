@@ -97,9 +97,15 @@ export const PublicPortfolioView: React.FC<PublicPortfolioViewProps> = ({
       {/* Real uploaded signature only; Signature has no placeholder fallback. */}
       <header className="w-full pt-6 md:pt-8 pb-3 px-6 flex items-center justify-center relative z-20 pointer-events-none">
         <a href="/" className="pointer-events-auto inline-flex rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-white" aria-label="Go to home page" title="Home">
-          <LiquidSurface className="cursor-pointer" active={sphereCircleHovered} subtle>
-            <Signature signatureUrl={portfolio.signatureUrl} className="cursor-pointer" />
-          </LiquidSurface>
+          <motion.span
+            className="inline-flex origin-center"
+            animate={{ scale: viewMode === 'sphere' && sphereCircleHovered && !reducedMotion ? 1.5 : 1 }}
+            transition={{ type: 'spring', stiffness: 220, damping: 20 }}
+          >
+            <LiquidSurface className="cursor-pointer" active={sphereCircleHovered} subtle>
+              <Signature signatureUrl={portfolio.signatureUrl} className="cursor-pointer" />
+            </LiquidSurface>
+          </motion.span>
         </a>
       </header>
 
