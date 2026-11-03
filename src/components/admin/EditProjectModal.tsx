@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Project, Portfolio, MediaType, AspectRatio } from '../../types/portfolio';
 import { uploadAssetToSupabase, isSupabaseConfigured } from '../../lib/supabase';
 import { parseSocialOrMediaUrl, ParsedMediaLink } from '../../lib/socialMediaParser';
+import { extractInstagramReelCover, isInstagramReelUrl } from '../../lib/reelCover';
 import {
   X,
   Check,
@@ -58,6 +59,22 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
   const [isDeleting, setIsDeleting] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [detectedMedia, setDetectedMedia] = useState<ParsedMediaLink | null>(null);
+  const [autoCoverLoading, setAutoCoverLoading] = useState(false);
+  const [autoCoverError, setAutoCoverError] = useState('');
+
+  const handleAutoCover = async () => {
+    const url = mediaUrl || socialUrl || externalLink;
+    if (!isInstagramReelUrl(url)) return;
+    setAutoCoverLoading(true);
+    setAutoCoverError('');
+    try {
+      setCoverUrl(await extractInstagramReelCover(url));
+    } catch (err: any) {
+      setAutoCoverError(err.message || 'Could not retrieve the cover. Upload an image instead.');
+    } finally {
+      setAutoCoverLoading(false);
+    }
+  };
 
   // Check link when mediaUrl changes
   const handleMediaUrlChange = (url: string) => {
@@ -360,9 +377,16 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
           {/* Section 4: Cover Thumbnail & Aspect Ratio */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="space-y-1.5 md:col-span-2">
-              <label className="block text-xs font-mono uppercase tracking-wider text-neutral-400">
-                Cover image
-              </label>
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <label className="block text-xs font-mono uppercase tracking-wider text-neutral-400">Cover image</label>
+                {isInstagramReelUrl(mediaUrl || socialUrl || externalLink) && (
+                  <button type="button" disabled={autoCoverLoading || uploadingCover} onClick={handleAutoCover}
+                    className="rounded-lg border border-white/15 px-3 py-1.5 text-xs text-neutral-200 hover:bg-white/10 disabled:opacity-50">
+                    {autoCoverLoading ? 'Finding cover...' : 'Get Reel cover'}
+                  </button>
+                )}
+              </div>
+              {autoCoverError && <p className="text-[11px] text-amber-400">{autoCoverError}</p>}
               <div className="flex items-center gap-3">
                 <div className="w-24 h-24 rounded-xl bg-neutral-900 border border-white/20 overflow-hidden shrink-0 flex items-center justify-center">
                   {coverUrl ? (
