@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Portfolio, Project } from '../types/portfolio';
 import SphereImageGrid, { ImageData } from './SphereImageGrid';
 import { ProjectViewerModal } from './ProjectViewerModal';
@@ -25,6 +25,21 @@ export const PublicPortfolioView: React.FC<PublicPortfolioViewProps> = ({
   const reducedMotion = useReducedMotion();
   const [hoveredView, setHoveredView] = useState<'sphere' | 'index' | null>(null);
   const [sphereCircleHovered, setSphereCircleHovered] = useState(false);
+  const [expandedSignatureScale, setExpandedSignatureScale] = useState(3);
+  const signatureRef = useRef<HTMLSpanElement>(null);
+  const sphereRef = useRef<HTMLDivElement>(null);
+  const handleSphereCircleHover = useCallback((hovering: boolean) => {
+    if (hovering && signatureRef.current && sphereRef.current) {
+      const signature = signatureRef.current.getBoundingClientRect();
+      const sphere = sphereRef.current.getBoundingClientRect();
+      const gap = 14;
+      const availableHeight = sphere.top - signature.top - gap;
+      const heightScale = availableHeight / Math.max(signature.height, 1);
+      const widthScale = (window.innerWidth - 32) / Math.max(signature.width, 1);
+      setExpandedSignatureScale(Math.max(1, Math.min(5, heightScale, widthScale)));
+    }
+    setSphereCircleHovered(hovering);
+  }, []);
 
   // Responsive sphere sizing based on window width
   useEffect(() => {
@@ -84,8 +99,8 @@ export const PublicPortfolioView: React.FC<PublicPortfolioViewProps> = ({
       {/* Top Center: Signature with Exclusion Effect */}
       <header className="w-full pt-6 md:pt-8 pb-3 px-6 flex items-center justify-center relative z-20 pointer-events-none">
         <a href="/" className="pointer-events-auto inline-flex rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-white" aria-label="Go to home page" title="Home">
-          <motion.span className="inline-flex origin-top items-center justify-center relative z-30" animate={{ scale: sphereCircleHovered && !reducedMotion ? 1.85 : 1 }} transition={{ type: "spring", stiffness: 550, damping: 32, mass: 0.55 }}>
-            <LiquidSurface className="cursor-pointer">
+          <motion.span ref={signatureRef} className="inline-flex origin-top items-center justify-center relative z-30" animate={{ scale: sphereCircleHovered && !reducedMotion ? expandedSignatureScale : 1 }} transition={{ type: "spring", stiffness: 520, damping: 38, mass: 0.5 }}>
+            <LiquidSurface className="cursor-pointer" active={sphereCircleHovered} subtle>
               <Signature signatureUrl={portfolio.signatureUrl} className="cursor-pointer" />
             </LiquidSurface>
           </motion.span>
@@ -119,7 +134,7 @@ export const PublicPortfolioView: React.FC<PublicPortfolioViewProps> = ({
         {/* 3D Sphere */}
         {viewMode === 'sphere' ? (
           <div className="flex flex-col items-center w-full my-auto">
-            <div className="relative flex items-center justify-center my-1">
+            <div ref={sphereRef} className="relative flex items-center justify-center my-1">
               <SphereImageGrid
                 images={sphereImages}
                 containerSize={sphereSize}
@@ -128,7 +143,7 @@ export const PublicPortfolioView: React.FC<PublicPortfolioViewProps> = ({
                 autoRotateSpeed={0.25}
                 dragSensitivity={0.55}
                 onSelectImage={handleSphereSelect}
-                onCircleHoverChange={setSphereCircleHovered}
+                onCircleHoverChange={handleSphereCircleHover}
                 className="transition-all duration-300"
               />
             </div>
