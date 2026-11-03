@@ -11,8 +11,9 @@ interface ProjectViewerModalProps {
 
 export const ProjectViewerModal: React.FC<ProjectViewerModalProps> = ({ project, projectsList, onClose, onNavigate }) => {
   const [activePage, setActivePage] = useState(0);
+  const [showSocialEmbed, setShowSocialEmbed] = useState(false);
   const touchStart = useRef<number | null>(null);
-  useEffect(() => setActivePage(0), [project?.id]);
+  useEffect(() => { setActivePage(0); setShowSocialEmbed(false); }, [project?.id]);
   const currentIndex = project ? projectsList.findIndex(p => p.id === project.id) : -1;
   const hasPrev = currentIndex > 0;
   const hasNext = currentIndex >= 0 && currentIndex < projectsList.length - 1;
@@ -42,6 +43,8 @@ export const ProjectViewerModal: React.FC<ProjectViewerModalProps> = ({ project,
   const carousel = Boolean(project.details?.isCarousel && project.mediaType === 'image');
   const pages = carousel ? [project.mediaUrl || project.coverUrl, ...(project.details?.carouselPages || [])].filter(Boolean) : [];
   const source = carousel ? pages[Math.min(activePage, pages.length - 1)] : project.mediaUrl || project.coverUrl;
+  const isPortraitSocial = project.mediaType === 'embed' && (/instagram\\.com\\/(reel|p|tv)\\//i.test(source) || /facebook\\.com\\/(reel|videos)\\//i.test(source));
+  const socialCover = project.coverUrl && !/instagram\\.com\\/|facebook\\.com\\//i.test(project.coverUrl) ? project.coverUrl : '';
   const socialUrl = project.socialUrl || (/instagram\.com|facebook\.com|youtu\.be|youtube\.com|tiktok\.com/.test(source) ? source : '');
   const driveUrl = project.googleDriveUrl || (project.externalLink?.includes('drive.google.com') ? project.externalLink : '');
   const websiteUrl = project.externalLink && !project.externalLink.includes('drive.google.com')
@@ -78,6 +81,16 @@ export const ProjectViewerModal: React.FC<ProjectViewerModalProps> = ({ project,
           const id = url.hostname.includes('youtu.be') ? url.pathname.slice(1) : url.searchParams.get('v');
           if (id) embedSrc = 'https://www.youtube.com/embed/' + encodeURIComponent(id);
         } catch { /* invalid link */ }
+      }
+      if (isPortraitSocial) {
+        return <div className="relative mx-auto w-full max-w-[min(420px,calc(72dvh*9/16))] aspect-[9/16] bg-[#171719] overflow-hidden">
+          {!showSocialEmbed && socialCover ? <>
+            <img src={socialCover} alt={project.title + ' reel cover'} className="absolute inset-0 h-full w-full object-contain" />
+            <button type="button" onClick={() => setShowSocialEmbed(true)} aria-label="Play reel" className="absolute inset-0 flex items-center justify-center bg-black/10 hover:bg-black/25 transition-colors">
+              <span className="flex h-14 w-14 items-center justify-center rounded-full bg-black/70 border border-white/60 text-white text-xl shadow-xl" aria-hidden="true">▶</span>
+            </button>
+          </> : embedSrc ? <iframe title={project.title} src={embedSrc} allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share" allowFullScreen className="absolute inset-0 block h-full w-full border-0 bg-[#171719]" /> : socialCover ? <img src={socialCover} alt={project.title} className="absolute inset-0 h-full w-full object-contain" /> : <a href={source} target="_blank" rel="noopener noreferrer" className="absolute inset-0 flex items-center justify-center text-sm underline">View original reel ↗</a>}
+        </div>;
       }
       return embedSrc
         ? <iframe title={project.title} src={embedSrc} allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share" allowFullScreen className="block w-full h-[65dvh] md:h-[76dvh] border-0" />
