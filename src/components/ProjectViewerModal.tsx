@@ -82,22 +82,25 @@ export const ProjectViewerModal: React.FC<ProjectViewerModalProps> = ({ project,
   })();
 
   const information = (
-    <div className="space-y-3 text-left">
-      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[10px] uppercase tracking-[0.16em] text-neutral-400">
-        {project.client && <span>{project.client}</span>}
-        {project.year && <span>{project.year}</span>}
-      </div>
-      <h2 className="text-xl md:text-2xl font-medium tracking-tight leading-snug text-white">{project.title}</h2>
-      {project.description && <p className="text-xs md:text-sm leading-relaxed text-neutral-300 whitespace-pre-line">{project.description}</p>}
-      {(project.details?.role || project.details?.deliverables?.length || project.details?.credits) && (
-        <div className="flex flex-wrap gap-x-8 gap-y-3 pt-2 text-xs">
-          {project.details.role && <div><span className="block mb-1 text-[10px] uppercase tracking-wider text-neutral-500">Role</span><span>{project.details.role}</span></div>}
-          {Boolean(project.details.deliverables?.length) && <div><span className="block mb-1 text-[10px] uppercase tracking-wider text-neutral-500">Deliverables</span><span>{project.details.deliverables?.join(' · ')}</span></div>}
-          {project.details.credits && <div><span className="block mb-1 text-[10px] uppercase tracking-wider text-neutral-500">Credits</span><span>{project.details.credits}</span></div>}
+    <div className="w-full text-left">
+      <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1.5fr)_minmax(220px,0.8fr)] gap-7 lg:gap-12">
+        <div className="min-w-0">
+          <div className="flex flex-wrap gap-x-3 gap-y-1 text-[10px] uppercase tracking-[0.16em] text-neutral-400 mb-3">
+            {project.client && <span>{project.client}</span>}
+            {project.client && project.year && <span className="text-neutral-600">/</span>}
+            {project.year && <span>{project.year}</span>}
+          </div>
+          <h2 className="text-[22px] md:text-[28px] leading-[1.15] tracking-[-0.04em] font-medium text-white break-words">{project.title}</h2>
+          {project.description && <p className="mt-4 text-[12px] md:text-[13px] leading-[1.8] text-neutral-300 whitespace-pre-line max-w-[58ch]">{project.description}</p>}
         </div>
-      )}
-      {Boolean(project.tags?.length) && <div className="flex flex-wrap gap-2">{project.tags?.map(tag => <span key={tag} className="text-[10px] text-neutral-400">#{tag}</span>)}</div>}
-      {links.length > 0 && <div className="flex flex-wrap gap-x-5 gap-y-2 pt-2">{links.map(link => <a key={link.label} href={link.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-white underline underline-offset-4 hover:text-neutral-300">{link.label}<ArrowUpRight size={12} /></a>)}</div>}
+        <div className="min-w-0 lg:border-l lg:border-white/15 lg:pl-7 flex flex-col gap-5">
+          {project.details?.role && <div><p className="text-[10px] uppercase tracking-[0.15em] text-neutral-500 mb-1.5">My role</p><p className="text-xs leading-relaxed text-neutral-200">{project.details.role}</p></div>}
+          {Boolean(project.details?.deliverables?.length) && <div><p className="text-[10px] uppercase tracking-[0.15em] text-neutral-500 mb-1.5">What I made</p><p className="text-xs leading-[1.8] text-neutral-200">{project.details?.deliverables?.join(' · ')}</p></div>}
+          {project.details?.credits && <div><p className="text-[10px] uppercase tracking-[0.15em] text-neutral-500 mb-1.5">Credits</p><p className="text-xs leading-relaxed text-neutral-200">{project.details.credits}</p></div>}
+          {Boolean(project.tags?.length) && <div className="flex flex-wrap gap-1.5">{project.tags?.map(tag => <span key={tag} className="rounded-full border border-white/15 px-2.5 py-1 text-[10px] text-neutral-400">{tag}</span>)}</div>}
+          {links.length > 0 && <div className="flex flex-wrap gap-2">{links.map(link => <a key={link.label} href={link.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 rounded-full border border-white/25 px-3 py-2 text-[11px] text-white hover:bg-white hover:text-black transition-colors">{link.label}<ArrowUpRight size={12} /></a>)}</div>}
+        </div>
+      </div>
     </div>
   );
 
@@ -113,12 +116,12 @@ export const ProjectViewerModal: React.FC<ProjectViewerModalProps> = ({ project,
             <div className="relative w-full flex items-center justify-center bg-[#101012] border border-white/10 rounded-xl overflow-hidden">
               {media}
               {/* On desktop the project remains uncropped; information floats over the bottom on hover or keyboard focus. */}
-              <div className="hidden md:block absolute inset-x-0 bottom-0 z-10 max-h-[78%] overflow-y-auto bg-gradient-to-t from-black via-black/95 to-black/80 backdrop-blur-xl p-6 lg:p-8 translate-y-[102%] opacity-0 transition-all duration-500 ease-out group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:translate-y-0 group-focus-within:opacity-100 pointer-events-none group-hover:pointer-events-auto group-focus-within:pointer-events-auto">
+              <div className="hidden md:block absolute inset-x-0 bottom-0 z-10 max-h-[85%] overflow-y-auto bg-[#101012]/95 border-t border-white/15 backdrop-blur-2xl px-7 py-7 lg:px-10 lg:py-9 translate-y-full opacity-0 transition-[transform,opacity] duration-500 ease-out group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:translate-y-0 group-focus-within:opacity-100 pointer-events-none group-hover:pointer-events-auto group-focus-within:pointer-events-auto">
                 {information}
               </div>
             </div>
             {/* Mobile: no hover dependency. Details are always shown underneath the full media. */}
-            <section className="md:hidden w-full px-1 pt-6 pb-16">{information}</section>
+            <section className="md:hidden w-full px-1 pt-7 pb-20">{information}</section>
             <p className="hidden md:block mt-3 text-[10px] text-neutral-500 tracking-wider">HOVER TO EXPLORE PROJECT DETAILS</p>
           </div>
         </div>
