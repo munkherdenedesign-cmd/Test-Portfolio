@@ -45,6 +45,8 @@ export const SimpleAddProject: React.FC<SimpleAddProjectProps> = ({
   const [isUploading, setIsUploading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const coverInputRef = useRef<HTMLInputElement>(null);
+  const [coverUploading, setCoverUploading] = useState(false);
 
   // Auto-detect URL on paste/type
   const handleUrlInput = (val: string) => {
@@ -125,6 +127,27 @@ export const SimpleAddProject: React.FC<SimpleAddProjectProps> = ({
     }
   };
 
+  const handleCoverUpload = async (file?: File) => {
+    if (!file) return;
+    setCoverUploading(true);
+    try {
+      if (isSupabaseConfigured()) {
+        setCoverUrl(await uploadAssetToSupabase(file, 'covers'));
+      } else {
+        const data = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result as string);
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        });
+        setCoverUrl(data);
+      }
+    } catch (err) {
+      console.error('Cover upload failed:', err);
+      alert('Cover upload failed. Please try again.');
+    } finally { setCoverUploading(false); }
+  };
+
   const toggleRole = (pId: string) => {
     setSelectedRoleIds(prev =>
       prev.includes(pId) ? prev.filter(id => id !== pId) : [...prev, pId]
@@ -138,7 +161,7 @@ export const SimpleAddProject: React.FC<SimpleAddProjectProps> = ({
     setIsSubmitting(true);
     const now = new Date().toISOString();
     const finalTitle = title.trim() || inputUrl.trim() || 'Untitled Project';
-    const finalCover = coverUrl.trim() || mediaUrl.trim() || DEFAULT_COVER;
+    const finalCover = coverUrl.trim() || (mediaType === 'embed' ? DEFAULT_COVER : mediaUrl.trim()) || DEFAULT_COVER;
     const finalMedia = mediaUrl.trim() || inputUrl.trim() || finalCover;
 
     const isDrive = inputUrl.includes('drive.google.com');
@@ -254,6 +277,24 @@ export const SimpleAddProject: React.FC<SimpleAddProjectProps> = ({
             <span>Add Project</span>
           </button>
         </div>
+
+        {(mediaType === 'embed' || coverUrl) && (
+          <div className="flex items-center gap-3 rounded-xl border border-white/10 bg-black/20 px-3 py-2">
+            <div className="h-14 w-14 shrink-0 overflow-hidden rounded-lg bg-neutral-800 flex items-center justify-center">
+              {coverUrl && !coverUrl.includes('instagram.com/') && !coverUrl.includes('facebook.com/')
+                ? <img src={coverUrl} alt="Cover preview" className="w-full h-full object-cover" />
+                : <span className="text-[10px] text-neutral-500">No cover</span>}
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="text-xs text-white">Cover image</p>
+              <p className="text-[11px] text-neutral-500">Instagram and Facebook previews need a cover upload.</p>
+            </div>
+            <input ref={coverInputRef} type="file" accept="image/*" className="hidden" onChange={e => handleCoverUpload(e.target.files?.[0])} />
+            <button type="button" disabled={coverUploading} onClick={() => coverInputRef.current?.click()} className="shrink-0 rounded-lg bg-white/10 px-3 py-2 text-xs text-white hover:bg-white/20 disabled:opacity-50">
+              {coverUploading ? 'Uploading...' : 'Upload cover'}
+            </button>
+          </div>
+        )}
 
         {/* Row 2: Detected Badge + Quick Role Toggles */}
         <div className="flex flex-wrap items-center justify-between gap-2 pt-1 text-xs font-mono">
