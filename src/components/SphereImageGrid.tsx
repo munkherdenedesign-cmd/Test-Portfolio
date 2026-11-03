@@ -589,7 +589,7 @@ export const SphereImageGrid: React.FC<SphereImageGridProps> = ({
   if (!isMounted) {
     return (
       <div
-        className="bg-neutral-900/40 rounded-full animate-pulse flex items-center justify-center border border-neutral-800"
+        className="opacity-0 rounded-full flex items-center justify-center pointer-events-none"
         style={{ width: containerSize, height: containerSize }}
       >
         <div className="text-neutral-500 font-mono text-xs uppercase tracking-widest">Loading Sphere...</div>
