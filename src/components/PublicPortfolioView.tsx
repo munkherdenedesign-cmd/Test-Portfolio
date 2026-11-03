@@ -48,7 +48,7 @@ export const PublicPortfolioView: React.FC<PublicPortfolioViewProps> = ({
       if (sphereTop == null || !signatureRect) return;
       // Place the enlarged signature just above the sphere, with a small visual gap.
       const enlargedHeight = signatureRect.height * 3;
-      const targetCenter = sphereTop - 20 - enlargedHeight / 2;
+      const targetCenter = sphereTop - 30 - enlargedHeight / 2;
       const currentCenter = signatureRect.top + signatureRect.height / 2;
       setSignatureHoverOffset(Math.max(0, targetCenter - currentCenter));
     };
