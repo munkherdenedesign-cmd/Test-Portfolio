@@ -1,6 +1,9 @@
-
 {
   "rewrites": [
+    {
+      "source": "/api/reel_cover",
+      "destination": "/api/reel_cover"
+    },
     {
       "source": "/(.*)",
       "destination": "/index.html"
