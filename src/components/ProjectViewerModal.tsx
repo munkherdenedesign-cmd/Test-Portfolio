@@ -43,7 +43,8 @@ export const ProjectViewerModal: React.FC<ProjectViewerModalProps> = ({ project,
   const carousel = Boolean(project.details?.isCarousel && project.mediaType === 'image');
   const pages = carousel ? [project.mediaUrl || project.coverUrl, ...(project.details?.carouselPages || [])].filter(Boolean) : [];
   const source = carousel ? pages[Math.min(activePage, pages.length - 1)] : project.mediaUrl || project.coverUrl;
-  const isPortraitSocial = project.mediaType === 'embed' && (/instagram[.]com[/](reel|p|tv)[/]/i.test(source) || /facebook[.]com[/](reel|videos)[/]/i.test(source));
+  const portraitSource = [source, project.socialUrl, project.externalLink, project.embedCode].filter(Boolean).join(' ');
+  const isPortraitSocial = project.mediaType === 'embed' && (/(?:www[.])?instagram[.]com[/](?:reel|p|tv)[/]/i.test(portraitSource) || /(?:www[.]|web[.])?facebook[.]com[/](?:reel|videos)[/]/i.test(portraitSource));
   const socialCover = project.coverUrl && !/instagram[.]com[/]|facebook[.]com[/]/i.test(project.coverUrl) ? project.coverUrl : '';
   const socialUrl = project.socialUrl || (/instagram\.com|facebook\.com|youtu\.be|youtube\.com|tiktok\.com/.test(source) ? source : '');
   const driveUrl = project.googleDriveUrl || (project.externalLink?.includes('drive.google.com') ? project.externalLink : '');
@@ -83,7 +84,7 @@ export const ProjectViewerModal: React.FC<ProjectViewerModalProps> = ({ project,
         } catch { /* invalid link */ }
       }
       if (isPortraitSocial) {
-        return <div className="relative mx-auto w-full max-w-[min(420px,calc(72dvh*9/16))] aspect-[9/16] bg-[#171719] overflow-hidden">
+        return <div className="relative mx-auto w-full max-w-[min(420px,calc(70dvh*9/16))] aspect-[9/16] bg-[#171719] overflow-hidden">
           {!showSocialEmbed && socialCover ? <>
             <img src={socialCover} alt={project.title + ' reel cover'} className="absolute inset-0 h-full w-full object-contain" />
             <button type="button" onClick={() => setShowSocialEmbed(true)} aria-label="Play reel" className="absolute inset-0 flex items-center justify-center bg-black/10 hover:bg-black/25 transition-colors">
@@ -126,9 +127,9 @@ export const ProjectViewerModal: React.FC<ProjectViewerModalProps> = ({ project,
     <div className="fixed inset-0 z-50 bg-black/95 backdrop-blur-lg font-mono text-white" role="dialog" aria-modal="true" aria-label={project.title} onClick={onClose}>
       <div className="absolute inset-0 overflow-y-auto overscroll-contain" onClick={e => e.stopPropagation()}>
         <div className="min-h-full flex flex-col items-center justify-center px-4 md:px-16 py-12 md:py-10">
-          <div className="group relative w-full max-w-6xl flex flex-col items-center">
+          <div className={`group relative w-full flex flex-col items-center ${isPortraitSocial ? "max-w-[min(420px,calc(70dvh*9/16))]" : "max-w-6xl"}`}>
             <button type="button" onClick={onClose} aria-label="Close project" title="Close project" className="absolute top-3 right-3 z-40 inline-flex h-10 w-10 items-center justify-center rounded-full bg-black/85 border border-white/30 text-white shadow-lg backdrop-blur-md transition-colors hover:bg-white hover:text-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-white"><X size={20} /></button>
-            <div className="relative w-full flex items-center justify-center bg-[#101012] border border-white/10 rounded-xl overflow-hidden"
+            <div className={`relative w-full flex items-center justify-center bg-[#101012] border border-white/10 rounded-xl overflow-hidden ${isPortraitSocial ? "aspect-[9/16]" : ""}`}
               onTouchStart={e => { touchStart.current = e.touches[0]?.clientX ?? null; }}
               onTouchEnd={e => { if (!carousel || touchStart.current === null) return; const delta = (e.changedTouches[0]?.clientX ?? touchStart.current) - touchStart.current; if (Math.abs(delta) > 45) setActivePage(p => Math.max(0, Math.min(pages.length - 1, p + (delta < 0 ? 1 : -1)))); touchStart.current = null; }}>
               {media}
