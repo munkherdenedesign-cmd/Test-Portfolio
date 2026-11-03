@@ -111,18 +111,14 @@ export const ProjectViewerModal: React.FC<ProjectViewerModalProps> = ({ project,
 
   return (
     <div className="fixed inset-0 z-50 bg-black/95 backdrop-blur-lg font-mono text-white" role="dialog" aria-modal="true" aria-label={project.title} onClick={onClose}>
-      <header className="absolute inset-x-0 top-0 z-30 h-14 px-4 md:px-8 flex items-center justify-between border-b border-white/10 bg-black/90" onClick={e => e.stopPropagation()}>
-        <span className="text-[11px] tracking-widest text-neutral-400">{currentIndex >= 0 ? String(currentIndex + 1).padStart(2, '0') + ' / ' + String(projectsList.length).padStart(2, '0') : 'PROJECT'}</span>
-        <button onClick={onClose} aria-label="Close project" className="p-2 rounded-full hover:bg-white/10"><X size={19} /></button>
-      </header>
-      <div className="absolute inset-x-0 top-14 bottom-0 overflow-y-auto overscroll-contain" onClick={e => e.stopPropagation()}>
-        <div className="min-h-full flex flex-col items-center justify-center px-4 md:px-16 py-5 md:py-8">
+      <div className="absolute inset-0 overflow-y-auto overscroll-contain" onClick={e => e.stopPropagation()}>
+        <div className="min-h-full flex flex-col items-center justify-center px-4 md:px-16 py-12 md:py-10">
           <div className="group relative w-full max-w-6xl flex flex-col items-center">
+            <button type="button" onClick={onClose} aria-label="Close project" title="Close project" className="absolute top-3 right-3 z-40 inline-flex h-10 w-10 items-center justify-center rounded-full bg-black/85 border border-white/30 text-white shadow-lg backdrop-blur-md transition-colors hover:bg-white hover:text-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-white"><X size={20} /></button>
             <div className="relative w-full flex items-center justify-center bg-[#101012] border border-white/10 rounded-xl overflow-hidden"
               onTouchStart={e => { touchStart.current = e.touches[0]?.clientX ?? null; }}
               onTouchEnd={e => { if (!carousel || touchStart.current === null) return; const delta = (e.changedTouches[0]?.clientX ?? touchStart.current) - touchStart.current; if (Math.abs(delta) > 45) setActivePage(p => Math.max(0, Math.min(pages.length - 1, p + (delta < 0 ? 1 : -1)))); touchStart.current = null; }}>
               {media}
-              {carousel && pages.length > 1 && <div className="absolute top-3 right-3 z-20 rounded-full bg-black/75 px-3 py-1.5 text-[11px] text-white pointer-events-none">{activePage + 1} / {pages.length}</div>}
               {/* On desktop the project remains uncropped; information floats over the bottom on hover or keyboard focus. */}
               <div className="hidden md:block absolute inset-x-0 bottom-0 z-10 max-h-[85%] overflow-y-auto bg-[#101012]/95 border-t border-white/15 backdrop-blur-2xl px-7 py-7 lg:px-10 lg:py-9 translate-y-full opacity-0 transition-[transform,opacity] duration-500 ease-out group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:translate-y-0 group-focus-within:opacity-100 pointer-events-none group-hover:pointer-events-auto group-focus-within:pointer-events-auto">
                 {information}
@@ -135,6 +131,14 @@ export const ProjectViewerModal: React.FC<ProjectViewerModalProps> = ({ project,
               </div>
               <button type="button" onClick={() => setActivePage(p => Math.min(pages.length - 1, p + 1))} disabled={activePage === pages.length - 1} aria-label="Next carousel page" className="shrink-0 p-2 border border-white/20 rounded-full disabled:opacity-30"><ChevronRight size={16}/></button>
             </div>}
+            {projectsList.length > 1 && <nav aria-label="Browse projects" className="flex items-center justify-center gap-2.5 mt-5 mb-1 min-h-6">
+              {projectsList.map((item, index) => (
+                <button key={item.id} type="button" onClick={() => onNavigate(item)} aria-label={`View project ${index + 1}: ${item.title}`} aria-current={index === currentIndex ? 'true' : undefined} title={item.title}
+                  className="group/dot flex h-7 min-w-3 items-center justify-center rounded-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-white">
+                  <span className={`block rounded-full transition-all duration-300 ease-out ${index === currentIndex ? 'h-3 w-3 bg-white shadow-[0_0_10px_rgba(255,255,255,0.4)]' : 'h-1.5 w-1.5 bg-white/35 group-hover/dot:bg-white/80 group-hover/dot:scale-125'}`} />
+                </button>
+              ))}
+            </nav>}
             {/* Mobile: no hover dependency. Details are always shown underneath the full media. */}
             <section className="md:hidden w-full px-1 pt-7 pb-20">{information}</section>
             <p className="hidden md:block mt-3 text-[10px] text-neutral-500 tracking-wider">HOVER TO EXPLORE PROJECT DETAILS</p>
