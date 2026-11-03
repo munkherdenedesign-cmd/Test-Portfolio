@@ -5,13 +5,15 @@ interface SignatureProps {
   className?: string;
   onUploadSignature?: (url: string) => void;
   canUpload?: boolean;
+  enlarged?: boolean;
 }
 
 export const Signature: React.FC<SignatureProps> = ({
   signatureUrl,
   className = '',
   onUploadSignature,
-  canUpload = false
+  canUpload = false,
+  enlarged = false
 }) => {
   const [activeUrl, setActiveUrl] = useState<string | null>(() => {
     return signatureUrl || localStorage.getItem('portfolio_signature_url') || null;
@@ -51,7 +53,7 @@ export const Signature: React.FC<SignatureProps> = ({
         <img
           src={activeUrl}
           alt="Signature"
-          className="h-9 md:h-11 w-auto max-w-[220px] object-contain filter contrast-200 pointer-events-none"
+          className={`h-9 md:h-11 w-auto max-w-[220px] object-contain filter contrast-200 pointer-events-none origin-center transition-transform duration-300 ease-out ${enlarged ? "scale-[3]" : "scale-100"}`}
         />
       ) : null}
 
