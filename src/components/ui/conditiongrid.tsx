@@ -30,30 +30,51 @@ const ProjectTile: React.FC<{project: Project; onSelect: (project: Project) => v
   </motion.button>
 );
 
-/** Asymmetric editorial columns, keeping each uploaded cover's natural aspect ratio. */
+/** Group by the existing client field, retaining the editorial masonry cards. */
 export default function ConditionGrid({projects, onSelect}: ConditionGridProps) {
   if (!projects.length) return null;
-  const mobileColumns = [0, 1, 2].map(column => projects.filter((_, index) => index % 3 === column));
+
+  const groups = new Map<string, Project[]>();
+  for (const project of projects) {
+    const company = project.client?.trim() || 'Independent Work';
+    if (!groups.has(company)) groups.set(company, []);
+    groups.get(company)!.push(project);
+  }
+
   return (
-    <>
-      {/* Compact mobile gallery: three thumbnails per row rather than oversized cards. */}
-      <div className="grid grid-cols-3 gap-1.5 w-full sm:hidden">
-        {mobileColumns.map((column, index) => (
-          <div key={index} className="flex min-w-0 flex-col gap-1.5">
-            {column.map(project => <ProjectTile key={project.id} project={project} onSelect={onSelect}/>)}
+    <div className="flex w-full flex-col gap-16 sm:gap-24">
+      {Array.from(groups, ([company, companyProjects]) => (
+        <section key={company} className="relative grid grid-cols-1 gap-3 sm:grid-cols-[minmax(150px,220px)_minmax(0,1fr)] sm:gap-8">
+          <div className="sticky top-3 z-20 self-start sm:top-8">
+            <div className="flex items-center justify-between gap-3 rounded-lg border border-white/10 bg-[#101012]/90 px-3 py-2.5 backdrop-blur-xl sm:flex-col sm:items-start sm:justify-start sm:border-0 sm:bg-transparent sm:px-0 sm:py-0 sm:backdrop-blur-none">
+              <h2 className="min-w-0 text-[11px] font-medium uppercase tracking-[0.1em] text-white sm:text-xs">{company}</h2>
+              <span className="shrink-0 text-[10px] text-neutral-500">{String(companyProjects.length).padStart(2, '0')} PROJECTS</span>
+            </div>
           </div>
-        ))}
-      </div>
-      {/* Desktop gallery: at least three projects across, preserving each cover's aspect ratio. */}
-      <div className="hidden sm:grid sm:grid-cols-3 sm:gap-4 w-full">
-        {[0, 1, 2].map(column => (
-          <div key={column} className="flex min-w-0 flex-col gap-4">
-            {projects.filter((_, index) => index % 3 === column).map(project => (
-              <ProjectTile key={project.id} project={project} onSelect={onSelect}/>
-            ))}
+          <div className="min-w-0">
+            {/* Compact mobile gallery, preserving the original three-column masonry. */}
+            <div className="grid grid-cols-3 gap-1.5 w-full sm:hidden">
+              {[0, 1, 2].map(column => (
+                <div key={column} className="flex min-w-0 flex-col gap-1.5">
+                  {companyProjects.filter((_, index) => index % 3 === column).map(project => (
+                    <ProjectTile key={project.id} project={project} onSelect={onSelect}/>
+                  ))}
+                </div>
+              ))}
+            </div>
+            {/* Desktop gallery, retaining natural image proportions. */}
+            <div className="hidden sm:grid sm:grid-cols-3 sm:gap-4 w-full">
+              {[0, 1, 2].map(column => (
+                <div key={column} className="flex min-w-0 flex-col gap-4">
+                  {companyProjects.filter((_, index) => index % 3 === column).map(project => (
+                    <ProjectTile key={project.id} project={project} onSelect={onSelect}/>
+                  ))}
+                </div>
+              ))}
+            </div>
           </div>
-        ))}
-      </div>
-    </>
+        </section>
+      ))}
+    </div>
   );
 }
