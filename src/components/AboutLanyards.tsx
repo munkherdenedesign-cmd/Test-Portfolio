@@ -18,7 +18,7 @@ function DecorativeQR({ seed }: { seed: string }) {
     n = (Math.imul(n,1664525)+1013904223)>>>0;
     if(f===true || (!reserved && (n&3)!==0)) cells.push(<rect key={y*21+x} x={x} y={y} width="1" height="1"/>);
   }
-  return <svg aria-label="Decorative QR pattern" role="img" viewBox="0 0 21 21" className="w-[66px] h-[66px] bg-white p-1 rounded-sm text-black shrink-0" fill="currentColor">{cells}</svg>;
+  return <svg aria-label="Decorative QR pattern" role="img" viewBox="0 0 21 21" className="w-[42px] h-[42px] bg-white p-1 rounded-sm text-black shrink-0" fill="currentColor">{cells}</svg>;
 }
 
 const COLORS = ['#f3a31f', '#a855f7', '#f34667', '#00b98b', '#2563eb'];
@@ -33,8 +33,8 @@ export function AboutLanyards({ items, intro = DEFAULT_ABOUT_INTRO }: { items: E
         <p className="text-xs text-neutral-500 mt-5">{intro.description}</p>
       </header>
       <div className="relative overflow-visible pb-8">
-        <div className="relative mx-auto w-max px-4">
-          <div aria-hidden="true" className="absolute top-[-18px] left-4 right-4 h-[54px] z-10 pointer-events-none">
+        <div className="relative mx-auto w-max px-8">
+          <div aria-hidden="true" className="absolute top-[-18px] left-0 right-0 h-[54px] z-10 pointer-events-none">
             <div className="absolute left-[20px] right-[20px] top-[18px] h-[19px] rounded-full border-y border-white/30 shadow-[0_5px_8px_#000b,inset_0_2px_2px_#fff5,inset_0_-3px_4px_#000a]" style={{background:'linear-gradient(180deg,#3c3d3e 0%,#e5e6e5 15%,#999b9d 29%,#45484a 46%,#777a7d 62%,#232526 85%,#686a6b 100%)'}}/>
             {[0,1].map(side => <div key={side} className={`absolute top-[11px] ${side ? 'right-0' : 'left-0'} w-[47px] h-[34px] flex items-center justify-center`}>
               <div className="absolute inset-y-[4px] left-[9px] right-[9px] rounded-[6px] border border-[#a5a7a7]/70 shadow-[0_4px_8px_#000c,inset_0_2px_2px_#fff5]" style={{background:'linear-gradient(180deg,#bbbdbd,#525657 36%,#292c2e 67%,#858889)'}}/>
@@ -45,22 +45,22 @@ export function AboutLanyards({ items, intro = DEFAULT_ABOUT_INTRO }: { items: E
           <div className="relative flex justify-center gap-0">
             {items.slice(0,5).map((item,index) => {
               const color = item.color && item.color !== '#71717a' ? item.color : COLORS[index];
-              const front = <div className="relative w-full h-full bg-[#1b1b1d] text-white overflow-hidden flex flex-col items-center px-3 pb-4 border border-white/10 rounded-xl">
+              const front = <div className="relative w-full h-full bg-[#1b1b1d] text-white overflow-hidden flex flex-col items-center px-2 pb-3 border border-white/10 rounded-xl">
                 <div className="absolute inset-x-0 top-0 h-[30%]" style={{ background: `repeating-linear-gradient(135deg,transparent 0 9px,#ffffff24 9px 11px),${color}` }}/>
-                <div className="relative mt-10 w-[72px] h-[72px] rounded-full border-4 border-[#252525] shadow-[0_0_0_2px_#aaa] overflow-hidden flex items-center justify-center bg-[#333] text-3xl">
+                <div className="relative mt-7 w-[54px] h-[54px] rounded-full border-4 border-[#252525] shadow-[0_0_0_2px_#aaa] overflow-hidden flex items-center justify-center bg-[#333] text-3xl">
                   {item.image ? <img src={item.image} alt="" className="w-full h-full object-cover"/> : (item.company || '?').charAt(0)}
                 </div>
-                <div className="relative mt-5 font-semibold text-base text-center leading-tight w-full break-words">{item.company || `Experience ${index+1}`}</div>
-                <div className="relative mt-2 text-xs text-neutral-400 text-center">{item.role || 'Job title'}</div>
-                <div className="relative mt-auto w-full border-t border-dashed border-white/25 pt-3 text-center text-xs font-mono tracking-wide">{item.period || 'Start — End'}</div>
+                <div className="relative mt-3 font-semibold text-[12px] text-center leading-tight w-full break-words">{item.company || `Experience ${index+1}`}</div>
+                <div className="relative mt-1 text-[10px] text-neutral-400 text-center">{item.role || 'Job title'}</div>
+                <div className="relative mt-auto w-full border-t border-dashed border-white/25 pt-2 text-center text-[10px] font-mono tracking-wide">{item.period || 'Start — End'}</div>
               </div>;
               const back = <div className="relative w-full h-full bg-[#191919] text-white overflow-hidden flex flex-col border border-white/10 rounded-xl">
                 <div className="h-[17%] shrink-0" style={{background:`repeating-linear-gradient(135deg,transparent 0 9px,#ffffff24 9px 11px),${color}`}}/>
                 <div className="px-3 pt-3 flex-1 flex flex-col min-h-0">
-                  <div className="font-semibold text-base leading-tight break-words">{item.company || `Experience ${index+1}`}</div>
-                  <div className="text-xs text-neutral-400 mt-1">{item.role || 'Job title'}</div>
-                  <p className="text-[12px] leading-[1.45] mt-3 text-neutral-200 break-words line-clamp-5">{item.description || 'Add a short description of this experience in the admin panel.'}</p>
-                  <div className="flex flex-wrap gap-1 mt-3">{(item.keywords || []).filter(Boolean).slice(0,3).map((word,i)=><span key={i} className="text-[10px] rounded-full border border-white/20 px-2 py-0.5 text-neutral-400">{word}</span>)}</div>
+                  <div className="font-semibold text-[12px] leading-tight break-words">{item.company || `Experience ${index+1}`}</div>
+                  <div className="text-[10px] text-neutral-400 mt-1">{item.role || 'Job title'}</div>
+                  <p className="text-[10px] leading-[1.4] mt-2 text-neutral-200 break-words line-clamp-5">{item.description || 'Add a short description of this experience in the admin panel.'}</p>
+                  <div className="flex flex-wrap gap-1 mt-2">{(item.keywords || []).filter(Boolean).slice(0,3).map((word,i)=><span key={i} className="text-[9px] rounded-full border border-white/20 px-2 py-0.5 text-neutral-400">{word}</span>)}</div>
                   <div className="mt-auto pb-3 flex items-end justify-between gap-1">
                     <div className="flex flex-col gap-2 text-[10px] text-neutral-300 min-w-0">
                       {item.location && <span className="flex items-start gap-1"><MapPin size={12} className="shrink-0"/><span className="break-words">{item.location}</span></span>}
@@ -70,7 +70,7 @@ export function AboutLanyards({ items, intro = DEFAULT_ABOUT_INTRO }: { items: E
                   </div>
                 </div>
               </div>;
-              return <div key={item.id} className="w-[520px] shrink-0 bg-transparent overflow-visible -mx-[190px]">
+              return <div key={item.id} className="w-[580px] shrink-0 bg-transparent overflow-visible -mx-[215px]">
                 <LanyardBadge
                   front={front}
                   back={back}
@@ -78,8 +78,8 @@ export function AboutLanyards({ items, intro = DEFAULT_ABOUT_INTRO }: { items: E
                   inkColor="#f2f2f2"
                   strapText={item.company || 'WORK EXPERIENCE'}
                   strapLabel={item.period || 'CAREER'}
-                  cardWidth={130}
-                  height="450px"
+                  cardWidth={150}
+                  height="500px"
                   flipButton={false}
                 />
               </div>;
