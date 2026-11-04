@@ -70,7 +70,7 @@ export function AboutLanyards({ items, intro = DEFAULT_ABOUT_INTRO }: { items: E
                   </div>
                 </div>
               </div>;
-              return <div key={item.id} className="w-[580px] shrink-0 bg-transparent overflow-visible -mx-[215px]">
+              return <div key={item.id} className="w-[580px] shrink-0 bg-transparent overflow-visible -mx-[200px]">
                 <LanyardBadge
                   front={front}
                   back={back}
