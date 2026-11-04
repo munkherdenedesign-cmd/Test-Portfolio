@@ -125,7 +125,7 @@ export const PublicPortfolioView: React.FC<PublicPortfolioViewProps> = ({
 
       {/* Real uploaded signature only; Signature has no placeholder fallback. */}
       <header className="w-full pt-6 md:pt-8 pb-3 px-6 flex items-center justify-center relative z-40 pointer-events-none">
-        <a ref={signatureRef} href="/" className="pointer-events-auto inline-flex rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-white" aria-label="Go to home page" title="Home">
+        <a ref={signatureRef} href="/p/design" className="pointer-events-auto inline-flex rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-white" aria-label="Go to design portfolio" title="Design portfolio">
           <motion.span
             className="inline-flex origin-center"
             animate={{ scale: 1, x: sphereCircleHovered && viewMode === "sphere" ? signatureHoverOffset.x : 0, y: sphereCircleHovered && viewMode === "sphere" ? signatureHoverOffset.y : 0 }}
