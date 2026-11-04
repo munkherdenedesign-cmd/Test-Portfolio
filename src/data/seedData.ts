@@ -231,7 +231,7 @@ export const INITIAL_PORTFOLIOS: Portfolio[] = [
     id: 'port-design',
     slug: 'design',
     title: 'Graphic Design',
-    subtitle: 'Editorial Typography, Physical Monograph & Brand Systems',
+    subtitle: 'Making things worth stopping the scroll for.',
     introduction: 'Rooted in Swiss modernist typography, rigorous editorial grids, and tactile print craft. Crafting indelible visual identities that transcend fleeting digital trends.',
     status: 'published',
     projectIds: ['proj-2', 'proj-6', 'proj-1', 'proj-8', 'proj-7'],
