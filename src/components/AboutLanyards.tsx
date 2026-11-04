@@ -27,13 +27,13 @@ export function AboutLanyards({ items, intro = DEFAULT_ABOUT_INTRO }: { items: E
   return (
     <section className="relative isolate min-h-[calc(100svh-85px)] overflow-hidden bg-[#090909] text-white pt-10 md:pt-14 pb-16">
       <div aria-hidden="true" className="absolute inset-0 pointer-events-none opacity-50" style={{ backgroundImage: 'radial-gradient(#343434 1.5px, transparent 1.5px)', backgroundSize: '36px 36px', maskImage: 'linear-gradient(transparent, black 25%, black 90%)' }}/>
-      <header className="relative z-10 text-center px-4 mb-20 md:mb-28">
+      <header className="relative z-10 text-center px-4 mb-12 md:mb-[152px]">
         <p className="text-[11px] uppercase tracking-[0.35em] text-neutral-500 mb-5">{intro.eyebrow}</p>
         <h1 className="text-3xl md:text-5xl lg:text-6xl tracking-tight font-semibold">{intro.heading}</h1>
         <p className="text-xs text-neutral-500 mt-5">{intro.description}</p>
       </header>
       <div className="relative overflow-visible pb-8">
-        <div className="relative mx-auto w-max px-8">
+        <div className="relative mx-auto w-max px-8 max-sm:[zoom:0.34] sm:max-md:[zoom:0.7]">
           <div aria-hidden="true" className="absolute top-[-18px] left-0 right-0 h-[54px] z-10 pointer-events-none">
             <div className="absolute left-[20px] right-[20px] top-[18px] h-[19px] rounded-full border-y border-white/30 shadow-[0_5px_8px_#000b,inset_0_2px_2px_#fff5,inset_0_-3px_4px_#000a]" style={{background:'linear-gradient(180deg,#3c3d3e 0%,#e5e6e5 15%,#999b9d 29%,#45484a 46%,#777a7d 62%,#232526 85%,#686a6b 100%)'}}/>
             {[0,1].map(side => <div key={side} className={`absolute top-[11px] ${side ? 'right-0' : 'left-0'} w-[47px] h-[34px] flex items-center justify-center`}>
