@@ -240,8 +240,8 @@ export const SphereImageGrid: React.FC<SphereImageGridProps> = ({
       // When moving into the center of the screen, circles expand dramatically
       const fisheyeBulge = Math.pow(centerProximity, 1.3) * (0.25 + 0.75 * frontRatio);
 
-      // Perspective scale: circles swell to ~2.2x at the center front and compress to ~0.65x at edges
-      const baseScale = 0.65 + 1.55 * fisheyeBulge;
+      // Perspective scale: circles swell to ~2.45x at the center front and compress to ~0.65x at edges
+      const baseScale = 0.65 + 1.8 * fisheyeBulge;
 
       // Attenuate items that rotate into the back hemisphere
       const depthRatio = Math.max(0.38, (worldPos.z + actualSphereRadius) / (2 * actualSphereRadius));
