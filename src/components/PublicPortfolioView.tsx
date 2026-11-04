@@ -107,7 +107,7 @@ export const PublicPortfolioView: React.FC<PublicPortfolioViewProps> = ({
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0a0c] text-[#eaeaea] font-mono flex flex-col justify-between selection:bg-white selection:text-black overflow-x-hidden relative">
+    <div className="min-h-screen bg-[#0a0a0c] text-[#eaeaea] font-mono flex flex-col justify-between selection:bg-white selection:text-black overflow-x-clip relative">
       {/* Draft Preview Banner */}
       {previewMode && (
         <div className="bg-amber-500/15 border-b border-amber-500/30 text-amber-300 text-xs py-2 px-6 flex items-center justify-between font-mono z-40">
