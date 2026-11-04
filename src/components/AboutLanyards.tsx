@@ -33,7 +33,7 @@ export function AboutLanyards({ items, intro = DEFAULT_ABOUT_INTRO }: { items: E
         <p className="text-xs text-neutral-500 mt-5">{intro.description}</p>
       </header>
       <div className="relative overflow-visible pb-8">
-        <div className="relative mx-auto w-max min-w-full px-8 md:px-14">
+        <div className="relative mx-auto w-max px-4">
           <div aria-hidden="true" className="absolute top-[-18px] left-4 right-4 h-[54px] z-10 pointer-events-none">
             <div className="absolute left-[20px] right-[20px] top-[18px] h-[19px] rounded-full border-y border-white/30 shadow-[0_5px_8px_#000b,inset_0_2px_2px_#fff5,inset_0_-3px_4px_#000a]" style={{background:'linear-gradient(180deg,#3c3d3e 0%,#e5e6e5 15%,#999b9d 29%,#45484a 46%,#777a7d 62%,#232526 85%,#686a6b 100%)'}}/>
             {[0,1].map(side => <div key={side} className={`absolute top-[11px] ${side ? 'right-0' : 'left-0'} w-[47px] h-[34px] flex items-center justify-center`}>
@@ -70,7 +70,7 @@ export function AboutLanyards({ items, intro = DEFAULT_ABOUT_INTRO }: { items: E
                   </div>
                 </div>
               </div>;
-              return <div key={item.id} className="w-[900px] shrink-0 bg-transparent overflow-visible -mx-[315px]">
+              return <div key={item.id} className="w-[520px] shrink-0 bg-transparent overflow-visible -mx-[190px]">
                 <LanyardBadge
                   front={front}
                   back={back}
@@ -78,8 +78,8 @@ export function AboutLanyards({ items, intro = DEFAULT_ABOUT_INTRO }: { items: E
                   inkColor="#f2f2f2"
                   strapText={item.company || 'WORK EXPERIENCE'}
                   strapLabel={item.period || 'CAREER'}
-                  cardWidth={190}
-                  height="640px"
+                  cardWidth={130}
+                  height="450px"
                   flipButton={false}
                 />
               </div>;
