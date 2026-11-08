@@ -76,8 +76,11 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
   const [autoCoverError, setAutoCoverError] = useState('');
 
   const handleAutoCover = async () => {
-    const url = mediaUrl || socialUrl || externalLink;
-    if (!isInstagramReelUrl(url)) return;
+    const url = [mediaUrl, socialUrl, externalLink].find(isInstagramReelUrl) || '';
+    if (!url) {
+      setAutoCoverError('Add a public Instagram or Facebook post/Reel URL first.');
+      return;
+    }
     setAutoCoverLoading(true);
     setAutoCoverError('');
     try {
@@ -402,10 +405,10 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
             <div className="min-w-0 space-y-1.5">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <label className="block text-xs font-mono uppercase tracking-wider text-neutral-400">Cover image</label>
-                {isInstagramReelUrl(mediaUrl || socialUrl || externalLink) && (
+                {[mediaUrl, socialUrl, externalLink].some(isInstagramReelUrl) && (
                   <button type="button" disabled={autoCoverLoading || uploadingCover} onClick={handleAutoCover}
                     className="rounded-lg border border-white/15 px-3 py-1.5 text-xs text-neutral-200 hover:bg-white/10 disabled:opacity-50">
-                    {autoCoverLoading ? 'Finding cover...' : 'Get Reel cover'}
+                    {autoCoverLoading ? 'Finding cover...' : 'Get post cover'}
                   </button>
                 )}
               </div>
