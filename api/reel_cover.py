@@ -13,7 +13,7 @@ from http.server import BaseHTTPRequestHandler
 
 import yt_dlp
 
-SOCIAL_RE = re.compile(r"^https?://(?:(?:www|m|web)\\.)?(?:instagram\\.com/(?:reel|p)/[A-Za-z0-9_-]{5,40}|facebook\\.com/(?:reel/[0-9]+|[^/?#]+/(?:posts|videos)/[^/?#]+|watch/[^?#]*|permalink\\.php\\?[^#]+)|fb\\.watch/[A-Za-z0-9_-]+)(?:[/?#].*)?$", re.I)
+SOCIAL_RE = re.compile(r"^https?://(?:(?:www|m|web)\.)?(?:instagram\.com/(?:reel|p)/[A-Za-z0-9_-]{5,40}|facebook\.com/(?:reel/[0-9]+|[^/?#]+/(?:posts|videos)/[^/?#]+|watch/[^?#]*|permalink\.php\?[^#]+)|fb\.watch/[A-Za-z0-9_-]+)(?:[/?#].*)?$", re.I)
 MAX_COVER_BYTES = 8 * 1024 * 1024
 ADMIN_EMAIL = "munkherdenedesign@gmail.com"
 
