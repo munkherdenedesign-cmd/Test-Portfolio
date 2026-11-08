@@ -1,4 +1,4 @@
-"""Authenticated Instagram Reel cover extraction, using only yt-dlp metadata.
+"""Authenticated Instagram/Facebook public post cover extraction using yt-dlp metadata.
 
 No video is downloaded, and no cookies or credentials are supplied to Instagram.
 The image is returned to the signed-in portfolio admin for saving to Supabase Storage.
@@ -13,7 +13,7 @@ from http.server import BaseHTTPRequestHandler
 
 import yt_dlp
 
-REEL_RE = re.compile(r"^https?://(?:www\.)?instagram\.com/reel/([A-Za-z0-9_-]{5,40})(?:[/?#].*)?$", re.I)
+SOCIAL_RE = re.compile(r"^https?://(?:(?:www|m|web)\\.)?(?:instagram\\.com/(?:reel|p)/[A-Za-z0-9_-]{5,40}|facebook\\.com/(?:reel/[0-9]+|[^/?#]+/(?:posts|videos)/[^/?#]+|watch/[^?#]*|permalink\\.php\\?[^#]+)|fb\\.watch/[A-Za-z0-9_-]+)(?:[/?#].*)?$", re.I)
 MAX_COVER_BYTES = 8 * 1024 * 1024
 ADMIN_EMAIL = "munkherdenedesign@gmail.com"
 
@@ -24,7 +24,7 @@ def allowed_cdn(url):
         host = (parsed.hostname or "").lower()
         return parsed.scheme == "https" and any(
             host == domain or host.endswith("." + domain)
-            for domain in ("fbcdn.net", "cdninstagram.com", "instagram.com")
+            for domain in ("fbcdn.net", "cdninstagram.com", "instagram.com", "fbsbx.com")
         )
     except ValueError:
         return False
@@ -81,11 +81,11 @@ class handler(BaseHTTPRequestHandler):
         try:
             payload = json.loads(self.rfile.read(length))
             url = payload.get("url", "")
-            match = REEL_RE.fullmatch(url) if isinstance(url, str) else None
+            match = SOCIAL_RE.fullmatch(url) if isinstance(url, str) and len(url) <= 1500 else None
         except (ValueError, TypeError):
             match = None
         if not match:
-            return self.send_json(400, "Enter a public Instagram Reel link.")
+            return self.send_json(400, "Enter a public Instagram or Facebook post/Reel link.")
 
         try:
             if not is_admin(token):
@@ -94,7 +94,7 @@ class handler(BaseHTTPRequestHandler):
             return self.send_json(503, "Cover service is not configured.")
 
         # Canonicalize before yt-dlp sees the link. Never pass arbitrary URLs.
-        reel_url = "https://www.instagram.com/reel/" + match.group(1) + "/"
+        social_url = url.split("#", 1)[0]
         try:
             with yt_dlp.YoutubeDL({
                 "skip_download": True,
@@ -105,9 +105,9 @@ class handler(BaseHTTPRequestHandler):
                 "retries": 0,
                 "extractor_retries": 0,
             }) as ydl:
-                metadata = ydl.extract_info(reel_url, download=False)
+                metadata = ydl.extract_info(social_url, download=False)
             if not isinstance(metadata, dict):
-                raise ValueError("No Reel metadata")
+                raise ValueError("No social media metadata")
             thumbnail = metadata.get("thumbnail")
             if not thumbnail:
                 thumbnails = metadata.get("thumbnails") or []
