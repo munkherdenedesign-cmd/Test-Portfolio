@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Project, MediaType, AspectRatio, Portfolio } from '../../types/portfolio';
 import { uploadAssetToSupabase, isSupabaseConfigured } from '../../lib/supabase';
 import { parseSocialOrMediaUrl, ParsedMediaLink } from '../../lib/socialMediaParser';
+import { extractSocialCover, isSocialCoverUrl } from '../../lib/reelCover';
 import {
   Plus,
   Link as LinkIcon,
@@ -58,8 +59,32 @@ export const AddProjectSection: React.FC<AddProjectSectionProps> = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
+  const [autoCoverLoading, setAutoCoverLoading] = useState(false);
+  const [autoCoverError, setAutoCoverError] = useState('');
+  const coverRequest = useRef(0);
+
+  useEffect(() => {
+    if (!isSocialCoverUrl(pastedUrl) || coverUrl || autoCoverError) return;
+    const id = ++coverRequest.current;
+    const timer = window.setTimeout(async () => {
+      setAutoCoverLoading(true);
+      try {
+        const image = await extractSocialCover(pastedUrl);
+        if (id === coverRequest.current) setCoverUrl(image);
+      } catch (error) {
+        if (id === coverRequest.current) setAutoCoverError(error instanceof Error ? error.message : 'Cover unavailable. Upload one instead.');
+      } finally {
+        if (id === coverRequest.current) setAutoCoverLoading(false);
+      }
+    }, 800);
+    return () => window.clearTimeout(timer);
+  }, [pastedUrl, coverUrl, autoCoverError]);
+
   // Auto-detect URL
   const handleUrlChange = (url: string) => {
+    coverRequest.current++;
+    setAutoCoverError('');
+    setCoverUrl('');
     setPastedUrl(url);
     if (!url.trim()) {
       setDetectedMedia(null);
@@ -90,7 +115,7 @@ export const AddProjectSection: React.FC<AddProjectSectionProps> = ({
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (target === 'cover') setUploadingCover(true);
+    if (target === 'cover') { coverRequest.current++; setAutoCoverError(''); setUploadingCover(true); }
     if (target === 'media') setUploadingMedia(true);
 
     try {
@@ -156,7 +181,7 @@ export const AddProjectSection: React.FC<AddProjectSectionProps> = ({
     setIsSubmitting(true);
 
     const now = new Date().toISOString();
-    const finalCover = coverUrl.trim() || mediaUrl.trim() || DEFAULT_COVER;
+    const finalCover = coverUrl.trim() || (mediaType === 'embed' ? DEFAULT_COVER : mediaUrl.trim()) || DEFAULT_COVER;
     const finalMedia = mediaUrl.trim() || finalCover;
 
     const newProject: Project = {
@@ -182,6 +207,8 @@ export const AddProjectSection: React.FC<AddProjectSectionProps> = ({
     setTitle('');
     setClient('');
     setDescription('');
+    coverRequest.current++;
+    setAutoCoverError('');
     setPastedUrl('');
     setDetectedMedia(null);
     setMediaUrl('');
@@ -270,6 +297,8 @@ export const AddProjectSection: React.FC<AddProjectSectionProps> = ({
               )}
             </div>
 
+            {autoCoverLoading && <p className="text-xs text-neutral-400">Finding the original post cover...</p>}
+            {autoCoverError && <p className="text-xs text-amber-400">{autoCoverError}</p>}
             {/* Detection feedback banner */}
             {detectedMedia && (
               <div className="flex items-center gap-2.5 px-3.5 py-2 rounded-lg bg-white/5 border border-white/10 text-xs font-mono text-neutral-300">
