@@ -68,12 +68,12 @@ export const SimpleAddProject: React.FC<SimpleAddProjectProps> = ({
   };
 
   useEffect(() => {
-    if (!isInstagramReelUrl(inputUrl) || coverUrl || coverUploading) return;
+    if (!isInstagramReelUrl(inputUrl) || coverUrl || coverUploading || coverError) return;
     const timer = window.setTimeout(() => void autoCover(inputUrl), 1000);
     return () => window.clearTimeout(timer);
   // Only run after the link changes or a cover has been selected.
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [inputUrl, coverUrl, coverUploading]);
+  }, [inputUrl, coverUrl, coverUploading, coverError]);
 
   // Auto-detect URL on paste/type
   const handleUrlInput = (val: string) => {
@@ -197,7 +197,7 @@ export const SimpleAddProject: React.FC<SimpleAddProjectProps> = ({
     setIsSubmitting(true);
     const now = new Date().toISOString();
     const finalTitle = title.trim() || inputUrl.trim() || 'Untitled Project';
-    const finalCover = coverUrl.trim() || (mediaType === 'embed' ? DEFAULT_COVER : mediaUrl.trim()) || DEFAULT_COVER;
+    const finalCover = coverUrl.trim() || (mediaType === 'embed' ? '' : mediaUrl.trim()) || DEFAULT_COVER;
     const finalMedia = mediaUrl.trim() || inputUrl.trim() || finalCover;
 
     const isDrive = inputUrl.includes('drive.google.com');
