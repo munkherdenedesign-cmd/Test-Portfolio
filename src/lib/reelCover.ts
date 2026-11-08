@@ -1,7 +1,7 @@
 import { getSupabaseClient, uploadAssetToSupabase } from './supabase';
 
-export function isInstagramReelUrl(url: string): boolean {
-  return /^https?:\/\/(?:www\.)?instagram\.com\/reel\/[A-Za-z0-9_-]{5,40}(?:[/?#].*)?$/i.test(url.trim());
+export function isSocialCoverUrl(url: string): boolean {
+  return /^https?:\/\/(?:(?:www|m|web)\.)?(?:instagram\.com\/(?:reel|p)\/[A-Za-z0-9_-]{5,40}|facebook\.com\/(?:reel\/[0-9]+|[^/?#]+\/(?:posts|videos)\/[^/?#]+|watch\/[^?#]*|permalink\.php\?[^#]+)|fb\.watch\/[A-Za-z0-9_-]+)(?:[/?#].*)?$/i.test(url.trim());
 }
 
 /**
@@ -9,8 +9,8 @@ export function isInstagramReelUrl(url: string): boolean {
  * The backend uses yt-dlp metadata only. Only the image is stored in Supabase.
  * Returns the durable Supabase Storage URL, never the expiring Instagram CDN URL.
  */
-export async function extractInstagramReelCover(url: string): Promise<string> {
-  if (!isInstagramReelUrl(url)) throw new Error('Paste an Instagram Reel link.');
+export async function extractSocialCover(url: string): Promise<string> {
+  if (!isSocialCoverUrl(url)) throw new Error('Paste a public Instagram or Facebook post/Reel link.');
   const client = getSupabaseClient();
   if (!client) throw new Error('Connect Supabase first.');
   const { data, error: sessionError } = await client.auth.getSession();
@@ -41,6 +41,10 @@ export async function extractInstagramReelCover(url: string): Promise<string> {
   const blob = await response.blob();
   if (!blob.size || blob.size > 8 * 1024 * 1024) throw new Error('Invalid cover image.');
   const ext = mime === 'image/png' ? 'png' : mime === 'image/webp' ? 'webp' : 'jpg';
-  const file = new File([blob], 'reel-cover-' + Date.now() + '.' + ext, { type: mime });
+  const file = new File([blob], 'social-cover-' + Date.now() + '.' + ext, { type: mime });
   return uploadAssetToSupabase(file, 'covers');
 }
+
+// Compatibility for existing admin components.
+export const isInstagramReelUrl = isSocialCoverUrl;
+export const extractInstagramReelCover = extractSocialCover;
